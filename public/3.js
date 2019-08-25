@@ -20,21 +20,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  data: {
-    scholen: [{
-      name: "Sancta Maria",
-      afkorting: "SMB"
+  data: function data() {
+    return {
+      message: 'Some Message',
+      scholen: [],
+      headers: []
+    };
+  },
+  methods: {
+    imgUrl: function imgUrl(item) {
+      return 'http://www.skbl.be/joomla/images/logo/logo-scholen/' + item.logo_filename;
+    }
+  },
+  created: function created() {
+    var app = this;
+    axios.get('/api/v1/school').then(function (resp) {
+      app.scholen = resp.data;
+    })["catch"](function (resp) {
+      console.log(resp);
+      alert("Could not load schools");
+    });
+    this.headers = [{
+      text: "",
+      align: "center",
+      value: "logo",
+      width: "30px"
     }, {
-      name: "Mater Dei",
-      afkorting: "MD"
+      text: "Naam",
+      align: "left",
+      value: "name"
     }, {
-      name: "Windekind",
-      afkorting: "Wind"
-    }, {
-      name: "Groenveld",
-      afkorting: "DB"
-    }]
+      text: "Afkorting",
+      align: "left",
+      value: "abbreviation"
+    }];
+    console.log('Component School.vue created.');
   }
 });
 
@@ -59,11 +82,34 @@ var render = function() {
     "v-card",
     { attrs: { width: "100%" } },
     [
-      _c("v-card-title", [_vm._v("\n    Scholen\n  ")]),
+      _c("v-card-title", [_vm._v("Scholen overzicht")]),
       _vm._v(" "),
       _c(
         "v-card-text",
-        [_c("v-data-table", { attrs: { items: _vm.scholen } })],
+        [
+          _c("v-data-table", {
+            attrs: { items: _vm.scholen, headers: _vm.headers },
+            scopedSlots: _vm._u([
+              {
+                key: "item.logo",
+                fn: function(ref) {
+                  var item = ref.item
+                  return [
+                    item.logo_filename != "nologo"
+                      ? _c("img", {
+                          attrs: {
+                            src: _vm.imgUrl(item),
+                            height: "25px",
+                            width: "25px"
+                          }
+                        })
+                      : _vm._e()
+                  ]
+                }
+              }
+            ])
+          })
+        ],
         1
       )
     ],
