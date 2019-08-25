@@ -9,16 +9,18 @@ require('./bootstrap');
 //window.Vue = require('vue');
 
 import Vue from 'vue'
-import VueRouter from 'vue-router';
+import '@mdi/font/css/materialdesignicons.css'
+// import VueRouter from 'vue-router';
+import router from './plugins/router';
 import vuetify from './plugins/vuetify' // path to vuetify export
 
-Vue.use(VueRouter);
+// Vue.use(VueRouter);
 window.Vue = Vue;
 
 import CompaniesIndex from './components/companies/CompaniesIndex.vue';
 import CompaniesCreate from './components/companies/CompaniesCreate.vue';
 import CompaniesEdit from './components/companies/CompaniesEdit.vue';
-
+/*
 const routes = [
     {
         path: '/',
@@ -31,7 +33,7 @@ const routes = [
 ]
 
 const router = new VueRouter({ routes })
-
+*/
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -53,4 +55,7 @@ const router = new VueRouter({ routes })
 
 new Vue({
     vuetify, router,
+    data: () => ({
+        drawer: null,
+      }),
   }).$mount('#app')

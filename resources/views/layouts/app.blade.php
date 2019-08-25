@@ -8,75 +8,95 @@
     <title>Laravel</title>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet"> -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900%7CRoboto+Mono:500%7CMaterial+Icons" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
     <v-app id="app">
+        @auth
+        <v-navigation-drawer v-model="drawer" app>
+            <v-list dense>
+                <v-list-item to="/">
+                    <v-list-item-action>
+                        <v-icon>dashboard</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Dashboard</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item to="/function">
+                    <v-list-item-action>
+                        <v-icon>home</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Ambten</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item to="/school">
+                    <v-list-item-action>
+                        <v-icon>contact_mail</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Scholen</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item to="/employee">
+                    <v-list-item-action>
+                        <v-icon>contacts</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Personeel</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item to="/logout">
+                    <v-list-item-action>
+                        <v-icon>exit_to_app</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Logout</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+            </v-list>
+        </v-navigation-drawer>
+        @endauth
+
+        <v-app-bar app color="indigo" dark>
+            <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+            <v-toolbar-title>TADD Calc</v-toolbar-title>
+        </v-app-bar>
         <v-content>
-        <nav class="navbar navbar-default navbar-static-top">
-                <div class="container">
-                    <div class="navbar-header">
-
-                        <!-- Collapsed Hamburger -->
-                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
-                            <span class="sr-only">Toggle Navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-
-                        <!-- Branding Image -->
-                        <a class="navbar-brand" href="{{ url('/') }}">
-                            {{ config('app.name', 'Laravel') }}
-                        </a>
-                    </div>
-
-                    <div class="collapse navbar-collapse" id="app-navbar-collapse">
-                        <!-- Left Side Of Navbar -->
-                        <ul class="nav navbar-nav">
-                            &nbsp;
-                        </ul>
-
-                        <!-- Right Side Of Navbar -->
-                        <ul class="nav navbar-nav navbar-right">
-                            <!-- Authentication Links -->
-                            @guest
-                            <li><a href="{{ route('login') }}">Login</a></li>
-                            <li><a href="{{ route('register') }}">Register</a></li>
-                            @else
-                            <li><a href="{{ route('admin.companies.index') }}">Companies</a></li>
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                    {{ Auth::user()->name }} <span class="caret"></span>
+            @auth
+            <router-view></router-view>
+            @else
+            <v-container fluid>
+                <v-row>
+                    <v-col cols="12">
+                        <v-row style="height: 300px;" justify="center" align="center">
+                            <v-card class="ma-3 pa-6" >
+                                <a href="{{ route('login') }}">
+                                    <v-btn>Login</v-btn>
                                 </a>
+                            </v-card>
+                            <v-card class="ma-3 pa-6" flat>
+                                <a href="{{ route('register') }}">
+                                    <v-btn>Register</v-btn>
+                                </a>
+                            </v-card>
+                        </v-row>
+                    </v-col>
+                </v-row>
+            </v-container>
+            @endauth
 
-                                <ul class="dropdown-menu" role="menu">
-                                    <li>
-                                        <a href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                            Logout
-                                        </a>
 
-                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                            {{ csrf_field() }}
-                                        </form>
-                                    </li>
-                                </ul>
-                            </li>
-                            @endguest
-                        </ul>
-                    </div>
-
-                </div>
-            </nav>
             @yield('content')
         </v-content>
 
-        
+
     </v-app>
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
