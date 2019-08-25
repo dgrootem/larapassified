@@ -52,14 +52,21 @@
                         <v-list-item-title>Personeel</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
-                <v-list-item to="/logout">
+                <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                <v-list-item>
                     <v-list-item-action>
-                        <v-icon>exit_to_app</v-icon>
+                    
+                {{ csrf_field() }}
+                    <v-icon>exit_to_app</v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
-                        <v-list-item-title>Logout</v-list-item-title>
+                        <v-list-item-title>
+                        <button type="submit" class="logoutbutton">Logout</button>
+                                            
+                        </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
+                </form>
             </v-list>
         </v-navigation-drawer>
         @endauth
