@@ -3,4 +3,5 @@
 Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middleware' => 'auth:api'], function () {
     //Route::resource('companies', 'CompaniesController', ['except' => ['create', 'edit']]);
     Route::resource('school','SchoolController',['except' => ['create', 'edit']]);
+    Route::resource('ambt','EducationalFunctionController',['except' => ['create', 'edit']]);
 });

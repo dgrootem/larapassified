@@ -163,11 +163,12 @@ export default {
             app.failSnack("Fout bij opslaan wijzigingen");
           });
       } else {
-        this.scholen.push(this.editedItem);
+        
         axios
           .post("/api/v1/school", this.editedItem)
           .then(function(resp) {
             //app.$router.push({ path: "/scholen" });
+            app.scholen.push(resp.data);
             app.successSnack("School toegevoegd");
           })
           .catch(function(resp) {
