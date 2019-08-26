@@ -72737,25 +72737,25 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
     path: '/',
     name: 'dashboard',
     component: function component() {
-      return __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ../components/Dashboard.vue */ "./resources/js/components/Dashboard.vue"));
+      return __webpack_require__.e(/*! import() */ 1).then(__webpack_require__.bind(null, /*! ../components/Dashboard.vue */ "./resources/js/components/Dashboard.vue"));
     }
   }, {
     path: '/employee',
     name: 'employee',
     component: function component() {
-      return __webpack_require__.e(/*! import() */ 1).then(__webpack_require__.bind(null, /*! ../components/Employee.vue */ "./resources/js/components/Employee.vue"));
+      return __webpack_require__.e(/*! import() */ 2).then(__webpack_require__.bind(null, /*! ../components/Employee.vue */ "./resources/js/components/Employee.vue"));
     }
   }, {
     path: '/school',
     name: 'school',
     component: function component() {
-      return __webpack_require__.e(/*! import() */ 3).then(__webpack_require__.bind(null, /*! ../components/School.vue */ "./resources/js/components/School.vue"));
+      return __webpack_require__.e(/*! import() */ 4).then(__webpack_require__.bind(null, /*! ../components/School.vue */ "./resources/js/components/School.vue"));
     }
   }, {
     path: '/function',
     name: 'function',
     component: function component() {
-      return __webpack_require__.e(/*! import() */ 2).then(__webpack_require__.bind(null, /*! ../components/Function.vue */ "./resources/js/components/Function.vue"));
+      return __webpack_require__.e(/*! import() */ 3).then(__webpack_require__.bind(null, /*! ../components/Function.vue */ "./resources/js/components/Function.vue"));
     }
   }, {
     path: '/admin/users',
@@ -72767,7 +72767,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
     path: '/calendar',
     name: 'calendar',
     component: function component() {
-      return __webpack_require__.e(/*! import() */ 4).then(__webpack_require__.bind(null, /*! ../components/Calendar.vue */ "./resources/js/components/Calendar.vue"));
+      return __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ../components/Calendar.vue */ "./resources/js/components/Calendar.vue"));
     }
   }]
 }));

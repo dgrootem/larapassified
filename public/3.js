@@ -1,9 +1,9 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([[3],{
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/School.vue?vue&type=script&lang=js&":
-/*!*****************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/School.vue?vue&type=script&lang=js& ***!
-  \*****************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Function.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Function.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -65,54 +65,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       message: "Some Message",
-      scholen: [],
-      schooltypes: [],
+      ambten: [],
       headers: [],
       fab: false,
       dialog: false,
       editedItem: null,
       defaultItem: {
         name: "",
-        schooltype: "",
-        adres: "",
-        abbreviation: "",
-        logo_filename: "",
-        postcode: -1
+        denominator: ''
       },
       editedIndex: -1,
       snackbar: false,
@@ -122,9 +86,6 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    imgUrl: function imgUrl(item) {
-      return "http://www.skbl.be/joomla/images/logo/logo-scholen/" + item.logo_filename;
-    },
     successSnack: function successSnack(message) {
       this.snack_text = message;
       this.snack_color = "success";
@@ -136,16 +97,16 @@ __webpack_require__.r(__webpack_exports__);
       this.snackbar = true;
     },
     editItem: function editItem(item) {
-      this.editedIndex = this.scholen.indexOf(item);
+      this.editedIndex = this.ambten.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
     deleteItem: function deleteItem(item) {
-      if (confirm("School echt verwijderen?")) {
+      if (confirm("Ambt echt verwijderen?")) {
         var app = this;
-        var index = this.scholen.indexOf(item);
-        axios["delete"]('/api/v1/school/' + item.id).then(function (resp) {
-          app.scholen.splice(index, 1);
+        var index = this.ambten.indexOf(item);
+        axios["delete"]('/api/v1/ambt/' + item.id).then(function (resp) {
+          app.ambten.splice(index, 1);
           app.successSnack("School verwijderd");
         })["catch"](function (resp) {
           app.failSnack("Verwijderen mislukt");
@@ -156,8 +117,8 @@ __webpack_require__.r(__webpack_exports__);
       var app = this;
 
       if (this.editedIndex > -1) {
-        Object.assign(this.scholen[this.editedIndex], this.editedItem);
-        axios.patch("/api/v1/school/" + this.editedItem.id, this.editedItem).then(function (resp) {
+        Object.assign(this.ambten[this.editedIndex], this.editedItem);
+        axios.patch("/api/v1/ambt/" + this.editedItem.id, this.editedItem).then(function (resp) {
           //app.$router.push({ path: "/scholen" });
           app.successSnack("Wijzigingen opgeslagen");
         })["catch"](function (resp) {
@@ -165,13 +126,13 @@ __webpack_require__.r(__webpack_exports__);
           app.failSnack("Fout bij opslaan wijzigingen");
         });
       } else {
-        axios.post("/api/v1/school", this.editedItem).then(function (resp) {
+        axios.post("/api/v1/ambt", this.editedItem).then(function (resp) {
           //app.$router.push({ path: "/scholen" });
-          app.scholen.push(resp.data);
-          app.successSnack("School toegevoegd");
+          app.ambten.push(resp.data);
+          app.successSnack("Ambt toegevoegd");
         })["catch"](function (resp) {
           console.log(resp);
-          app.failSnack("Fout bij aanmaken school");
+          app.failSnack("Fout bij aanmaken ambt");
         });
       }
 
@@ -189,47 +150,41 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     formTitle: function formTitle() {
-      return this.editedIndex === -1 ? "Nieuwe school toevoegen" : "Bewerk schoolgegevens";
+      return this.editedIndex === -1 ? "Nieuw ambt toevoegen" : "Bewerk ambt";
     }
   },
   created: function created() {
     var app = this;
-    axios.get("/api/v1/school").then(function (resp) {
-      app.scholen = resp.data.scholen;
-      app.schooltypes = resp.data.schooltypes;
+    axios.get("/api/v1/ambt").then(function (resp) {
+      app.ambten = resp.data;
     })["catch"](function (resp) {
       console.log(resp);
-      alert("Could not load schools");
+      alert("Could not load ambten");
     });
     this.headers = [{
-      text: "",
-      align: "center",
-      value: "logo",
-      width: "30px"
-    }, {
       text: "Naam",
       align: "left",
       value: "name"
     }, {
-      text: "Afkorting",
+      text: "Noemer",
       align: "left",
-      value: "abbreviation"
+      value: "denominator"
     }, {
       text: "",
       align: "center",
       value: "action"
     }];
     this.editedItem = Object.assign({}, this.defaultItem);
-    console.log("Component School.vue created.");
+    console.log("Component Function.vue created.");
   }
 });
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/School.vue?vue&type=template&id=74c62f9f&":
-/*!*********************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/School.vue?vue&type=template&id=74c62f9f& ***!
-  \*********************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Function.vue?vue&type=template&id=0d98dd43&":
+/*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Function.vue?vue&type=template&id=0d98dd43& ***!
+  \***********************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -255,7 +210,7 @@ var render = function() {
               _c(
                 "v-card-title",
                 [
-                  _vm._v("\n        Scholen overzicht\n        "),
+                  _vm._v("\n        Ambten overzicht\n        "),
                   _c(
                     "v-btn",
                     {
@@ -277,25 +232,8 @@ var render = function() {
                 "v-card-text",
                 [
                   _c("v-data-table", {
-                    attrs: { items: _vm.scholen, headers: _vm.headers },
+                    attrs: { items: _vm.ambten, headers: _vm.headers },
                     scopedSlots: _vm._u([
-                      {
-                        key: "item.logo",
-                        fn: function(ref) {
-                          var item = ref.item
-                          return [
-                            item.logo_filename != "nologo"
-                              ? _c("img", {
-                                  attrs: {
-                                    src: _vm.imgUrl(item),
-                                    height: "25px",
-                                    width: "25px"
-                                  }
-                                })
-                              : _vm._e()
-                          ]
-                        }
-                      },
                       {
                         key: "item.action",
                         fn: function(ref) {
@@ -375,28 +313,6 @@ var render = function() {
                         [
                           _c(
                             "v-col",
-                            { attrs: { cols: "12", sm: "6", md: "4" } },
-                            [
-                              _c("v-text-field", {
-                                attrs: { label: "Afkorting" },
-                                model: {
-                                  value: _vm.editedItem.abbreviation,
-                                  callback: function($$v) {
-                                    _vm.$set(
-                                      _vm.editedItem,
-                                      "abbreviation",
-                                      $$v
-                                    )
-                                  },
-                                  expression: "editedItem.abbreviation"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
                             { attrs: { cols: "12", sm: "6", md: "8" } },
                             [
                               _c("v-text-field", {
@@ -418,99 +334,13 @@ var render = function() {
                             { attrs: { cols: "12", sm: "12", md: "12" } },
                             [
                               _c("v-text-field", {
-                                attrs: { label: "Adres" },
+                                attrs: { label: "Noemer" },
                                 model: {
-                                  value: _vm.editedItem.adres,
+                                  value: _vm.editedItem.denominator,
                                   callback: function($$v) {
-                                    _vm.$set(_vm.editedItem, "adres", $$v)
+                                    _vm.$set(_vm.editedItem, "denominator", $$v)
                                   },
-                                  expression: "editedItem.adres"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12", sm: "6", md: "4" } },
-                            [
-                              _c("v-text-field", {
-                                attrs: { label: "Postcode" },
-                                model: {
-                                  value: _vm.editedItem.postcode,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.editedItem, "postcode", $$v)
-                                  },
-                                  expression: "editedItem.postcode"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12", sm: "8", md: "8" } },
-                            [
-                              _c("v-text-field", {
-                                attrs: { label: "Gemeente" },
-                                model: {
-                                  value: _vm.editedItem.gemeente,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.editedItem, "gemeente", $$v)
-                                  },
-                                  expression: "editedItem.gemeente"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12", sm: "6", md: "6" } },
-                            [
-                              _c("v-select", {
-                                attrs: {
-                                  items: _vm.schooltypes,
-                                  "item-text": "naam",
-                                  "item-value": "id",
-                                  "item-key": "id",
-                                  label: "Type"
-                                },
-                                model: {
-                                  value: _vm.editedItem.school_type_id,
-                                  callback: function($$v) {
-                                    _vm.$set(
-                                      _vm.editedItem,
-                                      "school_type_id",
-                                      $$v
-                                    )
-                                  },
-                                  expression: "editedItem.school_type_id"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12", sm: "6", md: "6" } },
-                            [
-                              _c("v-text-field", {
-                                attrs: { label: "Logo" },
-                                model: {
-                                  value: _vm.editedItem.logo_filename,
-                                  callback: function($$v) {
-                                    _vm.$set(
-                                      _vm.editedItem,
-                                      "logo_filename",
-                                      $$v
-                                    )
-                                  },
-                                  expression: "editedItem.logo_filename"
+                                  expression: "editedItem.denominator"
                                 }
                               })
                             ],
@@ -537,7 +367,7 @@ var render = function() {
                       attrs: { color: "blue darken-1", text: "" },
                       on: { click: _vm.close }
                     },
-                    [_vm._v("Cancel")]
+                    [_vm._v("Annuleren")]
                   ),
                   _vm._v(" "),
                   _c(
@@ -546,7 +376,7 @@ var render = function() {
                       attrs: { color: "blue darken-1", text: "" },
                       on: { click: _vm.save }
                     },
-                    [_vm._v("Save")]
+                    [_vm._v("Opslaan")]
                   )
                 ],
                 1
@@ -602,17 +432,17 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./resources/js/components/School.vue":
-/*!********************************************!*\
-  !*** ./resources/js/components/School.vue ***!
-  \********************************************/
+/***/ "./resources/js/components/Function.vue":
+/*!**********************************************!*\
+  !*** ./resources/js/components/Function.vue ***!
+  \**********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _School_vue_vue_type_template_id_74c62f9f___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./School.vue?vue&type=template&id=74c62f9f& */ "./resources/js/components/School.vue?vue&type=template&id=74c62f9f&");
-/* harmony import */ var _School_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./School.vue?vue&type=script&lang=js& */ "./resources/js/components/School.vue?vue&type=script&lang=js&");
+/* harmony import */ var _Function_vue_vue_type_template_id_0d98dd43___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Function.vue?vue&type=template&id=0d98dd43& */ "./resources/js/components/Function.vue?vue&type=template&id=0d98dd43&");
+/* harmony import */ var _Function_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Function.vue?vue&type=script&lang=js& */ "./resources/js/components/Function.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -622,9 +452,9 @@ __webpack_require__.r(__webpack_exports__);
 /* normalize component */
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _School_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _School_vue_vue_type_template_id_74c62f9f___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _School_vue_vue_type_template_id_74c62f9f___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _Function_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _Function_vue_vue_type_template_id_0d98dd43___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _Function_vue_vue_type_template_id_0d98dd43___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
   null,
@@ -634,38 +464,38 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "resources/js/components/School.vue"
+component.options.__file = "resources/js/components/Function.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 
-/***/ "./resources/js/components/School.vue?vue&type=script&lang=js&":
-/*!*********************************************************************!*\
-  !*** ./resources/js/components/School.vue?vue&type=script&lang=js& ***!
-  \*********************************************************************/
+/***/ "./resources/js/components/Function.vue?vue&type=script&lang=js&":
+/*!***********************************************************************!*\
+  !*** ./resources/js/components/Function.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_School_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./School.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/School.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_School_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Function_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./Function.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Function.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Function_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./resources/js/components/School.vue?vue&type=template&id=74c62f9f&":
-/*!***************************************************************************!*\
-  !*** ./resources/js/components/School.vue?vue&type=template&id=74c62f9f& ***!
-  \***************************************************************************/
+/***/ "./resources/js/components/Function.vue?vue&type=template&id=0d98dd43&":
+/*!*****************************************************************************!*\
+  !*** ./resources/js/components/Function.vue?vue&type=template&id=0d98dd43& ***!
+  \*****************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_School_vue_vue_type_template_id_74c62f9f___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./School.vue?vue&type=template&id=74c62f9f& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/School.vue?vue&type=template&id=74c62f9f&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_School_vue_vue_type_template_id_74c62f9f___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Function_vue_vue_type_template_id_0d98dd43___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./Function.vue?vue&type=template&id=0d98dd43& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Function.vue?vue&type=template&id=0d98dd43&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Function_vue_vue_type_template_id_0d98dd43___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_School_vue_vue_type_template_id_74c62f9f___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Function_vue_vue_type_template_id_0d98dd43___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

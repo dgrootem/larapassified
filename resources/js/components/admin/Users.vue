@@ -113,9 +113,13 @@ export default {
       else return "wachtwoorden komen niet overeen";
     },
     passLength(field1) {
-      if (this.editedItem.password.length < 8)
-        return "wachtwoord moet minstens 8 tekens lang zijn";
-      else return true;
+      if ((this.editedItem) && (this.editedItem.password)){
+          if (this.editedItem.password == undefined) return true;
+        if (this.editedItem.password.length >= 8)
+            return true;
+        else return "wachtwoord moet minstens 8 tekens lang zijn";
+      }
+      return true;
     },
     successSnack(message) {
       this.snack_text = message;
