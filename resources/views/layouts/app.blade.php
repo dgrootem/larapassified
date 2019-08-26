@@ -30,7 +30,7 @@
                 </v-list-item>
                 <v-list-item to="/function">
                     <v-list-item-action>
-                        <v-icon>home</v-icon>
+                        <v-icon>contact_mail</v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
                         <v-list-item-title>Ambten</v-list-item-title>
@@ -38,7 +38,7 @@
                 </v-list-item>
                 <v-list-item to="/school">
                     <v-list-item-action>
-                        <v-icon>contact_mail</v-icon>
+                        <v-icon>home</v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
                         <v-list-item-title>Scholen</v-list-item-title>
