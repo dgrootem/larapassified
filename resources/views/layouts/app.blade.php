@@ -52,6 +52,22 @@
                         <v-list-item-title>Personeel</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
+                <v-list-item>
+                <v-divider></v-divider>
+                </v-list-item>
+                @if (Auth::check() && Auth::user()->isadmin)
+                <v-list-item to="/admin/users">
+                    <v-list-item-action>
+                        <v-icon>settings</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Beheer</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                <v-divider></v-divider>
+                </v-list-item>
+                @endif
                 <form id="logout-form" action="{{ route('logout') }}" method="POST">
                 <v-list-item>
                     <v-list-item-action>

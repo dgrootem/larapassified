@@ -25,6 +25,16 @@ export default new Router({
             name: 'function',
             component: () => import('../components/Function.vue')
         },
+        {
+            path: '/admin/users',
+            name: 'users',
+            component: () => import('../components/admin/Users.vue')
+        },
+        {
+            path: '/calendar',
+            name: 'calendar',
+            component: () => import('../components/Calendar.vue')
+        },
         
     ]
 });

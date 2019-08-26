@@ -72757,6 +72757,18 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
     component: function component() {
       return __webpack_require__.e(/*! import() */ 2).then(__webpack_require__.bind(null, /*! ../components/Function.vue */ "./resources/js/components/Function.vue"));
     }
+  }, {
+    path: '/admin/users',
+    name: 'users',
+    component: function component() {
+      return __webpack_require__.e(/*! import() */ 5).then(__webpack_require__.bind(null, /*! ../components/admin/Users.vue */ "./resources/js/components/admin/Users.vue"));
+    }
+  }, {
+    path: '/calendar',
+    name: 'calendar',
+    component: function component() {
+      return __webpack_require__.e(/*! import() */ 4).then(__webpack_require__.bind(null, /*! ../components/Calendar.vue */ "./resources/js/components/Calendar.vue"));
+    }
   }]
 }));
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
