@@ -156,9 +156,8 @@ __webpack_require__.r(__webpack_exports__);
       var app = this;
 
       if (this.editedIndex > -1) {
-        Object.assign(this.scholen[this.editedIndex], this.editedItem);
         axios.patch("/api/v1/school/" + this.editedItem.id, this.editedItem).then(function (resp) {
-          //app.$router.push({ path: "/scholen" });
+          Object.assign(app.scholen[app.editedIndex], resp.data);
           app.successSnack("Wijzigingen opgeslagen");
         })["catch"](function (resp) {
           console.log(resp);
@@ -166,7 +165,6 @@ __webpack_require__.r(__webpack_exports__);
         });
       } else {
         axios.post("/api/v1/school", this.editedItem).then(function (resp) {
-          //app.$router.push({ path: "/scholen" });
           app.scholen.push(resp.data);
           app.successSnack("School toegevoegd");
         })["catch"](function (resp) {

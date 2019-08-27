@@ -114,8 +114,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     calcBdate: function calcBdate() {
-      debugger;
-
       if (this.editedItem.registrationNumber.length == 11) {
         if (!isNaN(this.editedItem.registrationNumber)) {
           //only do something when it is a number
@@ -179,7 +177,6 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.editedIndex > -1) {
         axios.patch("/api/v1/employee/" + this.editedItem.id, this.editedItem).then(function (resp) {
-          //app.$router.push({ path: "/employees" });
           Object.assign(app.employees[app.editedIndex], resp.data);
           app.successSnack("Wijzigingen opgeslagen");
         })["catch"](function (resp) {
@@ -188,7 +185,6 @@ __webpack_require__.r(__webpack_exports__);
         });
       } else {
         axios.post("/api/v1/employee", this.editedItem).then(function (resp) {
-          //app.$router.push({ path: "/employees" });
           app.employees.push(resp.data);
           app.successSnack("Personeelslid toegevoegd");
         })["catch"](function (resp) {
@@ -212,15 +208,7 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     formTitle: function formTitle() {
       return this.editedIndex === -1 ? "Nieuw personeelslid toevoegen" : "Bewerk gegevens";
-    } // registrationNumber : {
-    //     get(){
-    //       return this.editedItem.registrationNumber;
-    //     },
-    //     set(value){
-    //
-    //           this.registrationNumberProxy = value;
-    // }
-
+    }
   },
   created: function created() {
     var app = this;

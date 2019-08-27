@@ -110,11 +110,10 @@ export default {
     save() {
       var app = this;
       if (this.editedIndex > -1) {
-        Object.assign(this.ambten[this.editedIndex], this.editedItem);
         axios
           .patch("/api/v1/ambt/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
-            //app.$router.push({ path: "/scholen" });
+            Object.assign(app.ambten[app.editedIndex], resp.data);
             app.successSnack("Wijzigingen opgeslagen");
           })
           .catch(function(resp) {
@@ -126,7 +125,6 @@ export default {
         axios
           .post("/api/v1/ambt", this.editedItem)
           .then(function(resp) {
-            //app.$router.push({ path: "/scholen" });
             app.ambten.push(resp.data);
             app.successSnack("Ambt toegevoegd");
           })

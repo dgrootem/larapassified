@@ -151,11 +151,11 @@ export default {
     save() {
       var app = this;
       if (this.editedIndex > -1) {
-        Object.assign(this.scholen[this.editedIndex], this.editedItem);
+        
         axios
           .patch("/api/v1/school/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
-            //app.$router.push({ path: "/scholen" });
+            Object.assign(app.scholen[app.editedIndex], resp.data);
             app.successSnack("Wijzigingen opgeslagen");
           })
           .catch(function(resp) {
@@ -167,7 +167,6 @@ export default {
         axios
           .post("/api/v1/school", this.editedItem)
           .then(function(resp) {
-            //app.$router.push({ path: "/scholen" });
             app.scholen.push(resp.data);
             app.successSnack("School toegevoegd");
           })
