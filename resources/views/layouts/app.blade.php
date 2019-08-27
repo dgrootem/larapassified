@@ -25,8 +25,11 @@
                         <v-icon>dashboard</v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
-                        <v-list-item-title>Dashboard</v-list-item-title>
+                        <v-list-item-title>TADD</v-list-item-title>
                     </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                <v-divider></v-divider>
                 </v-list-item>
                 <v-list-item to="/function">
                     <v-list-item-action>
