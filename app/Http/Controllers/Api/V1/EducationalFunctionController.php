@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use \App\EducationalFunction;
+use App\EduFunctionData;
 
 class EducationalFunctionController extends Controller
 {
@@ -19,6 +20,11 @@ class EducationalFunctionController extends Controller
         return EducationalFunction::all();
     }
 
+    public function availableForEmployee($id)
+    {
+        $ids = EduFunctionData::where('employee_id',$id)->pluck('educational_function_id');
+        return EducationalFunction::whereNotIn('id',$ids)->get();
+    }
     
 
     /**

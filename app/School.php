@@ -13,4 +13,8 @@ class School extends Model
     {
         return $this->belongsTo(SchoolType::class);
     }
+
+    public function employments(){
+        return $this->hasMany(Employment::class);
+    }
 }
