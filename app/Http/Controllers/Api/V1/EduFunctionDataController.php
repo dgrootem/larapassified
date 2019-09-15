@@ -88,6 +88,7 @@ class EduFunctionDataController extends Controller
     }
 
     public function functionDataForEmployee($id){
-        return EduFunctionData::where('employee_id',$id)->with('educationalFunction')->get();
+        $result =  EduFunctionData::where('employee_id',$id)->with('educationalFunction','employments.school')->get();
+        return $result;
     }
 }

@@ -60,6 +60,8 @@
             :scholen="scholen"
             
             @delete="deleteFunctionData(fdata)"
+            @fail="failSnack(message)"
+            @success="successSnack(message)"
           ></functiondatacomp>
         </v-tab-item>
       </v-tabs>
@@ -380,6 +382,8 @@ export default {
         axios
           .get("/api/v1/employee/functiondata/" + val.id)
           .then(function(resp) {
+            console.log("loaded data for employee");
+            console.log(JSON.stringify(resp.data));
             app.functiondata = resp.data;
           })
           .then(app.setAvailableFunctions(val.id))

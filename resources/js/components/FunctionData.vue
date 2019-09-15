@@ -15,10 +15,26 @@
         </v-col>
       </v-row>
     </v-container>
-
+    {{employments}}
     <!-- </v-layout>
     <v-layout row>-->
-    <v-data-table :items="functiondata.employments"></v-data-table>
+    <v-data-table :items="employments" :headers="headers">
+      <template v-slot:item.school_id="{ item }">
+        <img
+          v-if="(item.school.logo_filename != 'nologo')"
+          :src="imgUrl(item.school)"
+          height="25px"
+          width="25px"
+        />
+        <!-- <v-label> -->
+        {{item.school.name}}
+        <!-- </v-label> -->
+      </template>
+      <template v-slot:item.action="{ item }">
+        <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
+        <v-icon small @click="deleteItem(item)">delete</v-icon>
+      </template>
+    </v-data-table>
     <!-- </v-layout>
     </v-container>-->
     <v-dialog v-model="employmentDialog" max-width="500px">
@@ -46,15 +62,13 @@
                   label="School"
                 ></v-select>
               </v-col>
-{{functiondata}}
               <v-col cols="12" sm="4" md="4">
-                
-                  <v-text-field v-if="editedItem" v-model="editedItem.hours" label="Uren"
-                  :suffix="hourSuffix">
-
-                  </v-text-field>
-                  
-                
+                <v-text-field
+                  v-if="editedItem"
+                  v-model="editedItem.hours"
+                  label="Uren"
+                  :suffix="hourSuffix"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -84,12 +98,22 @@ export default {
         beginDate: moment(),
         endDate: moment(),
         hours: 0,
-        school_id: -1
+        school_id: -1,
+        edu_function_data_id: this.functiondata.id
       },
+      employments: [],
 
       editedIndex: -1,
       editedItem: {},
-      employmentDialog: false
+      employmentDialog: false,
+
+      headers: [
+        { text: "Begin", align: "left", value: "beginDate" },
+        { text: "Einde", align: "left", value: "endDate" },
+        { text: "School", align: "left", value: "school_id" },
+        { text: "Uren", align: "left", value: "hours" },
+        { text: "", align: "center", value: "action" }
+      ]
     };
   },
   computed: {
@@ -98,11 +122,15 @@ export default {
         ? "Nieuwe aanstelling"
         : "Bewerk aanstelling";
     },
-    hourSuffix(){
-      if (this.functiondata.educational_function) return '/' + this.functiondata.educational_function.denominator;
-      else return '';
+    hourSuffix() {
+      if (this.functiondata.educational_function)
+        return "/" + this.functiondata.educational_function.denominator;
+      else return "";
     },
-
+    /*employments() {
+      return this.functiondata.employments;
+    },
+*/
     formattedBegin: {
       get() {
         if (this.editedItem && this.editedItem.beginDate)
@@ -131,15 +159,75 @@ export default {
     stopToday() {
       this.formattedEnd = moment();
     },
+    imgUrl: function(school) {
+      return (
+        "http://www.skbl.be/joomla/images/logo/logo-scholen/" +
+        school.logo_filename
+      );
+    },
 
     emitFail() {},
     emitSuccess() {},
+
+    editItem(item) {
+      this.editedIndex = this.employments.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+    deleteItem(item) {
+      if (confirm("School echt verwijderen?")) {
+        var app = this;
+        var index = this.employments.indexOf(item);
+        axios
+          .delete("/api/v1/employment/" + item.id)
+          .then(function(resp) {
+            app.employments.splice(index, 1);
+            app.emitSuccess("Aanstelling verwijderd");
+          })
+          .catch(function(resp) {
+            app.emitFail("Verwijderen mislukt");
+          });
+      }
+    },
 
     addEmployment() {
       this.editedItem = Object.assign({}, this.defaultEmployment);
       this.employmentDialog = true;
     },
-    saveEmployment() {},
+    saveEmployment() {
+      var app = this;
+      if (this.editedIndex == -1)
+        axios //we should retrieve the whole object set again from the server... trust only server data! :) TODO
+          .post("/api/v1/employment", this.editedItem)
+          .then(function(resp) {
+            //app.$router.push({ path: "/employees" });
+            app.employments.push(resp.data);
+            app.emitSuccess("Aanstelling toegevoegd");
+          })
+          .catch(function(resp) {
+            console.log(resp);
+            app.emitFail("Fout bij aanmaken aanstelling");
+          });
+      else {
+        // delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
+        axios
+          .patch("/api/v1/employment/" + this.editedItem.id, this.editedItem)
+          .then(function(resp) {
+            //to keep reactivity
+            Vue.set(
+              app.functiondata,
+              app.editedIndex,
+              Object.assign({}, resp.data)
+            );
+            app.emitSuccess("Wijzigingen opgeslagen");
+          })
+          .catch(function(resp) {
+            console.log(resp);
+            app.emitFail("Fout bij opslaan wijzigingen");
+          });
+      }
+      this.closeEmployment();
+    },
     deleteEmployment() {},
     closeEmployment() {
       this.employmentDialog = false;
@@ -148,6 +236,9 @@ export default {
     deleteFunctionData() {
       this.$emit("delete", this.functiondata);
     }
+  },
+  mounted(){
+    this.employments = this.functiondata.employments;
   }
 };
 </script>

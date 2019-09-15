@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Employment;
+use Carbon\Carbon;
 
 class EmploymentController extends Controller
 {
@@ -40,8 +41,10 @@ class EmploymentController extends Controller
         $employment->endDate = Carbon::parse(substr($request['endDate'],0,10));;
         $employment->hours = $request['hours'];
         $employment->school_id = $request['school_id'];
+        $employment->edu_function_data_id = $request['edu_function_data_id'];
         $employment->save();
         //$employment = Employment::create($request->all());
+        $employment->school;
         return $employment;
     }
 

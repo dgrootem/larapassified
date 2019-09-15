@@ -150,6 +150,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -357,6 +359,8 @@ __webpack_require__.r(__webpack_exports__);
       if (val) {
         var app = this;
         axios.get("/api/v1/employee/functiondata/" + val.id).then(function (resp) {
+          console.log("loaded data for employee");
+          console.log(JSON.stringify(resp.data));
           app.functiondata = resp.data;
         }).then(app.setAvailableFunctions(val.id))["catch"](function (resp) {
           console.log(resp);
@@ -470,6 +474,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -483,11 +501,34 @@ __webpack_require__.r(__webpack_exports__);
         beginDate: moment__WEBPACK_IMPORTED_MODULE_0___default()(),
         endDate: moment__WEBPACK_IMPORTED_MODULE_0___default()(),
         hours: 0,
-        school_id: -1
+        school_id: -1,
+        edu_function_data_id: this.functiondata.id
       },
+      employments: [],
       editedIndex: -1,
       editedItem: {},
-      employmentDialog: false
+      employmentDialog: false,
+      headers: [{
+        text: "Begin",
+        align: "left",
+        value: "beginDate"
+      }, {
+        text: "Einde",
+        align: "left",
+        value: "endDate"
+      }, {
+        text: "School",
+        align: "left",
+        value: "school_id"
+      }, {
+        text: "Uren",
+        align: "left",
+        value: "hours"
+      }, {
+        text: "",
+        align: "center",
+        value: "action"
+      }]
     };
   },
   computed: {
@@ -495,8 +536,13 @@ __webpack_require__.r(__webpack_exports__);
       return this.editedIndex === -1 ? "Nieuwe aanstelling" : "Bewerk aanstelling";
     },
     hourSuffix: function hourSuffix() {
-      if (this.functiondata.educational_function) return '/' + this.functiondata.educational_function.denominator;else return '';
+      if (this.functiondata.educational_function) return "/" + this.functiondata.educational_function.denominator;else return "";
     },
+
+    /*employments() {
+      return this.functiondata.employments;
+    },
+    */
     formattedBegin: {
       get: function get() {
         if (this.editedItem && this.editedItem.beginDate) return this.editedItem.beginDate.format("DD-MM-YYYY");else return "";
@@ -521,13 +567,55 @@ __webpack_require__.r(__webpack_exports__);
     stopToday: function stopToday() {
       this.formattedEnd = moment__WEBPACK_IMPORTED_MODULE_0___default()();
     },
+    imgUrl: function imgUrl(school) {
+      return "http://www.skbl.be/joomla/images/logo/logo-scholen/" + school.logo_filename;
+    },
     emitFail: function emitFail() {},
     emitSuccess: function emitSuccess() {},
+    editItem: function editItem(item) {
+      this.editedIndex = this.employments.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+    deleteItem: function deleteItem(item) {
+      if (confirm("School echt verwijderen?")) {
+        var app = this;
+        var index = this.employments.indexOf(item);
+        axios["delete"]("/api/v1/employment/" + item.id).then(function (resp) {
+          app.employments.splice(index, 1);
+          app.emitSuccess("Aanstelling verwijderd");
+        })["catch"](function (resp) {
+          app.emitFail("Verwijderen mislukt");
+        });
+      }
+    },
     addEmployment: function addEmployment() {
       this.editedItem = Object.assign({}, this.defaultEmployment);
       this.employmentDialog = true;
     },
-    saveEmployment: function saveEmployment() {},
+    saveEmployment: function saveEmployment() {
+      var app = this;
+      if (this.editedIndex == -1) axios //we should retrieve the whole object set again from the server... trust only server data! :) TODO
+      .post("/api/v1/employment", this.editedItem).then(function (resp) {
+        //app.$router.push({ path: "/employees" });
+        app.employments.push(resp.data);
+        app.emitSuccess("Aanstelling toegevoegd");
+      })["catch"](function (resp) {
+        console.log(resp);
+        app.emitFail("Fout bij aanmaken aanstelling");
+      });else {
+        // delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
+        axios.patch("/api/v1/employment/" + this.editedItem.id, this.editedItem).then(function (resp) {
+          //to keep reactivity
+          Vue.set(app.functiondata, app.editedIndex, Object.assign({}, resp.data));
+          app.emitSuccess("Wijzigingen opgeslagen");
+        })["catch"](function (resp) {
+          console.log(resp);
+          app.emitFail("Fout bij opslaan wijzigingen");
+        });
+      }
+      this.closeEmployment();
+    },
     deleteEmployment: function deleteEmployment() {},
     closeEmployment: function closeEmployment() {
       this.employmentDialog = false;
@@ -535,6 +623,9 @@ __webpack_require__.r(__webpack_exports__);
     deleteFunctionData: function deleteFunctionData() {
       this.$emit("delete", this.functiondata);
     }
+  },
+  mounted: function mounted() {
+    this.employments = this.functiondata.employments;
   }
 });
 
@@ -1016,6 +1107,12 @@ var render = function() {
                           on: {
                             delete: function($event) {
                               return _vm.deleteFunctionData(fdata)
+                            },
+                            fail: function($event) {
+                              return _vm.failSnack(_vm.message)
+                            },
+                            success: function($event) {
+                              return _vm.successSnack(_vm.message)
                             }
                           }
                         })
@@ -1359,7 +1456,7 @@ var render = function() {
                       on: { click: _vm.deleteFunctionData }
                     },
                     [
-                      _vm._v("\n            Verwijder ambt\n            "),
+                      _vm._v("\n          Verwijder ambt\n          "),
                       _c("v-icon", [_vm._v("delete")])
                     ],
                     1
@@ -1373,8 +1470,66 @@ var render = function() {
         ],
         1
       ),
+      _vm._v("\n  " + _vm._s(_vm.employments) + "\n  "),
       _vm._v(" "),
-      _c("v-data-table", { attrs: { items: _vm.functiondata.employments } }),
+      _c("v-data-table", {
+        attrs: { items: _vm.employments, headers: _vm.headers },
+        scopedSlots: _vm._u([
+          {
+            key: "item.school_id",
+            fn: function(ref) {
+              var item = ref.item
+              return [
+                item.school.logo_filename != "nologo"
+                  ? _c("img", {
+                      attrs: {
+                        src: _vm.imgUrl(item.school),
+                        height: "25px",
+                        width: "25px"
+                      }
+                    })
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm._v("\n      " + _vm._s(item.school.name) + "\n      ")
+              ]
+            }
+          },
+          {
+            key: "item.action",
+            fn: function(ref) {
+              var item = ref.item
+              return [
+                _c(
+                  "v-icon",
+                  {
+                    staticClass: "mr-2",
+                    attrs: { small: "" },
+                    on: {
+                      click: function($event) {
+                        return _vm.editItem(item)
+                      }
+                    }
+                  },
+                  [_vm._v("edit")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "v-icon",
+                  {
+                    attrs: { small: "" },
+                    on: {
+                      click: function($event) {
+                        return _vm.deleteItem(item)
+                      }
+                    }
+                  },
+                  [_vm._v("delete")]
+                )
+              ]
+            }
+          }
+        ])
+      }),
       _vm._v(" "),
       _c(
         "v-dialog",
@@ -1466,9 +1621,7 @@ var render = function() {
                             ],
                             1
                           ),
-                          _vm._v(
-                            "\n" + _vm._s(_vm.functiondata) + "\n              "
-                          ),
+                          _vm._v(" "),
                           _c(
                             "v-col",
                             { attrs: { cols: "12", sm: "4", md: "4" } },
