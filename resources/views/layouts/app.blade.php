@@ -41,7 +41,7 @@
                 </v-list-item>
                 <v-list-item to="/school">
                     <v-list-item-action>
-                        <v-icon>home</v-icon>
+                        <v-icon>school</v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
                         <v-list-item-title>Scholen</v-list-item-title>

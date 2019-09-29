@@ -17,7 +17,11 @@ class EmployeeController extends Controller
     public function index()
     {
         //
-        return Employee::all();
+        return Employee::selectRaw('*, CONCAT(lastName," ",firstName) as fullname')->get();
+    }
+
+    public function filterByName(String $value){
+        return Employee::where('lastName','like','%'.$value.'%')->orWhere('firstName','like','%'.$value.'%')->selectRaw('*, CONCAT(lastName," ",firstName) as fullname')->get();
     }
 
     public function visible()
