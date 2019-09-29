@@ -19,6 +19,12 @@
     <!-- </v-layout>
     <v-layout row>-->
     <v-data-table :items="employments" :headers="headers">
+      <template v-slot:item.beginDate="{ item }">
+        {{ formatDateFromDB(item.beginDate)}}
+      </template>
+      <template v-slot:item.endDate="{ item }">
+        {{ formatDateFromDB(item.endDate)}}
+      </template>
       <template v-slot:item.school_id="{ item }">
         <img
           v-if="(item.school.logo_filename != 'nologo')"
@@ -47,10 +53,10 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="6" md="6">
-                <v-text-field v-model="formattedBegin" label="Begin" hint="DD-MM-YYYY"></v-text-field>
+                <v-text-field v-model="editedItem.formattedBegin" label="Beging" hint="DD-MM-YYYY" @blur="setBegin"></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
-                <v-text-field v-model="formattedEnd" label="Einde" hint="DD-MM-YYYY"></v-text-field>
+                <v-text-field v-model="editedItem.formattedEnd" label="Einde" hint="DD-MM-YYYY" @blur="setEnd"></v-text-field>
               </v-col>
               <v-col cols="12" sm="12" md="12">
                 <v-select
@@ -96,7 +102,9 @@ export default {
     return {
       defaultEmployment: {
         beginDate: moment(),
+        formattedBegin : '',//this.defaultEmployment.beginDate.format('MM-DD-YYYY'),
         endDate: moment(),
+        formattedEnd : '',//this.defaultEmployment.endDate.format('MM-DD-YYYY'),
         hours: 0,
         school_id: -1,
         edu_function_data_id: this.functiondata.id
@@ -104,7 +112,7 @@ export default {
       employments: [],
 
       editedIndex: -1,
-      editedItem: {},
+      editedItem: Object.assign({},this.defaultEmployment),
       employmentDialog: false,
 
       headers: [
@@ -131,34 +139,55 @@ export default {
       return this.functiondata.employments;
     },
 */
-    formattedBegin: {
-      get() {
-        if (this.editedItem && this.editedItem.beginDate)
-          return this.editedItem.beginDate.format("DD-MM-YYYY");
-        else return "";
-      },
-      set(val) {
-        this.editedItem.beginDate = moment(val, "DD-MM-YYYY");
-      }
-    },
-    formattedEnd: {
-      get() {
-        if (this.editedItem && this.editedItem.endDate)
-          return this.editedItem.endDate.format("DD-MM-YYYY");
-        else return "";
-      },
-      set(val) {
-        this.editedItem.endDate = moment(val, "DD-MM-YYYY");
-      }
-    }
+    
+
+    // formattedBegin: {
+    //   get() {
+    //     if (this.editedItem && this.editedItem.beginDate)
+    //       return this.editedItem.beginDate.format("DD-MM-YYYY");
+    //     else return "";
+    //   }/*,
+    //   set(val) {
+    //     this.editedItem.beginDate = moment(val, "DD-MM-YYYY");
+    //   }*/
+    // },
+    // formattedEnd: {
+    //   get() {
+    //     if (this.editedItem && this.editedItem.endDate)
+    //       return this.editedItem.endDate.format("DD-MM-YYYY");
+    //     else return "";
+    //   }/*,
+    //   set(val) {
+    //     this.editedItem.endDate = moment(val, "DD-MM-YYYY");
+    //   }*/
+    // }
   },
   methods: {
-    beginToday() {
-      this.formattedBegin = moment();
+    // beginToday() {
+    //   this.formattedBegin = moment();
+    // },
+    // stopToday() {
+    //   this.formattedEnd = moment();
+    // },
+    parseDate(val){
+      let v = moment(val,"DD-MM-YYYY hh:mi:ss");
+      return v;
     },
-    stopToday() {
-      this.formattedEnd = moment();
+    formatDate(date){
+      let f = this.parseDate(date).format("DD-MM-YYYY");
+      return f;
     },
+    formatDateFromDB(date){
+      let f = moment(date,'YYYY-MM-DD hh:mi:ss').format("DD-MM-YYYY");
+      return f;
+    },
+    setBegin(){
+      this.editedItem.beginDate=this.parseDate(this.editedItem.formattedBegin + " 12:00:00")
+    },
+    setEnd(){
+      this.editedItem.endDate=this.parseDate(this.editedItem.formattedEnd + " 12:00:00")
+    },
+   
     imgUrl: function(school) {
       return (
         "http://www.skbl.be/joomla/images/logo/logo-scholen/" +
@@ -171,8 +200,11 @@ export default {
 
     editItem(item) {
       this.editedIndex = this.employments.indexOf(item);
+      
       this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.editedItem.formattedBegin = this.formatDateFromDB(this.editedItem.beginDate);
+      this.editedItem.formattedEnd = this.formatDateFromDB(this.editedItem.endDate);
+      this.employmentDialog = true;
     },
     deleteItem(item) {
       if (confirm("School echt verwijderen?")) {

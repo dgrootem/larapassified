@@ -488,6 +488,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -499,14 +505,18 @@ __webpack_require__.r(__webpack_exports__);
     return {
       defaultEmployment: {
         beginDate: moment__WEBPACK_IMPORTED_MODULE_0___default()(),
+        formattedBegin: '',
+        //this.defaultEmployment.beginDate.format('MM-DD-YYYY'),
         endDate: moment__WEBPACK_IMPORTED_MODULE_0___default()(),
+        formattedEnd: '',
+        //this.defaultEmployment.endDate.format('MM-DD-YYYY'),
         hours: 0,
         school_id: -1,
         edu_function_data_id: this.functiondata.id
       },
       employments: [],
       editedIndex: -1,
-      editedItem: {},
+      editedItem: Object.assign({}, this.defaultEmployment),
       employmentDialog: false,
       headers: [{
         text: "Begin",
@@ -537,35 +547,32 @@ __webpack_require__.r(__webpack_exports__);
     },
     hourSuffix: function hourSuffix() {
       if (this.functiondata.educational_function) return "/" + this.functiondata.educational_function.denominator;else return "";
-    },
-
-    /*employments() {
-      return this.functiondata.employments;
-    },
-    */
-    formattedBegin: {
-      get: function get() {
-        if (this.editedItem && this.editedItem.beginDate) return this.editedItem.beginDate.format("DD-MM-YYYY");else return "";
-      },
-      set: function set(val) {
-        this.editedItem.beginDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(val, "DD-MM-YYYY");
-      }
-    },
-    formattedEnd: {
-      get: function get() {
-        if (this.editedItem && this.editedItem.endDate) return this.editedItem.endDate.format("DD-MM-YYYY");else return "";
-      },
-      set: function set(val) {
-        this.editedItem.endDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(val, "DD-MM-YYYY");
-      }
     }
   },
   methods: {
-    beginToday: function beginToday() {
-      this.formattedBegin = moment__WEBPACK_IMPORTED_MODULE_0___default()();
+    // beginToday() {
+    //   this.formattedBegin = moment();
+    // },
+    // stopToday() {
+    //   this.formattedEnd = moment();
+    // },
+    parseDate: function parseDate(val) {
+      var v = moment__WEBPACK_IMPORTED_MODULE_0___default()(val, "DD-MM-YYYY hh:mi:ss");
+      return v;
     },
-    stopToday: function stopToday() {
-      this.formattedEnd = moment__WEBPACK_IMPORTED_MODULE_0___default()();
+    formatDate: function formatDate(date) {
+      var f = this.parseDate(date).format("DD-MM-YYYY");
+      return f;
+    },
+    formatDateFromDB: function formatDateFromDB(date) {
+      var f = moment__WEBPACK_IMPORTED_MODULE_0___default()(date, 'YYYY-MM-DD hh:mi:ss').format("DD-MM-YYYY");
+      return f;
+    },
+    setBegin: function setBegin() {
+      this.editedItem.beginDate = this.parseDate(this.editedItem.formattedBegin + " 12:00:00");
+    },
+    setEnd: function setEnd() {
+      this.editedItem.endDate = this.parseDate(this.editedItem.formattedEnd + " 12:00:00");
     },
     imgUrl: function imgUrl(school) {
       return "http://www.skbl.be/joomla/images/logo/logo-scholen/" + school.logo_filename;
@@ -575,7 +582,9 @@ __webpack_require__.r(__webpack_exports__);
     editItem: function editItem(item) {
       this.editedIndex = this.employments.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.editedItem.formattedBegin = this.formatDateFromDB(this.editedItem.beginDate);
+      this.editedItem.formattedEnd = this.formatDateFromDB(this.editedItem.endDate);
+      this.employmentDialog = true;
     },
     deleteItem: function deleteItem(item) {
       if (confirm("School echt verwijderen?")) {
@@ -1476,6 +1485,32 @@ var render = function() {
         attrs: { items: _vm.employments, headers: _vm.headers },
         scopedSlots: _vm._u([
           {
+            key: "item.beginDate",
+            fn: function(ref) {
+              var item = ref.item
+              return [
+                _vm._v(
+                  "\n      " +
+                    _vm._s(_vm.formatDateFromDB(item.beginDate)) +
+                    "\n    "
+                )
+              ]
+            }
+          },
+          {
+            key: "item.endDate",
+            fn: function(ref) {
+              var item = ref.item
+              return [
+                _vm._v(
+                  "\n      " +
+                    _vm._s(_vm.formatDateFromDB(item.endDate)) +
+                    "\n    "
+                )
+              ]
+            }
+          },
+          {
             key: "item.school_id",
             fn: function(ref) {
               var item = ref.item
@@ -1567,13 +1602,18 @@ var render = function() {
                             { attrs: { cols: "12", sm: "6", md: "6" } },
                             [
                               _c("v-text-field", {
-                                attrs: { label: "Begin", hint: "DD-MM-YYYY" },
+                                attrs: { label: "Beging", hint: "DD-MM-YYYY" },
+                                on: { blur: _vm.setBegin },
                                 model: {
-                                  value: _vm.formattedBegin,
+                                  value: _vm.editedItem.formattedBegin,
                                   callback: function($$v) {
-                                    _vm.formattedBegin = $$v
+                                    _vm.$set(
+                                      _vm.editedItem,
+                                      "formattedBegin",
+                                      $$v
+                                    )
                                   },
-                                  expression: "formattedBegin"
+                                  expression: "editedItem.formattedBegin"
                                 }
                               })
                             ],
@@ -1586,12 +1626,17 @@ var render = function() {
                             [
                               _c("v-text-field", {
                                 attrs: { label: "Einde", hint: "DD-MM-YYYY" },
+                                on: { blur: _vm.setEnd },
                                 model: {
-                                  value: _vm.formattedEnd,
+                                  value: _vm.editedItem.formattedEnd,
                                   callback: function($$v) {
-                                    _vm.formattedEnd = $$v
+                                    _vm.$set(
+                                      _vm.editedItem,
+                                      "formattedEnd",
+                                      $$v
+                                    )
                                   },
-                                  expression: "formattedEnd"
+                                  expression: "editedItem.formattedEnd"
                                 }
                               })
                             ],
