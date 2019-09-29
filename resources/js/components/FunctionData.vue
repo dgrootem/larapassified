@@ -241,13 +241,15 @@ export default {
             app.emitFail("Fout bij aanmaken aanstelling");
           });
       else {
-        // delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
+        
+         delete this.editedItem.school; //remove this property before sending it to the server to prevent mixups
         axios
           .patch("/api/v1/employment/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
             //to keep reactivity
+            //console.log("updating functiondata with index "+app.editedIndex);
             Vue.set(
-              app.functiondata,
+              app.employments,
               app.editedIndex,
               Object.assign({}, resp.data)
             );

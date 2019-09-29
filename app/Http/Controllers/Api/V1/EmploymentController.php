@@ -24,11 +24,21 @@ class EmploymentController extends Controller
         return Employment::findOrFail($id);
     }
 
+    private function saveEmployment(Request $request,Employment $employment){
+        $employment->beginDate = Carbon::parse(substr($request['beginDate'],0,10));
+        $employment->endDate = Carbon::parse(substr($request['endDate'],0,10));;
+        $employment->hours = $request['hours'];
+        $employment->school_id = $request['school_id'];
+        $employment->edu_function_data_id = $request['edu_function_data_id'];
+        $employment->save();
+    }
+
     public function update(Request $request, $id)
     {
         $employment = Employment::findOrFail($id);
-        $employment->update($request->all());
-
+        $this->saveEmployment($request,$employment);
+        //$employment->update($request->all());
+        $employment->school; //refresh link with school
         return $employment;
     }
 
@@ -37,12 +47,8 @@ class EmploymentController extends Controller
         $employment = new Employment();
         //Log::debug(substr($request['beginDate'],0,10));
         // Carbon::createFromFormat('DD-MM-YYYY',$request['beginDate']);
-        $employment->beginDate = Carbon::parse(substr($request['beginDate'],0,10));
-        $employment->endDate = Carbon::parse(substr($request['endDate'],0,10));;
-        $employment->hours = $request['hours'];
-        $employment->school_id = $request['school_id'];
-        $employment->edu_function_data_id = $request['edu_function_data_id'];
-        $employment->save();
+        $this.saveEmployment($request,$employment);
+        
         //$employment = Employment::create($request->all());
         $employment->school;
         return $employment;

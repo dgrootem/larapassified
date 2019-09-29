@@ -613,10 +613,12 @@ __webpack_require__.r(__webpack_exports__);
         console.log(resp);
         app.emitFail("Fout bij aanmaken aanstelling");
       });else {
-        // delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
+        delete this.editedItem.school; //remove this property before sending it to the server to prevent mixups
+
         axios.patch("/api/v1/employment/" + this.editedItem.id, this.editedItem).then(function (resp) {
           //to keep reactivity
-          Vue.set(app.functiondata, app.editedIndex, Object.assign({}, resp.data));
+          //console.log("updating functiondata with index "+app.editedIndex);
+          Vue.set(app.employments, app.editedIndex, Object.assign({}, resp.data));
           app.emitSuccess("Wijzigingen opgeslagen");
         })["catch"](function (resp) {
           console.log(resp);
