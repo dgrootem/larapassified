@@ -5,20 +5,20 @@
     <v-container>
       <v-row justify="space-between">
         <v-col cols="3">
-          <v-btn color="green" @click="addEmployment">Aanstelling toevoegen</v-btn>
+          <v-btn color="primary" @click="addEmployment">Aanstelling toevoegen</v-btn>
         </v-col>
         <v-col cols="3">
           <v-btn color="red" @click="deleteFunctionData">
-            Verwijder ambt
+            Ambt verwijderen
             <v-icon>delete</v-icon>
           </v-btn>
         </v-col>
       </v-row>
     </v-container>
-    {{employments}}
+    <!-- {{employments}} -->
     <!-- </v-layout>
     <v-layout row>-->
-    <v-data-table :items="employments" :headers="headers">
+    <v-data-table :items="employments" :headers="headers" v-if="employments.length > 0">
       <template v-slot:item.beginDate="{ item }">
         {{ formatDateFromDB(item.beginDate)}}
       </template>
@@ -33,7 +33,7 @@
           width="25px"
         />
         <!-- <v-label> -->
-        {{item.school.name}}
+        {{item.school.name}} [{{item.school.abbreviation}}]
         <!-- </v-label> -->
       </template>
       <template v-slot:item.action="{ item }">
@@ -53,7 +53,7 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="6" md="6">
-                <v-text-field v-model="editedItem.formattedBegin" label="Beging" hint="DD-MM-YYYY" @blur="setBegin"></v-text-field>
+                <v-text-field v-model="editedItem.formattedBegin" label="Begin" hint="DD-MM-YYYY" @blur="setBegin"></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
                 <v-text-field v-model="editedItem.formattedEnd" label="Einde" hint="DD-MM-YYYY" @blur="setEnd"></v-text-field>
