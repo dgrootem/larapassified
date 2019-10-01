@@ -47,7 +47,7 @@ class EmploymentController extends Controller
         $employment = new Employment();
         //Log::debug(substr($request['beginDate'],0,10));
         // Carbon::createFromFormat('DD-MM-YYYY',$request['beginDate']);
-        $this.saveEmployment($request,$employment);
+        $this->saveEmployment($request,$employment);
         
         //$employment = Employment::create($request->all());
         $employment->school;
