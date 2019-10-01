@@ -37,47 +37,54 @@
 
       <!-- </v-col> -->
     </v-container>
-    <v-card v-if="functiondata.length >0">
-      <v-card-title>
-        <v-toolbar color="#c5f77e">Ambten</v-toolbar>
-      </v-card-title>
-      <v-container fluid>
-        <v-tabs v-model="functiondatatab">
-          <v-tab v-for="fdata in functiondata" v-bind:key="fdata.id">
-            {{ fdata.educational_function.name }}
-            <v-icon small class="mx-4" @click="editFunctionData(fdata)">edit</v-icon>
-          </v-tab>
-          <v-tab-item v-for="fdata in functiondata" v-bind:key="fdata.id">
-            <functiondatacomp
-              :functiondata="fdata"
-              :scholen="scholen"
-              @delete="deleteFunctionData(fdata)"
-              @fail="failSnack(message)"
-              @success="successSnack(message)"
-            ></functiondatacomp>
-          </v-tab-item>
-        </v-tabs>
-      </v-container>
-    </v-card>
-    <v-card v-if="interruptions.length > 0">
-      <v-card-title>
-        <v-toolbar color="#f7dc6d">Onderbrekingen</v-toolbar>
-      </v-card-title>
-      <v-container>
-        <v-data-table :items="interruptions" :headers="interruptionheaders">
-          <template v-slot:item.beginDate="{ item }">{{ formatDateFromDB(item.beginDate)}}</template>
-          <template v-slot:item.endDate="{ item }">{{ formatDateFromDB(item.endDate)}}</template>
-          <template v-slot:item.type="{ item }">
-            <v-icon :color="item.type==1?'green':'red'">{{item.type==1?'check':'not_interested'}}</v-icon>
-          </template>
-          <template v-slot:item.action="{ item }">
-            <v-icon small class="mr-2" @click="editInterruption(item)">edit</v-icon>
-            <v-icon small class="mr-2" @click="deleteInterruption(item)">delete</v-icon>
-          </template>
-        </v-data-table>
-      </v-container>
-    </v-card>
-
+    <v-row>
+      <v-col xs="12" sm="12" md="8">
+        <v-card v-if="functiondata.length >0">
+          <v-card-title>
+            <v-toolbar color="#c5f77e">Ambten</v-toolbar>
+          </v-card-title>
+          <v-container fluid>
+            <v-tabs v-model="functiondatatab">
+              <v-tab v-for="fdata in functiondata" v-bind:key="fdata.id">
+                {{ fdata.educational_function.name }}
+                <v-icon small class="mx-4" @click="editFunctionData(fdata)">edit</v-icon>
+              </v-tab>
+              <v-tab-item v-for="fdata in functiondata" v-bind:key="fdata.id">
+                <functiondatacomp
+                  :functiondata="fdata"
+                  :scholen="scholen"
+                  @delete="deleteFunctionData(fdata)"
+                  @fail="failSnack(message)"
+                  @success="successSnack(message)"
+                ></functiondatacomp>
+              </v-tab-item>
+            </v-tabs>
+          </v-container>
+        </v-card>
+      </v-col>
+      <v-col xs="12" sm="12" md="4">
+        <v-card v-if="interruptions.length > 0">
+          <v-card-title>
+            <v-toolbar color="#f7dc6d">Onderbrekingen</v-toolbar>
+          </v-card-title>
+          <v-container fluid>
+            <v-data-table :items="interruptions" :headers="interruptionheaders">
+              <template v-slot:item.beginDate="{ item }">{{ formatDateFromDB(item.beginDate)}}</template>
+              <template v-slot:item.endDate="{ item }">{{ formatDateFromDB(item.endDate)}}</template>
+              <template v-slot:item.type="{ item }">
+                <v-icon
+                  :color="item.type==1?'green':'red'"
+                >{{item.type==1?'check':'not_interested'}}</v-icon>
+              </template>
+              <template v-slot:item.action="{ item }">
+                <v-icon small class="mr-2" @click="editInterruption(item)">edit</v-icon>
+                <v-icon small class="mr-2" @click="deleteInterruption(item)">delete</v-icon>
+              </template>
+            </v-data-table>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
     <v-dialog v-model="functionDataDialog" max-width="500px">
       <v-card>
         <v-card-title>
@@ -195,7 +202,7 @@ export default {
       fab: false,
       //tab stuff
       functiondatatab: null,
-      loadingtabs : false,
+      loadingtabs: false,
       // interruptiontab: null,
 
       snack_color: null,
@@ -205,8 +212,6 @@ export default {
 
       functionDataDialog: false,
       interruptionDialog: false,
-
-      
 
       interruptionheaders: [
         { text: "Begin", align: "left", value: "beginDate" },
@@ -390,13 +395,16 @@ export default {
       this.editedItem = Object.assign({}, this.defaultInterruption);
       this.editedItem.employee_id = this.selectedEmployee.id;
       this.interruptionDialog = true;
-      
     },
     editInterruption(item) {
       this.editedIndex = this.interruptions.indexOf(item);
-      this.editedItem = Object.assign({},item);
-      this.editedItem.formattedBegin = this.formatDateFromDB(this.editedItem.beginDate);
-      this.editedItem.formattedEnd = this.formatDateFromDB(this.editedItem.endDate);
+      this.editedItem = Object.assign({}, item);
+      this.editedItem.formattedBegin = this.formatDateFromDB(
+        this.editedItem.beginDate
+      );
+      this.editedItem.formattedEnd = this.formatDateFromDB(
+        this.editedItem.endDate
+      );
       this.interruptionDialog = true;
     },
     saveInterruption() {
@@ -478,10 +486,8 @@ export default {
         })
         .finally(() => (this.isLoading = false));
     },
-    
+
     selectedEmployee(val) {
-      
-      
       if (val) {
         var app = this;
         axios
@@ -509,7 +515,6 @@ export default {
             console.log(resp);
             alert("Could not load functiondata");
           });
-          
       } else {
         (this.functiondata = []),
           (this.employments = []),

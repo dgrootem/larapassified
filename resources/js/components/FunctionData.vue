@@ -4,11 +4,11 @@
     <v-layout row>-->
     <v-container>
       <v-row justify="space-between">
-        <v-col cols="3">
+        <v-col cols="4" xs="8" sm="5" md="4">
           <v-btn color="primary" @click="addEmployment">Aanstelling toevoegen</v-btn>
         </v-col>
-        <v-col cols="3">
-          <v-btn color="red" @click="deleteFunctionData">
+        <v-col cols="4" xs="8" sm="5" md="4">
+          <v-btn color="red" @click="deleteFunctionData" width="100%">
             Ambt verwijderen
             <v-icon>delete</v-icon>
           </v-btn>
