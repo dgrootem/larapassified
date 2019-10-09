@@ -13,6 +13,11 @@
             <template v-slot:item.action="{ item }">
               <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
               <v-icon small @click="deleteItem(item)">delete</v-icon>
+              <v-icon
+                small
+                class="mr-2"
+                @click="toggleVisibility(item)"
+              >{{ item.isActive ? 'visibility' : 'visibility_off' }}</v-icon>
             </template>
           </v-data-table>
         </v-card-text>
@@ -106,6 +111,25 @@ export default {
                             app.failSnack("Verwijderen mislukt");
                         });
                 }
+    },
+    toggleVisibility(item) {
+      var app = this;
+      //first copy to editItem, which we will send to the server for processing
+      //and we only update the model when server successfully processes data
+      this.editedItem = Object.assign({}, item);
+      this.editedItem.isActive = !this.editedItem.isActive;
+      this.editedIndex = this.ambten.indexOf(item);
+      axios
+        .patch("/api/v1/ambt/" + this.editedItem.id, this.editedItem)
+        .then(function(resp) {
+          //app.$router.push({ path: "/employees" });
+          Object.assign(app.ambten[app.editedIndex], resp.data);
+          app.successSnack("Wijzigingen opgeslagen");
+        })
+        .catch(function(resp) {
+          console.log(resp);
+          app.failSnack("Fout bij opslaan wijzigingen");
+        });
     },
     save() {
       var app = this;
