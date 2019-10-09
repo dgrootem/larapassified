@@ -18,8 +18,8 @@ class CreateEmployeesTable extends Migration
             $table->timestamps();
             $table->string('firstName');
             $table->string('lastName');
-            $table->string('registrationNumber');
-            $table->date('birthDate');
+            $table->string('registrationNumber')->nullable();
+            $table->date('birthDate')->nullable();
             $table->date('lastEmploymentDate')->default(null)->nullable();
             $table->boolean('isActive')->default(true);
             $table->integer('startwaarde')->default(0);

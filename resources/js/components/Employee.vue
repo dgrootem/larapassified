@@ -19,8 +19,12 @@
         </v-card-title>
         <v-card-text>
           
-          <v-data-table :items="employees" :headers="headers" :search="search">
+          <v-data-table :items="employees" :headers="headers" :search="search" multi-sort>
             <template v-slot:item.birthDate="{ item }">{{ formatDate(item.birthDate) }}</template>
+            <template v-slot:item.registrationNumber="{ item }">
+              {{item.registrationNumber?item.registrationNumber:''}}
+              <span v-if="!item.registrationNumber">Geen Stamboeknummer<v-icon  color="warning">warning</v-icon></span>
+            </template>
             <template v-slot:item.action="{ item }">
               <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
               <v-icon small class="mr-2" @click="deleteItem(item)">delete</v-icon>
@@ -55,7 +59,7 @@
             </v-row>
             <v-row>
               <v-col cols="12" sm="12" md="7">
-                <v-text-field
+                <v-text-field 
                   v-model="editedItem.registrationNumber"
                   @blur="calcBdate"
                   label="Stamboeknummer"
