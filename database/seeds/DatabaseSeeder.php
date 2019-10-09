@@ -13,5 +13,14 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(SchoolTypeSeeder::class);
         $this->call(SchoolSeeder::class);
+        $this->call(EmployeeSeeder::class);
+        $this->call(FunctionSeeder::class);
+        $this->call(FunctionDataSeeder::class);
+        $this->call(EmploymentsSeeder::class);
+        
+        $this->call(InterruptionSeeder::class);
+
+        $this->call(BenoemingSeedre::class);
+
     }
 }

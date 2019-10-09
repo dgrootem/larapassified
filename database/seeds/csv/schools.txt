@@ -1,0 +1,13 @@
+id,name,isActive
+1,Sancta Maria Basisschool,1
+2,Paridaensinstituut Basis,1
+3,Sint-Jan Basisschool,1
+4,Mater Dei kleuterschool,1
+5,HDC Lagere school,1
+6,De Ark Lagere school,0
+7,De Ark Kleuterschool,0
+8,Don Bosco Basisschool,1
+9,Sint-Pietersschool Basis,1
+10,Windekind BuBaO,1
+11,Ter Bank BuBaO,1
+12,Mater Dei Lagere school,1

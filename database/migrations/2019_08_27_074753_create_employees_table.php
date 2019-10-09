@@ -20,7 +20,9 @@ class CreateEmployeesTable extends Migration
             $table->string('lastName');
             $table->string('registrationNumber');
             $table->date('birthDate');
+            $table->date('lastEmploymentDate')->default(null)->nullable();
             $table->boolean('isActive')->default(true);
+            
         });
     }
 
