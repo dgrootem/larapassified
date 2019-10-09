@@ -4,12 +4,22 @@
       <v-container fluid>
         <v-card-title>
           Personeelsleden
+          <div class="flex-grow-1"></div>
+          <v-text-field
+        v-model="search"
+        append-icon="search"
+        label="Zoeken"
+        single-line
+        hide-details
+      ></v-text-field>
+      <div class="flex-grow-1"></div>
           <v-btn fab right absolute @click="dialog = !dialog">
             <v-icon>add</v-icon>
           </v-btn>
         </v-card-title>
         <v-card-text>
-          <v-data-table :items="employees" :headers="headers">
+          
+          <v-data-table :items="employees" :headers="headers" :search="search">
             <template v-slot:item.birthDate="{ item }">{{ formatDate(item.birthDate) }}</template>
             <template v-slot:item.action="{ item }">
               <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
@@ -42,6 +52,8 @@
               <v-col cols="12" sm="6" md="5">
                 <v-text-field v-model="editedItem.firstName" label="Voornaam"></v-text-field>
               </v-col>
+            </v-row>
+            <v-row>
               <v-col cols="12" sm="12" md="7">
                 <v-text-field
                   v-model="editedItem.registrationNumber"
@@ -55,6 +67,11 @@
                   :disabled="editedItem.registrationNumber != ''"
                   label="Geboortedatum"
                 ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="12" md="6">
+                <v-text-field v-model="editedItem.startwaarde" label="Startwaarde" type="number" min="0"></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -97,7 +114,8 @@ export default {
       snackbar: false,
       snack_text: "",
       snack_color: "",
-      snack_timeout: 2000
+      snack_timeout: 2000,
+      search : ""
       // registrationNumberProxy : null
     };
   },
@@ -233,6 +251,7 @@ export default {
       { text: "Voornaam", align: "left", value: "firstName" },
       { text: "Stamboeknummer", align: "left", value: "registrationNumber" },
       { text: "Geboortedatum", align: "left", value: "birthDate" },
+      { text: "Startwaarde", align: "right", value: "startwaarde" },
       { text: "", align: "center", value: "action" }
     ];
     this.editedItem = Object.assign({}, this.defaultItem);
