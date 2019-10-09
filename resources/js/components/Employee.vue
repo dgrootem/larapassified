@@ -108,7 +108,8 @@ export default {
         lastName: "",
         registrationNumber: "",
         birthDate: null,
-        isActive: true
+        isActive: true,
+        startwaarde: 0
       },
       editedIndex: -1,
       snackbar: false,
@@ -151,6 +152,7 @@ export default {
       this.snackbar = true;
     },
     editItem(item) {
+      
       this.editedIndex = this.employees.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
@@ -191,6 +193,7 @@ export default {
     },
     save() {
       var app = this;
+      
       if (this.editedIndex > -1) {
         axios
           .patch("/api/v1/employee/" + this.editedItem.id, this.editedItem)
