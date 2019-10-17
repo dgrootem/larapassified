@@ -65,6 +65,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -112,6 +117,22 @@ __webpack_require__.r(__webpack_exports__);
           app.failSnack("Verwijderen mislukt");
         });
       }
+    },
+    toggleVisibility: function toggleVisibility(item) {
+      var app = this; //first copy to editItem, which we will send to the server for processing
+      //and we only update the model when server successfully processes data
+
+      this.editedItem = Object.assign({}, item);
+      this.editedItem.isActive = !this.editedItem.isActive;
+      this.editedIndex = this.ambten.indexOf(item);
+      axios.patch("/api/v1/ambt/" + this.editedItem.id, this.editedItem).then(function (resp) {
+        //app.$router.push({ path: "/employees" });
+        Object.assign(app.ambten[app.editedIndex], resp.data);
+        app.successSnack("Wijzigingen opgeslagen");
+      })["catch"](function (resp) {
+        console.log(resp);
+        app.failSnack("Fout bij opslaan wijzigingen");
+      });
     },
     save: function save() {
       var app = this;
@@ -262,6 +283,28 @@ var render = function() {
                                 }
                               },
                               [_vm._v("delete")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "v-icon",
+                              {
+                                staticClass: "mr-2",
+                                attrs: { small: "" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.toggleVisibility(item)
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  _vm._s(
+                                    item.isActive
+                                      ? "visibility"
+                                      : "visibility_off"
+                                  )
+                                )
+                              ]
                             )
                           ]
                         }

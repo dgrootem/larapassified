@@ -9,9 +9,8 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _FunctionData_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FunctionData.vue */ "./resources/js/components/FunctionData.vue");
+/* harmony import */ var _FunctionData_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FunctionData.vue */ "./resources/js/components/FunctionData.vue");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/index.js");
 //
 //
 //
@@ -152,11 +151,37 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//import moment from "moment";
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
-    functiondatacomp: _FunctionData_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+    functiondatacomp: _FunctionData_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   data: function data() {
     return {
@@ -171,9 +196,12 @@ __webpack_require__.r(__webpack_exports__);
         employee_id: this.selectedEmployee
       },
       defaultInterruption: {
-        beginDate: moment__WEBPACK_IMPORTED_MODULE_0___default()(),
-        endDate: moment__WEBPACK_IMPORTED_MODULE_0___default()(),
-        employee_id: this.selectedEmployee
+        beginDate: new Date(),
+        formattedBegin: null,
+        endDate: new Date(),
+        formattedEnd: null,
+        employee_id: this.selectedEmployee,
+        type: 1
       },
       //autocomplete stuff
       entries: [],
@@ -185,6 +213,7 @@ __webpack_require__.r(__webpack_exports__);
       fab: false,
       //tab stuff
       functiondatatab: null,
+      loadingtabs: false,
       // interruptiontab: null,
       snack_color: null,
       snack_timeout: 2000,
@@ -192,6 +221,23 @@ __webpack_require__.r(__webpack_exports__);
       snack_text: "",
       functionDataDialog: false,
       interruptionDialog: false,
+      interruptionheaders: [{
+        text: "Begin",
+        align: "left",
+        value: "beginDate"
+      }, {
+        text: "Einde",
+        align: "left",
+        value: "endDate"
+      }, {
+        text: "Telt mee",
+        align: "left",
+        value: "type"
+      }, {
+        text: "",
+        align: "center",
+        value: "action"
+      }],
       // employmentDialog: false,
 
       /*datepickerMenu1 : false,
@@ -202,18 +248,6 @@ __webpack_require__.r(__webpack_exports__);
       descriptionLimit: 45
     };
   },
-<<<<<<< HEAD
-  methods: {
-    calcBdate: function calcBdate() {
-      if (this.editedItem.registrationNumber.length == 11) {
-        if (!isNaN(this.editedItem.registrationNumber)) {
-          //only do something when it is a number
-          var bd = this.editedItem.registrationNumber.substring(1, 7);
-          var year = bd.substring(0, 2);
-          if (parseInt(year) > 40) year = "19" + year;else year = "20" + year;
-          this.editedItem.birthDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(bd.substring(4, 6) + "-" + bd.substring(2, 4) + "-" + year, 'DD-MM-YYYY');
-        }
-=======
   computed: {
     formTitleFD: function formTitleFD() {
       return this.editedIndex === -1 ? "Nieuwe functie" : "Bewerk functie";
@@ -221,23 +255,28 @@ __webpack_require__.r(__webpack_exports__);
     formTitleInterruption: function formTitleInterruption() {
       return this.editedIndex === -1 ? "Nieuwe onderbreking" : "Bewerk onderbrekeing";
     },
+
+    /*
     formattedBegin: {
-      get: function get() {
-        if (this.editedItem && this.editedItem.beginDate) return this.editedItem.beginDate.format("DD-MM-YYYY");else return "";
+      get() {
+        if (this.editedItem && this.editedItem.beginDate)
+          return this.editedItem.beginDate.format("DD-MM-YYYY");
+        else return "";
       },
-      set: function set(val) {
-        this.editedItem.beginDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(val, "DD-MM-YYYY");
->>>>>>> feature/edufunctionpage
+      set(val) {
+        this.editedItem.beginDate = moment(val, "DD-MM-YYYY");
       }
     },
     formattedEnd: {
-      get: function get() {
-        if (this.editedItem && this.editedItem.endDate) return this.editedItem.endDate.format("DD-MM-YYYY");else return "";
+      get() {
+        if (this.editedItem && this.editedItem.endDate)
+          return this.editedItem.endDate.format("DD-MM-YYYY");
+        else return "";
       },
-      set: function set(val) {
-        this.editedItem.endDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(val, "DD-MM-YYYY");
+      set(val) {
+        this.editedItem.endDate = moment(val, "DD-MM-YYYY");
       }
-    },
+    },*/
     items: function items() {
       var _this = this;
 
@@ -251,6 +290,34 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    parseDate: function parseDate(val) {
+      if (val && val.length >= 10) {
+        var d = val.substring(0, 10);
+        var pd = Object(date_fns__WEBPACK_IMPORTED_MODULE_1__["parse"])(d, "dd-MM-yyyy", new Date());
+        return pd;
+      } else return null;
+    },
+    formatDate: function formatDate(date) {
+      if (date && date.length >= 10) {
+        var d = this.parseDate(date);
+        var f = Object(date_fns__WEBPACK_IMPORTED_MODULE_1__["format"])(d, "dd-MM-yyyy");
+        return f;
+      } else return null;
+    },
+    formatDateFromDB: function formatDateFromDB(date) {
+      if (date && date.length >= 10) {
+        var d = date.substring(0, 10);
+        console.log(d);
+        return Object(date_fns__WEBPACK_IMPORTED_MODULE_1__["format"])(Object(date_fns__WEBPACK_IMPORTED_MODULE_1__["parse"])(d, "yyyy-MM-dd", new Date()), "dd-MM-yyyy"); //let f = format(parse(date.substring(0,10), "yyyy-MM-dd", new Date()), "dd-MM-yyyy"); //   moment(date, "YYYY-MM-DD hh:mi:ss").format("DD-MM-YYYY");
+        //return f;
+      } else return null;
+    },
+    setBegin: function setBegin() {
+      this.editedItem.beginDate = this.parseDate(this.editedItem.formattedBegin + " 12:00:00");
+    },
+    setEnd: function setEnd() {
+      this.editedItem.endDate = this.parseDate(this.editedItem.formattedEnd + " 12:00:00");
+    },
     successSnack: function successSnack(message) {
       this.snack_text = message;
       this.snack_color = "success";
@@ -265,6 +332,7 @@ __webpack_require__.r(__webpack_exports__);
       var app = this;
       axios.get("/api/v1/ambt/availableForEmployee/" + this.selectedEmployee.id).then(function (resp) {
         app.ambten = resp.data;
+        app.functiondatatab = 0;
       })["catch"](function (resp) {
         console.log(resp);
         alert("Could not load functions for employee");
@@ -295,31 +363,14 @@ __webpack_require__.r(__webpack_exports__);
       });else {
         delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
 
-<<<<<<< HEAD
-      if (this.editedIndex > -1) {
-        axios.patch("/api/v1/employee/" + this.editedItem.id, this.editedItem).then(function (resp) {
-          Object.assign(app.employees[app.editedIndex], resp.data);
-=======
         axios.patch("/api/v1/educationalFunctionData/" + this.editedItem.id, this.editedItem).then(function (resp) {
           //to keep reactivity
           Vue.set(app.functiondata, app.editedIndex, Object.assign({}, resp.data));
->>>>>>> feature/edufunctionpage
           app.successSnack("Wijzigingen opgeslagen");
         })["catch"](function (resp) {
           console.log(resp);
           app.failSnack("Fout bij opslaan wijzigingen");
         });
-<<<<<<< HEAD
-      } else {
-        axios.post("/api/v1/employee", this.editedItem).then(function (resp) {
-          app.employees.push(resp.data);
-          app.successSnack("Personeelslid toegevoegd");
-        })["catch"](function (resp) {
-          console.log(resp);
-          app.failSnack("Fout bij aanmaken personeelslid");
-        });
-=======
->>>>>>> feature/edufunctionpage
       }
       this.closeFunctionData();
     },
@@ -347,30 +398,59 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     addInterruption: function addInterruption() {
+      this.editedIndex = -1;
       this.editedItem = Object.assign({}, this.defaultInterruption);
       this.editedItem.employee_id = this.selectedEmployee.id;
       this.interruptionDialog = true;
-      this.editedIndex = -1;
+    },
+    editInterruption: function editInterruption(item) {
+      this.editedIndex = this.interruptions.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.editedItem.formattedBegin = this.formatDateFromDB(this.editedItem.beginDate);
+      this.editedItem.formattedEnd = this.formatDateFromDB(this.editedItem.endDate);
+      this.interruptionDialog = true;
     },
     saveInterruption: function saveInterruption() {
       var app = this;
-      axios.post("/api/v1/interruption", this.editedItem).then(function (resp) {
+      if (this.editedIndex == -1) axios.post("/api/v1/employmentInterruption", this.editedItem).then(function (resp) {
         //app.$router.push({ path: "/employees" });
-        app.functiondata.push(resp.data);
+        app.interruptions.push(resp.data);
         app.successSnack("Onderbreking toegevoegd");
       })["catch"](function (resp) {
         console.log(resp);
         app.failSnack("Fout bij aanmaken onderbreking");
-      });
+      });else {
+        delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
+
+        axios.patch("/api/v1/employmentInterruption/" + this.editedItem.id, this.editedItem).then(function (resp) {
+          //to keep reactivity
+          Vue.set(app.interruptions, app.editedIndex, Object.assign({}, resp.data));
+          app.successSnack("Wijzigingen opgeslagen");
+        })["catch"](function (resp) {
+          console.log(resp);
+          app.failSnack("Fout bij opslaan wijzigingen");
+        });
+      }
+      this.closeInterruption();
     },
-    closeInterruption: function closeInterruption() {},
-    deleteInterruption: function deleteInterruption() {}
+    closeInterruption: function closeInterruption() {
+      this.interruptionDialog = false;
+    },
+    deleteInterruption: function deleteInterruption(item) {
+      var yes = confirm("Onderbreking verwijderen?");
+
+      if (yes) {
+        var app = this;
+        var index = this.interruptions.indexOf(item);
+        axios["delete"]("/api/v1/employmentInterruption/" + item.id).then(function (resp) {
+          app.interruptions.splice(index, 1);
+          app.successSnack("Onderbreking verwijderd");
+        })["catch"](function (resp) {
+          app.failSnack("Verwijderen mislukt");
+        });
+      }
+    }
   },
-<<<<<<< HEAD
-  computed: {
-    formTitle: function formTitle() {
-      return this.editedIndex === -1 ? "Nieuw personeelslid toevoegen" : "Bewerk gegevens";
-=======
   watch: {
     search: function search(val) {
       var _this3 = this;
@@ -394,17 +474,26 @@ __webpack_require__.r(__webpack_exports__);
       if (val) {
         var app = this;
         axios.get("/api/v1/employee/functiondata/" + val.id).then(function (resp) {
-          console.log("loaded data for employee");
+          console.log("loaded function data for employee");
           console.log(JSON.stringify(resp.data));
           app.functiondata = resp.data;
+          app.functiondatatab = 0;
         }).then(app.setAvailableFunctions(val.id))["catch"](function (resp) {
+          console.log(resp);
+          alert("Could not load functiondata");
+          app.functiondatatab = 0;
+        });
+        axios.get("/api/v1/employee/interruptions/" + val.id).then(function (resp) {
+          console.log("loaded interruptions for employee");
+          console.log(JSON.stringify(resp.data));
+          app.interruptions = resp.data;
+        })["catch"](function (resp) {
           console.log(resp);
           alert("Could not load functiondata");
         });
       } else {
         this.functiondata = [], this.employments = [], this.interruptions = [];
       }
->>>>>>> feature/edufunctionpage
     }
   },
   created: function created() {
@@ -436,8 +525,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/index.js");
 //
 //
 //
@@ -530,6 +618,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//import moment from "moment";
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -540,11 +635,11 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       defaultEmployment: {
-        beginDate: moment__WEBPACK_IMPORTED_MODULE_0___default()(),
-        formattedBegin: '',
+        beginDate: new Date(),
+        formattedBegin: "",
         //this.defaultEmployment.beginDate.format('MM-DD-YYYY'),
-        endDate: moment__WEBPACK_IMPORTED_MODULE_0___default()(),
-        formattedEnd: '',
+        endDate: new Date(),
+        formattedEnd: "",
         //this.defaultEmployment.endDate.format('MM-DD-YYYY'),
         hours: 0,
         school_id: -1,
@@ -584,6 +679,31 @@ __webpack_require__.r(__webpack_exports__);
     hourSuffix: function hourSuffix() {
       if (this.functiondata.educational_function) return "/" + this.functiondata.educational_function.denominator;else return "";
     }
+    /*employments() {
+      return this.functiondata.employments;
+    },
+    */
+    // formattedBegin: {
+    //   get() {
+    //     if (this.editedItem && this.editedItem.beginDate)
+    //       return this.editedItem.beginDate.format("DD-MM-YYYY");
+    //     else return "";
+    //   }/*,
+    //   set(val) {
+    //     this.editedItem.beginDate = moment(val, "DD-MM-YYYY");
+    //   }*/
+    // },
+    // formattedEnd: {
+    //   get() {
+    //     if (this.editedItem && this.editedItem.endDate)
+    //       return this.editedItem.endDate.format("DD-MM-YYYY");
+    //     else return "";
+    //   }/*,
+    //   set(val) {
+    //     this.editedItem.endDate = moment(val, "DD-MM-YYYY");
+    //   }*/
+    // }
+
   },
   methods: {
     // beginToday() {
@@ -593,17 +713,39 @@ __webpack_require__.r(__webpack_exports__);
     //   this.formattedEnd = moment();
     // },
     parseDate: function parseDate(val) {
-      var v = moment__WEBPACK_IMPORTED_MODULE_0___default()(val, "DD-MM-YYYY hh:mi:ss");
-      return v;
+      if (val && val.length >= 10) {
+        var d = val.substring(0, 10);
+        var pd = Object(date_fns__WEBPACK_IMPORTED_MODULE_0__["parse"])(d, "dd-MM-yyyy", new Date());
+        return pd;
+      } else return null;
     },
     formatDate: function formatDate(date) {
-      var f = this.parseDate(date).format("DD-MM-YYYY");
-      return f;
+      if (date && date.length >= 10) {
+        var d = this.parseDate(date);
+        var f = Object(date_fns__WEBPACK_IMPORTED_MODULE_0__["format"])(d, "dd-MM-yyyy");
+        return f;
+      } else return null;
     },
     formatDateFromDB: function formatDateFromDB(date) {
-      var f = moment__WEBPACK_IMPORTED_MODULE_0___default()(date, 'YYYY-MM-DD hh:mi:ss').format("DD-MM-YYYY");
-      return f;
+      if (date && date.length >= 10) {
+        var d = date.substring(0, 10);
+        console.log(d);
+        return Object(date_fns__WEBPACK_IMPORTED_MODULE_0__["format"])(Object(date_fns__WEBPACK_IMPORTED_MODULE_0__["parse"])(d, "yyyy-MM-dd", new Date()), "dd-MM-yyyy"); //let f = format(parse(date.substring(0,10), "yyyy-MM-dd", new Date()), "dd-MM-yyyy"); //   moment(date, "YYYY-MM-DD hh:mi:ss").format("DD-MM-YYYY");
+        //return f;
+      } else return null;
     },
+    // parseDate(val){
+    //   let v = moment(val,"DD-MM-YYYY hh:mi:ss");
+    //   return v;
+    // },
+    // formatDate(date){
+    //   let f = this.parseDate(date).format("DD-MM-YYYY");
+    //   return f;
+    // },
+    // formatDateFromDB(date){
+    //   let f = moment(date,'YYYY-MM-DD hh:mi:ss').format("DD-MM-YYYY");
+    //   return f;
+    // },
     setBegin: function setBegin() {
       this.editedItem.beginDate = this.parseDate(this.editedItem.formattedBegin + " 12:00:00");
     },
@@ -613,8 +755,12 @@ __webpack_require__.r(__webpack_exports__);
     imgUrl: function imgUrl(school) {
       return "http://www.skbl.be/joomla/images/logo/logo-scholen/" + school.logo_filename;
     },
-    emitFail: function emitFail() {},
-    emitSuccess: function emitSuccess() {},
+    emitFail: function emitFail(msg) {
+      this.$emit('fail', msg);
+    },
+    emitSuccess: function emitSuccess(msg) {
+      this.$emit('success', msg);
+    },
     editItem: function editItem(item) {
       this.editedIndex = this.employments.indexOf(item);
       this.editedItem = Object.assign({}, item);
@@ -675,292 +821,6 @@ __webpack_require__.r(__webpack_exports__);
     this.employments = this.functiondata.employments;
   }
 });
-
-/***/ }),
-
-/***/ "./node_modules/moment/locale sync recursive ^\\.\\/.*$":
-/*!**************************************************!*\
-  !*** ./node_modules/moment/locale sync ^\.\/.*$ ***!
-  \**************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var map = {
-	"./af": "./node_modules/moment/locale/af.js",
-	"./af.js": "./node_modules/moment/locale/af.js",
-	"./ar": "./node_modules/moment/locale/ar.js",
-	"./ar-dz": "./node_modules/moment/locale/ar-dz.js",
-	"./ar-dz.js": "./node_modules/moment/locale/ar-dz.js",
-	"./ar-kw": "./node_modules/moment/locale/ar-kw.js",
-	"./ar-kw.js": "./node_modules/moment/locale/ar-kw.js",
-	"./ar-ly": "./node_modules/moment/locale/ar-ly.js",
-	"./ar-ly.js": "./node_modules/moment/locale/ar-ly.js",
-	"./ar-ma": "./node_modules/moment/locale/ar-ma.js",
-	"./ar-ma.js": "./node_modules/moment/locale/ar-ma.js",
-	"./ar-sa": "./node_modules/moment/locale/ar-sa.js",
-	"./ar-sa.js": "./node_modules/moment/locale/ar-sa.js",
-	"./ar-tn": "./node_modules/moment/locale/ar-tn.js",
-	"./ar-tn.js": "./node_modules/moment/locale/ar-tn.js",
-	"./ar.js": "./node_modules/moment/locale/ar.js",
-	"./az": "./node_modules/moment/locale/az.js",
-	"./az.js": "./node_modules/moment/locale/az.js",
-	"./be": "./node_modules/moment/locale/be.js",
-	"./be.js": "./node_modules/moment/locale/be.js",
-	"./bg": "./node_modules/moment/locale/bg.js",
-	"./bg.js": "./node_modules/moment/locale/bg.js",
-	"./bm": "./node_modules/moment/locale/bm.js",
-	"./bm.js": "./node_modules/moment/locale/bm.js",
-	"./bn": "./node_modules/moment/locale/bn.js",
-	"./bn.js": "./node_modules/moment/locale/bn.js",
-	"./bo": "./node_modules/moment/locale/bo.js",
-	"./bo.js": "./node_modules/moment/locale/bo.js",
-	"./br": "./node_modules/moment/locale/br.js",
-	"./br.js": "./node_modules/moment/locale/br.js",
-	"./bs": "./node_modules/moment/locale/bs.js",
-	"./bs.js": "./node_modules/moment/locale/bs.js",
-	"./ca": "./node_modules/moment/locale/ca.js",
-	"./ca.js": "./node_modules/moment/locale/ca.js",
-	"./cs": "./node_modules/moment/locale/cs.js",
-	"./cs.js": "./node_modules/moment/locale/cs.js",
-	"./cv": "./node_modules/moment/locale/cv.js",
-	"./cv.js": "./node_modules/moment/locale/cv.js",
-	"./cy": "./node_modules/moment/locale/cy.js",
-	"./cy.js": "./node_modules/moment/locale/cy.js",
-	"./da": "./node_modules/moment/locale/da.js",
-	"./da.js": "./node_modules/moment/locale/da.js",
-	"./de": "./node_modules/moment/locale/de.js",
-	"./de-at": "./node_modules/moment/locale/de-at.js",
-	"./de-at.js": "./node_modules/moment/locale/de-at.js",
-	"./de-ch": "./node_modules/moment/locale/de-ch.js",
-	"./de-ch.js": "./node_modules/moment/locale/de-ch.js",
-	"./de.js": "./node_modules/moment/locale/de.js",
-	"./dv": "./node_modules/moment/locale/dv.js",
-	"./dv.js": "./node_modules/moment/locale/dv.js",
-	"./el": "./node_modules/moment/locale/el.js",
-	"./el.js": "./node_modules/moment/locale/el.js",
-	"./en-SG": "./node_modules/moment/locale/en-SG.js",
-	"./en-SG.js": "./node_modules/moment/locale/en-SG.js",
-	"./en-au": "./node_modules/moment/locale/en-au.js",
-	"./en-au.js": "./node_modules/moment/locale/en-au.js",
-	"./en-ca": "./node_modules/moment/locale/en-ca.js",
-	"./en-ca.js": "./node_modules/moment/locale/en-ca.js",
-	"./en-gb": "./node_modules/moment/locale/en-gb.js",
-	"./en-gb.js": "./node_modules/moment/locale/en-gb.js",
-	"./en-ie": "./node_modules/moment/locale/en-ie.js",
-	"./en-ie.js": "./node_modules/moment/locale/en-ie.js",
-	"./en-il": "./node_modules/moment/locale/en-il.js",
-	"./en-il.js": "./node_modules/moment/locale/en-il.js",
-	"./en-nz": "./node_modules/moment/locale/en-nz.js",
-	"./en-nz.js": "./node_modules/moment/locale/en-nz.js",
-	"./eo": "./node_modules/moment/locale/eo.js",
-	"./eo.js": "./node_modules/moment/locale/eo.js",
-	"./es": "./node_modules/moment/locale/es.js",
-	"./es-do": "./node_modules/moment/locale/es-do.js",
-	"./es-do.js": "./node_modules/moment/locale/es-do.js",
-	"./es-us": "./node_modules/moment/locale/es-us.js",
-	"./es-us.js": "./node_modules/moment/locale/es-us.js",
-	"./es.js": "./node_modules/moment/locale/es.js",
-	"./et": "./node_modules/moment/locale/et.js",
-	"./et.js": "./node_modules/moment/locale/et.js",
-	"./eu": "./node_modules/moment/locale/eu.js",
-	"./eu.js": "./node_modules/moment/locale/eu.js",
-	"./fa": "./node_modules/moment/locale/fa.js",
-	"./fa.js": "./node_modules/moment/locale/fa.js",
-	"./fi": "./node_modules/moment/locale/fi.js",
-	"./fi.js": "./node_modules/moment/locale/fi.js",
-	"./fo": "./node_modules/moment/locale/fo.js",
-	"./fo.js": "./node_modules/moment/locale/fo.js",
-	"./fr": "./node_modules/moment/locale/fr.js",
-	"./fr-ca": "./node_modules/moment/locale/fr-ca.js",
-	"./fr-ca.js": "./node_modules/moment/locale/fr-ca.js",
-	"./fr-ch": "./node_modules/moment/locale/fr-ch.js",
-	"./fr-ch.js": "./node_modules/moment/locale/fr-ch.js",
-	"./fr.js": "./node_modules/moment/locale/fr.js",
-	"./fy": "./node_modules/moment/locale/fy.js",
-	"./fy.js": "./node_modules/moment/locale/fy.js",
-	"./ga": "./node_modules/moment/locale/ga.js",
-	"./ga.js": "./node_modules/moment/locale/ga.js",
-	"./gd": "./node_modules/moment/locale/gd.js",
-	"./gd.js": "./node_modules/moment/locale/gd.js",
-	"./gl": "./node_modules/moment/locale/gl.js",
-	"./gl.js": "./node_modules/moment/locale/gl.js",
-	"./gom-latn": "./node_modules/moment/locale/gom-latn.js",
-	"./gom-latn.js": "./node_modules/moment/locale/gom-latn.js",
-	"./gu": "./node_modules/moment/locale/gu.js",
-	"./gu.js": "./node_modules/moment/locale/gu.js",
-	"./he": "./node_modules/moment/locale/he.js",
-	"./he.js": "./node_modules/moment/locale/he.js",
-	"./hi": "./node_modules/moment/locale/hi.js",
-	"./hi.js": "./node_modules/moment/locale/hi.js",
-	"./hr": "./node_modules/moment/locale/hr.js",
-	"./hr.js": "./node_modules/moment/locale/hr.js",
-	"./hu": "./node_modules/moment/locale/hu.js",
-	"./hu.js": "./node_modules/moment/locale/hu.js",
-	"./hy-am": "./node_modules/moment/locale/hy-am.js",
-	"./hy-am.js": "./node_modules/moment/locale/hy-am.js",
-	"./id": "./node_modules/moment/locale/id.js",
-	"./id.js": "./node_modules/moment/locale/id.js",
-	"./is": "./node_modules/moment/locale/is.js",
-	"./is.js": "./node_modules/moment/locale/is.js",
-	"./it": "./node_modules/moment/locale/it.js",
-	"./it-ch": "./node_modules/moment/locale/it-ch.js",
-	"./it-ch.js": "./node_modules/moment/locale/it-ch.js",
-	"./it.js": "./node_modules/moment/locale/it.js",
-	"./ja": "./node_modules/moment/locale/ja.js",
-	"./ja.js": "./node_modules/moment/locale/ja.js",
-	"./jv": "./node_modules/moment/locale/jv.js",
-	"./jv.js": "./node_modules/moment/locale/jv.js",
-	"./ka": "./node_modules/moment/locale/ka.js",
-	"./ka.js": "./node_modules/moment/locale/ka.js",
-	"./kk": "./node_modules/moment/locale/kk.js",
-	"./kk.js": "./node_modules/moment/locale/kk.js",
-	"./km": "./node_modules/moment/locale/km.js",
-	"./km.js": "./node_modules/moment/locale/km.js",
-	"./kn": "./node_modules/moment/locale/kn.js",
-	"./kn.js": "./node_modules/moment/locale/kn.js",
-	"./ko": "./node_modules/moment/locale/ko.js",
-	"./ko.js": "./node_modules/moment/locale/ko.js",
-	"./ku": "./node_modules/moment/locale/ku.js",
-	"./ku.js": "./node_modules/moment/locale/ku.js",
-	"./ky": "./node_modules/moment/locale/ky.js",
-	"./ky.js": "./node_modules/moment/locale/ky.js",
-	"./lb": "./node_modules/moment/locale/lb.js",
-	"./lb.js": "./node_modules/moment/locale/lb.js",
-	"./lo": "./node_modules/moment/locale/lo.js",
-	"./lo.js": "./node_modules/moment/locale/lo.js",
-	"./lt": "./node_modules/moment/locale/lt.js",
-	"./lt.js": "./node_modules/moment/locale/lt.js",
-	"./lv": "./node_modules/moment/locale/lv.js",
-	"./lv.js": "./node_modules/moment/locale/lv.js",
-	"./me": "./node_modules/moment/locale/me.js",
-	"./me.js": "./node_modules/moment/locale/me.js",
-	"./mi": "./node_modules/moment/locale/mi.js",
-	"./mi.js": "./node_modules/moment/locale/mi.js",
-	"./mk": "./node_modules/moment/locale/mk.js",
-	"./mk.js": "./node_modules/moment/locale/mk.js",
-	"./ml": "./node_modules/moment/locale/ml.js",
-	"./ml.js": "./node_modules/moment/locale/ml.js",
-	"./mn": "./node_modules/moment/locale/mn.js",
-	"./mn.js": "./node_modules/moment/locale/mn.js",
-	"./mr": "./node_modules/moment/locale/mr.js",
-	"./mr.js": "./node_modules/moment/locale/mr.js",
-	"./ms": "./node_modules/moment/locale/ms.js",
-	"./ms-my": "./node_modules/moment/locale/ms-my.js",
-	"./ms-my.js": "./node_modules/moment/locale/ms-my.js",
-	"./ms.js": "./node_modules/moment/locale/ms.js",
-	"./mt": "./node_modules/moment/locale/mt.js",
-	"./mt.js": "./node_modules/moment/locale/mt.js",
-	"./my": "./node_modules/moment/locale/my.js",
-	"./my.js": "./node_modules/moment/locale/my.js",
-	"./nb": "./node_modules/moment/locale/nb.js",
-	"./nb.js": "./node_modules/moment/locale/nb.js",
-	"./ne": "./node_modules/moment/locale/ne.js",
-	"./ne.js": "./node_modules/moment/locale/ne.js",
-	"./nl": "./node_modules/moment/locale/nl.js",
-	"./nl-be": "./node_modules/moment/locale/nl-be.js",
-	"./nl-be.js": "./node_modules/moment/locale/nl-be.js",
-	"./nl.js": "./node_modules/moment/locale/nl.js",
-	"./nn": "./node_modules/moment/locale/nn.js",
-	"./nn.js": "./node_modules/moment/locale/nn.js",
-	"./pa-in": "./node_modules/moment/locale/pa-in.js",
-	"./pa-in.js": "./node_modules/moment/locale/pa-in.js",
-	"./pl": "./node_modules/moment/locale/pl.js",
-	"./pl.js": "./node_modules/moment/locale/pl.js",
-	"./pt": "./node_modules/moment/locale/pt.js",
-	"./pt-br": "./node_modules/moment/locale/pt-br.js",
-	"./pt-br.js": "./node_modules/moment/locale/pt-br.js",
-	"./pt.js": "./node_modules/moment/locale/pt.js",
-	"./ro": "./node_modules/moment/locale/ro.js",
-	"./ro.js": "./node_modules/moment/locale/ro.js",
-	"./ru": "./node_modules/moment/locale/ru.js",
-	"./ru.js": "./node_modules/moment/locale/ru.js",
-	"./sd": "./node_modules/moment/locale/sd.js",
-	"./sd.js": "./node_modules/moment/locale/sd.js",
-	"./se": "./node_modules/moment/locale/se.js",
-	"./se.js": "./node_modules/moment/locale/se.js",
-	"./si": "./node_modules/moment/locale/si.js",
-	"./si.js": "./node_modules/moment/locale/si.js",
-	"./sk": "./node_modules/moment/locale/sk.js",
-	"./sk.js": "./node_modules/moment/locale/sk.js",
-	"./sl": "./node_modules/moment/locale/sl.js",
-	"./sl.js": "./node_modules/moment/locale/sl.js",
-	"./sq": "./node_modules/moment/locale/sq.js",
-	"./sq.js": "./node_modules/moment/locale/sq.js",
-	"./sr": "./node_modules/moment/locale/sr.js",
-	"./sr-cyrl": "./node_modules/moment/locale/sr-cyrl.js",
-	"./sr-cyrl.js": "./node_modules/moment/locale/sr-cyrl.js",
-	"./sr.js": "./node_modules/moment/locale/sr.js",
-	"./ss": "./node_modules/moment/locale/ss.js",
-	"./ss.js": "./node_modules/moment/locale/ss.js",
-	"./sv": "./node_modules/moment/locale/sv.js",
-	"./sv.js": "./node_modules/moment/locale/sv.js",
-	"./sw": "./node_modules/moment/locale/sw.js",
-	"./sw.js": "./node_modules/moment/locale/sw.js",
-	"./ta": "./node_modules/moment/locale/ta.js",
-	"./ta.js": "./node_modules/moment/locale/ta.js",
-	"./te": "./node_modules/moment/locale/te.js",
-	"./te.js": "./node_modules/moment/locale/te.js",
-	"./tet": "./node_modules/moment/locale/tet.js",
-	"./tet.js": "./node_modules/moment/locale/tet.js",
-	"./tg": "./node_modules/moment/locale/tg.js",
-	"./tg.js": "./node_modules/moment/locale/tg.js",
-	"./th": "./node_modules/moment/locale/th.js",
-	"./th.js": "./node_modules/moment/locale/th.js",
-	"./tl-ph": "./node_modules/moment/locale/tl-ph.js",
-	"./tl-ph.js": "./node_modules/moment/locale/tl-ph.js",
-	"./tlh": "./node_modules/moment/locale/tlh.js",
-	"./tlh.js": "./node_modules/moment/locale/tlh.js",
-	"./tr": "./node_modules/moment/locale/tr.js",
-	"./tr.js": "./node_modules/moment/locale/tr.js",
-	"./tzl": "./node_modules/moment/locale/tzl.js",
-	"./tzl.js": "./node_modules/moment/locale/tzl.js",
-	"./tzm": "./node_modules/moment/locale/tzm.js",
-	"./tzm-latn": "./node_modules/moment/locale/tzm-latn.js",
-	"./tzm-latn.js": "./node_modules/moment/locale/tzm-latn.js",
-	"./tzm.js": "./node_modules/moment/locale/tzm.js",
-	"./ug-cn": "./node_modules/moment/locale/ug-cn.js",
-	"./ug-cn.js": "./node_modules/moment/locale/ug-cn.js",
-	"./uk": "./node_modules/moment/locale/uk.js",
-	"./uk.js": "./node_modules/moment/locale/uk.js",
-	"./ur": "./node_modules/moment/locale/ur.js",
-	"./ur.js": "./node_modules/moment/locale/ur.js",
-	"./uz": "./node_modules/moment/locale/uz.js",
-	"./uz-latn": "./node_modules/moment/locale/uz-latn.js",
-	"./uz-latn.js": "./node_modules/moment/locale/uz-latn.js",
-	"./uz.js": "./node_modules/moment/locale/uz.js",
-	"./vi": "./node_modules/moment/locale/vi.js",
-	"./vi.js": "./node_modules/moment/locale/vi.js",
-	"./x-pseudo": "./node_modules/moment/locale/x-pseudo.js",
-	"./x-pseudo.js": "./node_modules/moment/locale/x-pseudo.js",
-	"./yo": "./node_modules/moment/locale/yo.js",
-	"./yo.js": "./node_modules/moment/locale/yo.js",
-	"./zh-cn": "./node_modules/moment/locale/zh-cn.js",
-	"./zh-cn.js": "./node_modules/moment/locale/zh-cn.js",
-	"./zh-hk": "./node_modules/moment/locale/zh-hk.js",
-	"./zh-hk.js": "./node_modules/moment/locale/zh-hk.js",
-	"./zh-tw": "./node_modules/moment/locale/zh-tw.js",
-	"./zh-tw.js": "./node_modules/moment/locale/zh-tw.js"
-};
-
-
-function webpackContext(req) {
-	var id = webpackContextResolve(req);
-	return __webpack_require__(id);
-}
-function webpackContextResolve(req) {
-	if(!__webpack_require__.o(map, req)) {
-		var e = new Error("Cannot find module '" + req + "'");
-		e.code = 'MODULE_NOT_FOUND';
-		throw e;
-	}
-	return map[req];
-}
-webpackContext.keys = function webpackContextKeys() {
-	return Object.keys(map);
-};
-webpackContext.resolve = webpackContextResolve;
-module.exports = webpackContext;
-webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
 
 /***/ }),
 
@@ -1030,165 +890,331 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _c(
-            "v-speed-dial",
-            {
-              attrs: { absolute: "", top: "", right: "", direction: "bottom" },
-              scopedSlots: _vm._u([
+          _vm.selectedEmployee
+            ? _c(
+                "v-speed-dial",
                 {
-                  key: "activator",
-                  fn: function() {
-                    return [
-                      _c(
-                        "v-btn",
-                        {
-                          attrs: { color: "blue darken-2", dark: "", fab: "" },
-                          model: {
-                            value: _vm.fab,
-                            callback: function($$v) {
-                              _vm.fab = $$v
-                            },
-                            expression: "fab"
-                          }
+                  attrs: {
+                    absolute: "",
+                    top: "",
+                    right: "",
+                    direction: "bottom"
+                  },
+                  scopedSlots: _vm._u(
+                    [
+                      {
+                        key: "activator",
+                        fn: function() {
+                          return [
+                            _c(
+                              "v-btn",
+                              {
+                                attrs: {
+                                  color: "blue darken-2",
+                                  dark: "",
+                                  fab: ""
+                                },
+                                model: {
+                                  value: _vm.fab,
+                                  callback: function($$v) {
+                                    _vm.fab = $$v
+                                  },
+                                  expression: "fab"
+                                }
+                              },
+                              [
+                                _vm.fab
+                                  ? _c("v-icon", [_vm._v("close")])
+                                  : _c("v-icon", [_vm._v("add")])
+                              ],
+                              1
+                            )
+                          ]
                         },
+                        proxy: true
+                      }
+                    ],
+                    null,
+                    false,
+                    2591573340
+                  ),
+                  model: {
+                    value: _vm.fab,
+                    callback: function($$v) {
+                      _vm.fab = $$v
+                    },
+                    expression: "fab"
+                  }
+                },
+                [
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: { fab: "", dark: "", small: "", color: "#c5f77e" },
+                      on: { click: _vm.addFunctionData }
+                    },
+                    [_c("v-icon", [_vm._v("work")])],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: { fab: "", dark: "", small: "", color: "#f7dc6d" },
+                      on: { click: _vm.addInterruption }
+                    },
+                    [_c("v-icon", [_vm._v("work_off")])],
+                    1
+                  )
+                ],
+                1
+              )
+            : _vm._e()
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-row",
+        [
+          _c(
+            "v-col",
+            { attrs: { xs: "12", sm: "12", md: "8" } },
+            [
+              _vm.functiondata.length > 0
+                ? _c(
+                    "v-card",
+                    [
+                      _c(
+                        "v-card-title",
                         [
-                          _vm.fab
-                            ? _c("v-icon", [_vm._v("close")])
-                            : _c("v-icon", [_vm._v("add")])
+                          _c("v-toolbar", { attrs: { color: "#c5f77e" } }, [
+                            _vm._v("Ambten")
+                          ])
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-container",
+                        { attrs: { fluid: "" } },
+                        [
+                          _c(
+                            "v-tabs",
+                            {
+                              model: {
+                                value: _vm.functiondatatab,
+                                callback: function($$v) {
+                                  _vm.functiondatatab = $$v
+                                },
+                                expression: "functiondatatab"
+                              }
+                            },
+                            [
+                              _vm._l(_vm.functiondata, function(fdata) {
+                                return _c(
+                                  "v-tab",
+                                  { key: fdata.id },
+                                  [
+                                    _vm._v(
+                                      "\n              " +
+                                        _vm._s(
+                                          fdata.educational_function.name
+                                        ) +
+                                        "\n              "
+                                    ),
+                                    _c(
+                                      "v-icon",
+                                      {
+                                        staticClass: "mx-4",
+                                        attrs: { small: "" },
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.editFunctionData(fdata)
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("edit")]
+                                    )
+                                  ],
+                                  1
+                                )
+                              }),
+                              _vm._v(" "),
+                              _vm._l(_vm.functiondata, function(fdata) {
+                                return _c(
+                                  "v-tab-item",
+                                  { key: fdata.id },
+                                  [
+                                    _c("functiondatacomp", {
+                                      attrs: {
+                                        functiondata: fdata,
+                                        scholen: _vm.scholen
+                                      },
+                                      on: {
+                                        delete: function($event) {
+                                          return _vm.deleteFunctionData(fdata)
+                                        },
+                                        fail: _vm.failSnack,
+                                        success: _vm.successSnack
+                                      }
+                                    })
+                                  ],
+                                  1
+                                )
+                              })
+                            ],
+                            2
+                          )
                         ],
                         1
                       )
-                    ]
-                  },
-                  proxy: true
-                }
-              ]),
-              model: {
-                value: _vm.fab,
-                callback: function($$v) {
-                  _vm.fab = $$v
-                },
-                expression: "fab"
-              }
-            },
+                    ],
+                    1
+                  )
+                : _vm._e()
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-col",
+            { attrs: { xs: "12", sm: "12", md: "4" } },
             [
-              _vm._v(" "),
-              _c(
-                "v-btn",
-                {
-                  attrs: { fab: "", dark: "", small: "", color: "green" },
-                  on: { click: _vm.addFunctionData }
-                },
-                [_c("v-icon", [_vm._v("work")])],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-btn",
-                {
-                  attrs: { fab: "", dark: "", small: "", color: "orange" },
-                  on: { click: _vm.addInterruption }
-                },
-                [_c("v-icon", [_vm._v("work_off")])],
-                1
-              )
+              _vm.interruptions.length > 0
+                ? _c(
+                    "v-card",
+                    [
+                      _c(
+                        "v-card-title",
+                        [
+                          _c("v-toolbar", { attrs: { color: "#f7dc6d" } }, [
+                            _vm._v("Onderbrekingen")
+                          ])
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-container",
+                        { attrs: { fluid: "" } },
+                        [
+                          _c("v-data-table", {
+                            attrs: {
+                              items: _vm.interruptions,
+                              headers: _vm.interruptionheaders
+                            },
+                            scopedSlots: _vm._u(
+                              [
+                                {
+                                  key: "item.beginDate",
+                                  fn: function(ref) {
+                                    var item = ref.item
+                                    return [
+                                      _vm._v(
+                                        _vm._s(
+                                          _vm.formatDateFromDB(item.beginDate)
+                                        )
+                                      )
+                                    ]
+                                  }
+                                },
+                                {
+                                  key: "item.endDate",
+                                  fn: function(ref) {
+                                    var item = ref.item
+                                    return [
+                                      _vm._v(
+                                        _vm._s(
+                                          _vm.formatDateFromDB(item.endDate)
+                                        )
+                                      )
+                                    ]
+                                  }
+                                },
+                                {
+                                  key: "item.type",
+                                  fn: function(ref) {
+                                    var item = ref.item
+                                    return [
+                                      _c(
+                                        "v-icon",
+                                        {
+                                          attrs: {
+                                            color:
+                                              item.type == 1 ? "green" : "red"
+                                          }
+                                        },
+                                        [
+                                          _vm._v(
+                                            _vm._s(
+                                              item.type == 1
+                                                ? "check"
+                                                : "not_interested"
+                                            )
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  }
+                                },
+                                {
+                                  key: "item.action",
+                                  fn: function(ref) {
+                                    var item = ref.item
+                                    return [
+                                      _c(
+                                        "v-icon",
+                                        {
+                                          staticClass: "mr-2",
+                                          attrs: { small: "" },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.editInterruption(item)
+                                            }
+                                          }
+                                        },
+                                        [_vm._v("edit")]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-icon",
+                                        {
+                                          staticClass: "mr-2",
+                                          attrs: { small: "" },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.deleteInterruption(
+                                                item
+                                              )
+                                            }
+                                          }
+                                        },
+                                        [_vm._v("delete")]
+                                      )
+                                    ]
+                                  }
+                                }
+                              ],
+                              null,
+                              false,
+                              2109429079
+                            )
+                          })
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                : _vm._e()
             ],
             1
           )
         ],
         1
       ),
-      _vm._v(" "),
-      _vm.functiondata.length > 0
-        ? _c(
-            "v-container",
-            { attrs: { fluid: "" } },
-            [
-              _c(
-                "v-tabs",
-                {
-                  model: {
-                    value: _vm.functiondatatab,
-                    callback: function($$v) {
-                      _vm.functiondatatab = $$v
-                    },
-                    expression: "functiondatatab"
-                  }
-                },
-                [
-                  _vm._l(_vm.functiondata, function(fdata) {
-                    return _c(
-                      "v-tab",
-                      { key: fdata.id },
-                      [
-                        _vm._v(
-                          "\n        " +
-                            _vm._s(fdata.educational_function.name) +
-                            "\n        "
-                        ),
-                        _c(
-                          "v-icon",
-                          {
-                            staticClass: "mx-4",
-                            attrs: { small: "" },
-                            on: {
-                              click: function($event) {
-                                return _vm.editFunctionData(fdata)
-                              }
-                            }
-                          },
-                          [_vm._v("edit")]
-                        )
-                      ],
-                      1
-                    )
-                  }),
-                  _vm._v(" "),
-                  _vm._l(_vm.functiondata, function(fdata) {
-                    return _c(
-                      "v-tab-item",
-                      { key: fdata.id },
-                      [
-                        _c("functiondatacomp", {
-                          attrs: { functiondata: fdata, scholen: _vm.scholen },
-                          on: {
-                            delete: function($event) {
-                              return _vm.deleteFunctionData(fdata)
-                            },
-                            fail: function($event) {
-                              return _vm.failSnack(_vm.message)
-                            },
-                            success: function($event) {
-                              return _vm.successSnack(_vm.message)
-                            }
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  })
-                ],
-                2
-              )
-            ],
-            1
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.interruptions.length > 0
-        ? _c(
-            "v-container",
-            [
-              _c("v-data-table", {
-                attrs: {
-                  items: _vm.interruptions,
-                  headers: _vm.interruptionheaders
-                }
-              })
-            ],
-            1
-          )
-        : _vm._e(),
       _vm._v(" "),
       _c(
         "v-dialog",
@@ -1309,7 +1335,7 @@ var render = function() {
             [
               _c("v-card-title", [
                 _c("span", { staticClass: "headline" }, [
-                  _vm._v(_vm._s(_vm.formTitleFD))
+                  _vm._v(_vm._s(_vm.formTitleInterruption))
                 ])
               ]),
               _vm._v(" "),
@@ -1327,17 +1353,18 @@ var render = function() {
                             { attrs: { cols: "12", sm: "6", md: "6" } },
                             [
                               _c("v-text-field", {
-                                attrs: {
-                                  clearable: "",
-                                  label: "Begin",
-                                  hint: "DD-MM-YYYY"
-                                },
+                                attrs: { label: "Begin", hint: "DD-MM-YYYY" },
+                                on: { blur: _vm.setBegin },
                                 model: {
-                                  value: _vm.formattedBegin,
+                                  value: _vm.editedItem.formattedBegin,
                                   callback: function($$v) {
-                                    _vm.formattedBegin = $$v
+                                    _vm.$set(
+                                      _vm.editedItem,
+                                      "formattedBegin",
+                                      $$v
+                                    )
                                   },
-                                  expression: "formattedBegin"
+                                  expression: "editedItem.formattedBegin"
                                 }
                               })
                             ],
@@ -1349,17 +1376,36 @@ var render = function() {
                             { attrs: { cols: "12", sm: "6", md: "6" } },
                             [
                               _c("v-text-field", {
-                                attrs: {
-                                  clearable: "",
-                                  label: "Einde",
-                                  hint: "DD-MM-YYYY"
-                                },
+                                attrs: { label: "Einde", hint: "DD-MM-YYYY" },
+                                on: { blur: _vm.setEnd },
                                 model: {
-                                  value: _vm.formattedEnd,
+                                  value: _vm.editedItem.formattedEnd,
                                   callback: function($$v) {
-                                    _vm.formattedEnd = $$v
+                                    _vm.$set(
+                                      _vm.editedItem,
+                                      "formattedEnd",
+                                      $$v
+                                    )
                                   },
-                                  expression: "formattedEnd"
+                                  expression: "editedItem.formattedEnd"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-col",
+                            { attrs: { cols: "12", sm: "12", md: "12" } },
+                            [
+                              _c("v-switch", {
+                                attrs: { label: "Telt mee voor rechtenopbouw" },
+                                model: {
+                                  value: _vm.editedItem.type,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.editedItem, "type", $$v)
+                                  },
+                                  expression: "editedItem.type"
                                 }
                               })
                             ],
@@ -1478,12 +1524,12 @@ var render = function() {
             [
               _c(
                 "v-col",
-                { attrs: { cols: "3" } },
+                { attrs: { cols: "4", xs: "8", sm: "5", md: "4" } },
                 [
                   _c(
                     "v-btn",
                     {
-                      attrs: { color: "green" },
+                      attrs: { color: "primary" },
                       on: { click: _vm.addEmployment }
                     },
                     [_vm._v("Aanstelling toevoegen")]
@@ -1494,16 +1540,16 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "v-col",
-                { attrs: { cols: "3" } },
+                { attrs: { cols: "4", xs: "8", sm: "5", md: "4" } },
                 [
                   _c(
                     "v-btn",
                     {
-                      attrs: { color: "red" },
+                      attrs: { color: "red", width: "100%" },
                       on: { click: _vm.deleteFunctionData }
                     },
                     [
-                      _vm._v("\n          Verwijder ambt\n          "),
+                      _vm._v("\n          Ambt verwijderen\n          "),
                       _c("v-icon", [_vm._v("delete")])
                     ],
                     1
@@ -1517,92 +1563,94 @@ var render = function() {
         ],
         1
       ),
-      _vm._v("\n  " + _vm._s(_vm.employments) + "\n  "),
       _vm._v(" "),
-      _c("v-data-table", {
-        attrs: { items: _vm.employments, headers: _vm.headers },
-        scopedSlots: _vm._u([
-          {
-            key: "item.beginDate",
-            fn: function(ref) {
-              var item = ref.item
-              return [
-                _vm._v(
-                  "\n      " +
-                    _vm._s(_vm.formatDateFromDB(item.beginDate)) +
-                    "\n    "
-                )
-              ]
-            }
-          },
-          {
-            key: "item.endDate",
-            fn: function(ref) {
-              var item = ref.item
-              return [
-                _vm._v(
-                  "\n      " +
-                    _vm._s(_vm.formatDateFromDB(item.endDate)) +
-                    "\n    "
-                )
-              ]
-            }
-          },
-          {
-            key: "item.school_id",
-            fn: function(ref) {
-              var item = ref.item
-              return [
-                item.school.logo_filename != "nologo"
-                  ? _c("img", {
-                      attrs: {
-                        src: _vm.imgUrl(item.school),
-                        height: "25px",
-                        width: "25px"
-                      }
-                    })
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm._v("\n      " + _vm._s(item.school.name) + "\n      ")
-              ]
-            }
-          },
-          {
-            key: "item.action",
-            fn: function(ref) {
-              var item = ref.item
-              return [
-                _c(
-                  "v-icon",
-                  {
-                    staticClass: "mr-2",
-                    attrs: { small: "" },
-                    on: {
-                      click: function($event) {
-                        return _vm.editItem(item)
-                      }
-                    }
-                  },
-                  [_vm._v("edit")]
-                ),
-                _vm._v(" "),
-                _c(
-                  "v-icon",
-                  {
-                    attrs: { small: "" },
-                    on: {
-                      click: function($event) {
-                        return _vm.deleteItem(item)
-                      }
-                    }
-                  },
-                  [_vm._v("delete")]
-                )
-              ]
-            }
-          }
-        ])
-      }),
+      _vm.employments.length > 0
+        ? _c("v-data-table", {
+            attrs: { items: _vm.employments, headers: _vm.headers },
+            scopedSlots: _vm._u(
+              [
+                {
+                  key: "item.beginDate",
+                  fn: function(ref) {
+                    var item = ref.item
+                    return [
+                      _vm._v(_vm._s(_vm.formatDateFromDB(item.beginDate)))
+                    ]
+                  }
+                },
+                {
+                  key: "item.endDate",
+                  fn: function(ref) {
+                    var item = ref.item
+                    return [_vm._v(_vm._s(_vm.formatDateFromDB(item.endDate)))]
+                  }
+                },
+                {
+                  key: "item.school_id",
+                  fn: function(ref) {
+                    var item = ref.item
+                    return [
+                      item.school.logo_filename != "nologo"
+                        ? _c("img", {
+                            attrs: {
+                              src: _vm.imgUrl(item.school),
+                              height: "25px",
+                              width: "25px"
+                            }
+                          })
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm._v(
+                        "\n      " +
+                          _vm._s(item.school.name) +
+                          " [" +
+                          _vm._s(item.school.abbreviation) +
+                          "]\n      "
+                      )
+                    ]
+                  }
+                },
+                {
+                  key: "item.action",
+                  fn: function(ref) {
+                    var item = ref.item
+                    return [
+                      _c(
+                        "v-icon",
+                        {
+                          staticClass: "mr-2",
+                          attrs: { small: "" },
+                          on: {
+                            click: function($event) {
+                              return _vm.editItem(item)
+                            }
+                          }
+                        },
+                        [_vm._v("edit")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-icon",
+                        {
+                          attrs: { small: "" },
+                          on: {
+                            click: function($event) {
+                              return _vm.deleteItem(item)
+                            }
+                          }
+                        },
+                        [_vm._v("delete")]
+                      )
+                    ]
+                  }
+                }
+              ],
+              null,
+              false,
+              3931262463
+            )
+          })
+        : _vm._e(),
       _vm._v(" "),
       _c(
         "v-dialog",
@@ -1640,7 +1688,7 @@ var render = function() {
                             { attrs: { cols: "12", sm: "6", md: "6" } },
                             [
                               _c("v-text-field", {
-                                attrs: { label: "Beging", hint: "DD-MM-YYYY" },
+                                attrs: { label: "Begin", hint: "DD-MM-YYYY" },
                                 on: { blur: _vm.setBegin },
                                 model: {
                                   value: _vm.editedItem.formattedBegin,
