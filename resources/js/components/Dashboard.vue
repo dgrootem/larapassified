@@ -54,8 +54,8 @@
                   :functiondata="fdata"
                   :scholen="scholen"
                   @delete="deleteFunctionData(fdata)"
-                  @fail="failSnack(message)"
-                  @success="successSnack(message)"
+                  @fail="failSnack"
+                  @success="successSnack"
                 ></functiondatacomp>
               </v-tab-item>
             </v-tabs>
@@ -164,8 +164,9 @@
 </template>
 
 <script>
-import moment from "moment";
+//import moment from "moment";
 import FunctionData from "./FunctionData.vue";
+import {parse,format} from 'date-fns';
 
 export default {
   components: {
@@ -184,9 +185,9 @@ export default {
         employee_id: this.selectedEmployee
       },
       defaultInterruption: {
-        beginDate: moment(),
+        beginDate: new Date(),
         formattedBegin: null,
-        endDate: moment(),
+        endDate: new Date(),
         formattedEnd: null,
         employee_id: this.selectedEmployee,
         type: 1
@@ -273,16 +274,27 @@ export default {
   },
   methods: {
     parseDate(val) {
-      let v = moment(val, "DD-MM-YYYY hh:mi:ss");
-      return v;
+      if (val && val.length>=10){
+        let d = val.substring(0,10);
+        let pd = parse(d,"dd-MM-yyyy",new Date());
+        return pd;
+      } else return null;
     },
     formatDate(date) {
-      let f = this.parseDate(date).format("DD-MM-YYYY");
-      return f;
+      if (date && date.length>=10) {
+        let d = this.parseDate(date);
+        let f = format(d,"dd-MM-yyyy");
+        return f;
+      } else return null;
     },
     formatDateFromDB(date) {
-      let f = moment(date, "YYYY-MM-DD hh:mi:ss").format("DD-MM-YYYY");
-      return f;
+      if (date && date.length>=10) {
+        let d = date.substring(0,10);
+        console.log(d);
+        return format(parse(d,"yyyy-MM-dd",new Date()),"dd-MM-yyyy");
+        //let f = format(parse(date.substring(0,10), "yyyy-MM-dd", new Date()), "dd-MM-yyyy"); //   moment(date, "YYYY-MM-DD hh:mi:ss").format("DD-MM-YYYY");
+        //return f;
+      }else return null;
     },
     setBegin() {
       this.editedItem.beginDate = this.parseDate(

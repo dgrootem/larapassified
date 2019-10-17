@@ -2,7 +2,7 @@
   
 </template>
 
-<script>
+<script>/*
 export default {
   props: {
     interrruptions: {},
@@ -65,7 +65,7 @@ export default {
     closeInterruption() {},
     deleteInterruption(){},
   }
-};
+};*/
 </script>
 
 <style>
