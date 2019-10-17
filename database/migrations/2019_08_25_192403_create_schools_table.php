@@ -23,6 +23,7 @@ class CreateSchoolsTable extends Migration
             $table->string('logo_filename');
             $table->string('gemeente');
             $table->bigInteger('school_type_id')->unsigned();
+            $table->boolean('isActive')->default(1);
 
             $table->foreign('school_type_id')->references('id')->on('school_types');
         });

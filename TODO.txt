@@ -1,0 +1,32 @@
+TODO:
+
+* actief/inactief toevoegen voor school
+* actief/inactief toevoegen voor ambt
+* rol toevoegen voor user: admin, directie, leerkracht?
+
+
+geboortedatum in correct formaat tonen wanneer dit berekend wordt vanuit stamboeknummer in javascript
+
+autocomplete: copy entries naar items, zo lijst blijven opbouwen van reeds opgehaalde items; 
+nu wordt de lijst niet meer vernieuwd van zodra je begint lettters weg te vegen nadat je een item hebt geselecteerd
+(of toch wel, maar dan moet het veld eerst helemaal leeggemaakt worden... het oogt wat vreemd)
+
+volgende stap: employment toevoegen --DONE
+
+enter in dialog == opslaan
+vertalen van cancel+save in dialogs
+
+personeel : geboortedatum formaat weergave fixen, nu worden maand en dag omgewisseld getoond
+
+input: tegen 1 oktober
+output: tegen 1 november
+
+types onderbrekingen kunnen beheren: type, naam, telt wel of niet mee, grenswaarden (max aantal dagen dat meetelt)
+tekst voorzien bij knoppen toevoegen
+
+beginwaarden voorzien bij personeel
+
+IDEEEN
+* zichtbaarheid van onderbrekingen/ambten kunnen aan en uitzetten?
+* misschien als 2 cards naast elkaar tonen ipv onder elkaar (indien het kan)
+* paginatie verbergen?

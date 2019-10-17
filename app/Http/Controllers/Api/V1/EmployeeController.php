@@ -76,12 +76,14 @@ class EmployeeController extends Controller
     private function getBirthDate(Request $request)
     {
         if (array_key_exists('registrationNumber', $request->all())) {
-            $parseDate = substr($request['registrationNumber'], 1, 6);
-            $year = substr($parseDate, 0, 2);
-            //fix years only represented with two digits: put them in correct century
-            if (intval($year) > 40) $year = "19" . $year;
-            else $year = '20' . $year;
-            return Carbon::createFromDate($year, substr($parseDate, 2, 2), substr($parseDate, 4, 2));
+            if (strlen($request['registrationNumber']>10)){
+                $parseDate = substr($request['registrationNumber'], 1, 6);
+                $year = substr($parseDate, 0, 2);
+                //fix years only represented with two digits: put them in correct century
+                if (intval($year) > 40) $year = "19" . $year;
+                else $year = '20' . $year;
+                return Carbon::createFromDate($year, substr($parseDate, 2, 2), substr($parseDate, 4, 2));
+            }
         } else if (array_key_exists('birthDate', $request->all())) return $request['birthDate'];
         else return null;
     }
@@ -93,6 +95,7 @@ class EmployeeController extends Controller
         $employee->firstName = $request['firstName'];
         $employee->lastName = $request['lastName'];
         $employee->isActive = $request['isActive'];
+        $employee->startwaarde = $request['startwaarde'];
         $employee->save();
         return $employee;
     }

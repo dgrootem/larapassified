@@ -14,6 +14,12 @@
               <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
               <v-icon small @click="deleteItem(item)">delete</v-icon>
             </template>
+            <template v-slot:item.isadmin="{ item }">
+              <v-icon color="success"  class="mr-2" v-if="item.isadmin">check</v-icon>
+            </template>
+            <template v-slot:item.isactive="{ item }">
+              <v-icon color="success"  class="mr-2" v-if="item.isactive">check</v-icon>
+            </template>
           </v-data-table>
         </v-card-text>
       </v-container>
@@ -210,7 +216,9 @@ export default {
 
     this.headers = [
       { text: "Naam", align: "left", value: "name" },
-      { text: "Noemer", align: "left", value: "denominator" },
+      { text: "email", align: "left", value: "email" },
+      { text: "admin", align: "left", value: "isadmin" },
+      { text: "active", align: "left", value: "isactive" },
       { text: "", align: "center", value: "action" }
     ];
     this.editedItem = Object.assign({}, this.defaultItem);

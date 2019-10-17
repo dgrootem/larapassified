@@ -89,6 +89,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -205,9 +211,17 @@ __webpack_require__.r(__webpack_exports__);
       align: "left",
       value: "name"
     }, {
-      text: "Noemer",
+      text: "email",
       align: "left",
-      value: "denominator"
+      value: "email"
+    }, {
+      text: "admin",
+      align: "left",
+      value: "isadmin"
+    }, {
+      text: "active",
+      align: "left",
+      value: "isactive"
     }, {
       text: "",
       align: "center",
@@ -304,6 +318,42 @@ var render = function() {
                               },
                               [_vm._v("delete")]
                             )
+                          ]
+                        }
+                      },
+                      {
+                        key: "item.isadmin",
+                        fn: function(ref) {
+                          var item = ref.item
+                          return [
+                            item.isadmin
+                              ? _c(
+                                  "v-icon",
+                                  {
+                                    staticClass: "mr-2",
+                                    attrs: { color: "success" }
+                                  },
+                                  [_vm._v("check")]
+                                )
+                              : _vm._e()
+                          ]
+                        }
+                      },
+                      {
+                        key: "item.isactive",
+                        fn: function(ref) {
+                          var item = ref.item
+                          return [
+                            item.isactive
+                              ? _c(
+                                  "v-icon",
+                                  {
+                                    staticClass: "mr-2",
+                                    attrs: { color: "success" }
+                                  },
+                                  [_vm._v("check")]
+                                )
+                              : _vm._e()
                           ]
                         }
                       }

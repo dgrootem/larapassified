@@ -1,11 +1,13 @@
-name,abbreviation,adres,postcode,gemeente,school_type_id,logo_filename
-GEEN TOEWIJZING,GEEN," ",0," ",3,"nologo"
-VBS Paridaens,PAR,Janseniusstraat 2,3000,Leuven,1,Pari.png
-Vrije Basisschool,SJ,Mechelsevest 2,3000,Leuven,1,SJ.jpg
-Vrije Kleuterschool,MD-KS,Sint-jacobsplein 13,3000,Leuven,1,MD2.png
-VLS HDC,HDC,Oude Markt 28,3000,Leuven,1,Logo_HDC.jpg
-Vrije Basisschool,DB,Groenveldstraat 46,3001,Heverlee,1,Logo_DB.jpg
-VBSBO Windekind,WIN,Schapenstraat 98,3000,Leuven,2,Wind.jpg
-VBSBO Ter Bank,TB,Tervuursesteenweg 295,3001,Heverlee,2,BoTer.jpg
-Vrije Basisschool,SM,Charles Deberiostraat 3,3000,Leuven,1,SM.jpg
-VLS Mater Dei,MD-LS,Sint-jacobsplein 15,3000,Leuven,1,MD2.png
+id,name,isActive,abbreviation,adres,postcode,gemeente,school_type_id,logo_filename
+1,Sancta Maria Basisschool,1,SM,Charles Deberiostraat 3,3000,Leuven,1,SM.jpg
+2,Paridaensinstituut Basis,1,PAR,Janseniusstraat 2,3000,Leuven,1,Pari.png
+3,Sint-Jan Basisschool,1,SJ,Mechelsevest 2,3000,Leuven,1,SJ.jpg
+4,Mater Dei kleuterschool,1,MD-KS,Sint-jacobsplein 13,3000,Leuven,1,MD2.png
+5,HDC Lagere school,1,HDC,Oude Markt 28,3000,Leuven,1,Logo_HDC.jpg
+6,De Ark Lagere school,0,ArkLager,ddd,3000,Leuven,1,"nologo"
+7,De Ark Kleuterschool,0,ArkKleuter,ddd,3000,Leuven,1,"nologo"
+8,Don Bosco Basisschool,1,DB,Groenveldstraat 46,3001,Heverlee,1,Logo_DB.jpg
+9,Sint-Pietersschool Basis,1,STP,Kloosterstraat 6,3360, Korbeek-Lo,1,"nologo"
+10,Windekind BuBaO,1,WIN,Schapenstraat 98,3000,Leuven,2,Wind.jpg
+11,Ter Bank BuBaO,1,TB,Tervuursesteenweg 295,3001,Heverlee,2,BoTer.jpg
+12,Mater Dei Lagere school,1,MD-LS,Sint-jacobsplein 15,3000,Leuven,1,MD2.png

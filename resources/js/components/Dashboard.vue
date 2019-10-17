@@ -20,56 +20,71 @@
         </v-col>
         <!-- <v-col xs="12" sm="4" md="4"> -->
       </v-row>
-      <v-speed-dial v-model="fab" absolute top right direction="bottom">
+      <v-speed-dial v-model="fab" absolute top right direction="bottom" v-if="selectedEmployee">
         <template v-slot:activator>
           <v-btn v-model="fab" color="blue darken-2" dark fab>
             <v-icon v-if="fab">close</v-icon>
             <v-icon v-else>add</v-icon>
           </v-btn>
         </template>
-        <v-btn fab dark small color="green" @click="addFunctionData">
+        <v-btn fab dark small color="#c5f77e" @click="addFunctionData">
           <v-icon>work</v-icon>
         </v-btn>
-        <v-btn fab dark small color="orange" @click="addInterruption">
+        <v-btn fab dark small color="#f7dc6d" @click="addInterruption">
           <v-icon>work_off</v-icon>
         </v-btn>
       </v-speed-dial>
 
       <!-- </v-col> -->
     </v-container>
-    <v-container v-if="functiondata.length >0" fluid>
-      <v-tabs v-model="functiondatatab">
-        <v-tab v-for="fdata in functiondata" v-bind:key="fdata.id">
-          {{ fdata.educational_function.name }}
-          <v-icon small class="mx-4" @click="editFunctionData(fdata)">edit</v-icon>
-        </v-tab>
-        <v-tab-item v-for="fdata in functiondata" v-bind:key="fdata.id">
-          <!-- <v-container>
-            <v-row justify="end">
-              <v-col cols="3" >
-                <v-btn color="red" @click="deleteFunctionData(fdata)">
-                  Verwijder ambt
-                  <v-icon>delete</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-container>-->
-
-          <functiondatacomp
-            :functiondata="fdata"
-            :scholen="scholen"
-            
-            @delete="deleteFunctionData(fdata)"
-            @fail="failSnack(message)"
-            @success="successSnack(message)"
-          ></functiondatacomp>
-        </v-tab-item>
-      </v-tabs>
-    </v-container>
-    <v-container v-if="interruptions.length > 0">
-      <v-data-table :items="interruptions" :headers="interruptionheaders"></v-data-table>
-    </v-container>
-
+    <v-row>
+      <v-col xs="12" sm="12" md="8">
+        <v-card v-if="functiondata.length >0">
+          <v-card-title>
+            <v-toolbar color="#c5f77e">Ambten</v-toolbar>
+          </v-card-title>
+          <v-container fluid>
+            <v-tabs v-model="functiondatatab">
+              <v-tab v-for="fdata in functiondata" v-bind:key="fdata.id">
+                {{ fdata.educational_function.name }}
+                <v-icon small class="mx-4" @click="editFunctionData(fdata)">edit</v-icon>
+              </v-tab>
+              <v-tab-item v-for="fdata in functiondata" v-bind:key="fdata.id">
+                <functiondatacomp
+                  :functiondata="fdata"
+                  :scholen="scholen"
+                  @delete="deleteFunctionData(fdata)"
+                  @fail="failSnack"
+                  @success="successSnack"
+                ></functiondatacomp>
+              </v-tab-item>
+            </v-tabs>
+          </v-container>
+        </v-card>
+      </v-col>
+      <v-col xs="12" sm="12" md="4">
+        <v-card v-if="interruptions.length > 0">
+          <v-card-title>
+            <v-toolbar color="#f7dc6d">Onderbrekingen</v-toolbar>
+          </v-card-title>
+          <v-container fluid>
+            <v-data-table :items="interruptions" :headers="interruptionheaders">
+              <template v-slot:item.beginDate="{ item }">{{ formatDateFromDB(item.beginDate)}}</template>
+              <template v-slot:item.endDate="{ item }">{{ formatDateFromDB(item.endDate)}}</template>
+              <template v-slot:item.type="{ item }">
+                <v-icon
+                  :color="item.type==1?'green':'red'"
+                >{{item.type==1?'check':'not_interested'}}</v-icon>
+              </template>
+              <template v-slot:item.action="{ item }">
+                <v-icon small class="mr-2" @click="editInterruption(item)">edit</v-icon>
+                <v-icon small class="mr-2" @click="deleteInterruption(item)">delete</v-icon>
+              </template>
+            </v-data-table>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
     <v-dialog v-model="functionDataDialog" max-width="500px">
       <v-card>
         <v-card-title>
@@ -103,7 +118,7 @@
     <v-dialog v-model="interruptionDialog" max-width="500px">
       <v-card>
         <v-card-title>
-          <span class="headline">{{ formTitleFD }}</span>
+          <span class="headline">{{ formTitleInterruption }}</span>
         </v-card-title>
 
         <v-card-text>
@@ -111,14 +126,24 @@
             <v-row>
               <v-col cols="12" sm="6" md="6">
                 <!-- <v-menu v-model="datepickerMenu3" :close-on-content-click="false" full-width max-width="290"> -->
-                  <!-- <template v-slot:activator="{ on }"> -->
-                    <v-text-field clearable v-model="formattedBegin" label="Begin" hint="DD-MM-YYYY"></v-text-field>
-                  <!-- </template> -->
-                  <!-- <v-date-picker v-model="formattedBegin" @change="datepickerMenu3 = false"></v-date-picker> -->
-                <!-- </v-menu> -->
+                <!-- <template v-slot:activator="{ on }"> -->
+                <v-text-field
+                  v-model="editedItem.formattedBegin"
+                  label="Begin"
+                  hint="DD-MM-YYYY"
+                  @blur="setBegin"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
-                <v-text-field clearable v-model="formattedEnd" label="Einde" hint="DD-MM-YYYY"></v-text-field>
+                <v-text-field
+                  v-model="editedItem.formattedEnd"
+                  label="Einde"
+                  hint="DD-MM-YYYY"
+                  @blur="setEnd"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-switch v-model="editedItem.type" label="Telt mee voor rechtenopbouw"></v-switch>
               </v-col>
             </v-row>
           </v-container>
@@ -139,12 +164,13 @@
 </template>
 
 <script>
-import moment from "moment";
-import FuncionData from "./FunctionData.vue";
+//import moment from "moment";
+import FunctionData from "./FunctionData.vue";
+import {parse,format} from 'date-fns';
 
 export default {
   components: {
-    functiondatacomp: FuncionData
+    functiondatacomp: FunctionData
   },
   data: function() {
     return {
@@ -159,9 +185,12 @@ export default {
         employee_id: this.selectedEmployee
       },
       defaultInterruption: {
-        beginDate: moment(),
-        endDate: moment(),
-        employee_id: this.selectedEmployee
+        beginDate: new Date(),
+        formattedBegin: null,
+        endDate: new Date(),
+        formattedEnd: null,
+        employee_id: this.selectedEmployee,
+        type: 1
       },
       //autocomplete stuff
       entries: [],
@@ -174,6 +203,7 @@ export default {
       fab: false,
       //tab stuff
       functiondatatab: null,
+      loadingtabs: false,
       // interruptiontab: null,
 
       snack_color: null,
@@ -183,6 +213,13 @@ export default {
 
       functionDataDialog: false,
       interruptionDialog: false,
+
+      interruptionheaders: [
+        { text: "Begin", align: "left", value: "beginDate" },
+        { text: "Einde", align: "left", value: "endDate" },
+        { text: "Telt mee", align: "left", value: "type" },
+        { text: "", align: "center", value: "action" }
+      ],
       // employmentDialog: false,
 
       /*datepickerMenu1 : false,
@@ -202,7 +239,7 @@ export default {
         ? "Nieuwe onderbreking"
         : "Bewerk onderbrekeing";
     },
-
+    /*
     formattedBegin: {
       get() {
         if (this.editedItem && this.editedItem.beginDate)
@@ -222,7 +259,7 @@ export default {
       set(val) {
         this.editedItem.endDate = moment(val, "DD-MM-YYYY");
       }
-    },
+    },*/
     items() {
       //debugger;
       return this.entries.map(entry => {
@@ -236,6 +273,39 @@ export default {
     }
   },
   methods: {
+    parseDate(val) {
+      if (val && val.length>=10){
+        let d = val.substring(0,10);
+        let pd = parse(d,"dd-MM-yyyy",new Date());
+        return pd;
+      } else return null;
+    },
+    formatDate(date) {
+      if (date && date.length>=10) {
+        let d = this.parseDate(date);
+        let f = format(d,"dd-MM-yyyy");
+        return f;
+      } else return null;
+    },
+    formatDateFromDB(date) {
+      if (date && date.length>=10) {
+        let d = date.substring(0,10);
+        console.log(d);
+        return format(parse(d,"yyyy-MM-dd",new Date()),"dd-MM-yyyy");
+        //let f = format(parse(date.substring(0,10), "yyyy-MM-dd", new Date()), "dd-MM-yyyy"); //   moment(date, "YYYY-MM-DD hh:mi:ss").format("DD-MM-YYYY");
+        //return f;
+      }else return null;
+    },
+    setBegin() {
+      this.editedItem.beginDate = this.parseDate(
+        this.editedItem.formattedBegin + " 12:00:00"
+      );
+    },
+    setEnd() {
+      this.editedItem.endDate = this.parseDate(
+        this.editedItem.formattedEnd + " 12:00:00"
+      );
+    },
     successSnack(message) {
       this.snack_text = message;
       this.snack_color = "success";
@@ -252,6 +322,7 @@ export default {
         .get("/api/v1/ambt/availableForEmployee/" + this.selectedEmployee.id)
         .then(function(resp) {
           app.ambten = resp.data;
+          app.functiondatatab = 0;
         })
         .catch(function(resp) {
           console.log(resp);
@@ -332,27 +403,78 @@ export default {
       }
     },
     addInterruption() {
+      this.editedIndex = -1;
       this.editedItem = Object.assign({}, this.defaultInterruption);
       this.editedItem.employee_id = this.selectedEmployee.id;
       this.interruptionDialog = true;
-      this.editedIndex = -1;
+    },
+    editInterruption(item) {
+      this.editedIndex = this.interruptions.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.editedItem.formattedBegin = this.formatDateFromDB(
+        this.editedItem.beginDate
+      );
+      this.editedItem.formattedEnd = this.formatDateFromDB(
+        this.editedItem.endDate
+      );
+      this.interruptionDialog = true;
     },
     saveInterruption() {
       var app = this;
-      axios
-        .post("/api/v1/interruption", this.editedItem)
-        .then(function(resp) {
-          //app.$router.push({ path: "/employees" });
-          app.functiondata.push(resp.data);
-          app.successSnack("Onderbreking toegevoegd");
-        })
-        .catch(function(resp) {
-          console.log(resp);
-          app.failSnack("Fout bij aanmaken onderbreking");
-        });
+      if (this.editedIndex == -1)
+        axios
+          .post("/api/v1/employmentInterruption", this.editedItem)
+          .then(function(resp) {
+            //app.$router.push({ path: "/employees" });
+            app.interruptions.push(resp.data);
+            app.successSnack("Onderbreking toegevoegd");
+          })
+          .catch(function(resp) {
+            console.log(resp);
+            app.failSnack("Fout bij aanmaken onderbreking");
+          });
+      else {
+        delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
+        axios
+          .patch(
+            "/api/v1/employmentInterruption/" + this.editedItem.id,
+            this.editedItem
+          )
+          .then(function(resp) {
+            //to keep reactivity
+            Vue.set(
+              app.interruptions,
+              app.editedIndex,
+              Object.assign({}, resp.data)
+            );
+            app.successSnack("Wijzigingen opgeslagen");
+          })
+          .catch(function(resp) {
+            console.log(resp);
+            app.failSnack("Fout bij opslaan wijzigingen");
+          });
+      }
+      this.closeInterruption();
     },
-    closeInterruption() {},
-    deleteInterruption() {}
+    closeInterruption() {
+      this.interruptionDialog = false;
+    },
+    deleteInterruption(item) {
+      let yes = confirm("Onderbreking verwijderen?");
+      if (yes) {
+        var app = this;
+        var index = this.interruptions.indexOf(item);
+        axios
+          .delete("/api/v1/employmentInterruption/" + item.id)
+          .then(function(resp) {
+            app.interruptions.splice(index, 1);
+            app.successSnack("Onderbreking verwijderd");
+          })
+          .catch(function(resp) {
+            app.failSnack("Verwijderen mislukt");
+          });
+      }
+    }
   },
   watch: {
     search(val) {
@@ -376,17 +498,31 @@ export default {
         })
         .finally(() => (this.isLoading = false));
     },
+
     selectedEmployee(val) {
       if (val) {
         var app = this;
         axios
           .get("/api/v1/employee/functiondata/" + val.id)
           .then(function(resp) {
-            console.log("loaded data for employee");
+            console.log("loaded function data for employee");
             console.log(JSON.stringify(resp.data));
             app.functiondata = resp.data;
+            app.functiondatatab = 0;
           })
           .then(app.setAvailableFunctions(val.id))
+          .catch(function(resp) {
+            console.log(resp);
+            alert("Could not load functiondata");
+            app.functiondatatab = 0;
+          });
+        axios
+          .get("/api/v1/employee/interruptions/" + val.id)
+          .then(function(resp) {
+            console.log("loaded interruptions for employee");
+            console.log(JSON.stringify(resp.data));
+            app.interruptions = resp.data;
+          })
           .catch(function(resp) {
             console.log(resp);
             alert("Could not load functiondata");

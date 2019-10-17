@@ -18,6 +18,7 @@ class CreateEducationalFunctionsTable extends Migration
             $table->timestamps();
             $table->string('name');
             $table->integer('denominator');
+            $table->boolean('isActive')->default(true);
         });
     }
 
