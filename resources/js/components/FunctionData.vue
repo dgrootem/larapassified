@@ -53,6 +53,7 @@
                   v-model="editedItem.formattedBegin"
                   label="Begin"
                   hint="DD-MM-YYYY"
+                  type="date"
                   @blur="setBegin"
                 ></v-text-field>
               </v-col>
@@ -61,6 +62,7 @@
                   v-model="editedItem.formattedEnd"
                   label="Einde"
                   hint="DD-MM-YYYY"
+                  type="date"
                   @blur="setEnd"
                 ></v-text-field>
               </v-col>
