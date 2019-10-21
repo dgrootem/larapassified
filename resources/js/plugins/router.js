@@ -3,7 +3,7 @@ import Router from 'vue-router';
 Vue.use(Router);
 export default new Router({
     mode: 'history',
-    base: process.env.BASE_URL,
+    base: '/tadd2/public/' , //process.env.BASE_URL,  // aangepast voor deploy
     routes: [
         {
             path: '/',
@@ -30,11 +30,11 @@ export default new Router({
             name: 'users',
             component: () => import('../components/admin/Users.vue')
         },
-        {
+        /*{
             path: '/calendar',
             name: 'calendar',
             component: () => import('../components/Calendar.vue')
-        },
+        },*/
         
     ]
 });

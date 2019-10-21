@@ -143,7 +143,7 @@ export default {
       if (confirm("School echt verwijderen?")) {
                     var app = this;
                     var index = this.scholen.indexOf(item);
-                    axios.delete('/api/v1/school/' + item.id)
+                    axios.delete('api/v1/school/' + item.id)
                         .then(function (resp) {
                             app.scholen.splice(index, 1);
                             app.successSnack("School verwijderd");
@@ -161,7 +161,7 @@ export default {
       this.editedItem.isActive = !this.editedItem.isActive;
       this.editedIndex = this.scholen.indexOf(item);
       axios
-        .patch("/api/v1/school/" + this.editedItem.id, this.editedItem)
+        .patch("api/v1/school/" + this.editedItem.id, this.editedItem)
         .then(function(resp) {
           //app.$router.push({ path: "/employees" });
           Object.assign(app.scholen[app.editedIndex], resp.data);
@@ -177,7 +177,7 @@ export default {
       if (this.editedIndex > -1) {
         
         axios
-          .patch("/api/v1/school/" + this.editedItem.id, this.editedItem)
+          .patch("api/v1/school/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
             Object.assign(app.scholen[app.editedIndex], resp.data);
             app.successSnack("Wijzigingen opgeslagen");
@@ -189,7 +189,7 @@ export default {
       } else {
         
         axios
-          .post("/api/v1/school", this.editedItem)
+          .post("api/v1/school", this.editedItem)
           .then(function(resp) {
             app.scholen.push(resp.data);
             app.successSnack("School toegevoegd");
@@ -221,7 +221,7 @@ export default {
   created() {
     var app = this;
     axios
-      .get("/api/v1/school")
+      .get("api/v1/school")
       .then(function(resp) {
         app.scholen = resp.data.scholen;
         app.schooltypes = resp.data.schooltypes;
@@ -242,6 +242,3 @@ export default {
   }
 };
 </script>
-
-<style>
-</style>

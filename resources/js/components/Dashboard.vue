@@ -319,7 +319,7 @@ export default {
     setAvailableFunctions() {
       var app = this;
       axios
-        .get("/api/v1/ambt/availableForEmployee/" + this.selectedEmployee.id)
+        .get("api/v1/ambt/availableForEmployee/" + this.selectedEmployee.id)
         .then(function(resp) {
           app.ambten = resp.data;
           app.functiondatatab = 0;
@@ -346,7 +346,7 @@ export default {
       var app = this;
       if (this.editedIndex == -1)
         axios
-          .post("/api/v1/educationalFunctionData", this.editedItem)
+          .post("api/v1/educationalFunctionData", this.editedItem)
           .then(function(resp) {
             //app.$router.push({ path: "/employees" });
             app.functiondata.push(resp.data);
@@ -360,7 +360,7 @@ export default {
         delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
         axios
           .patch(
-            "/api/v1/educationalFunctionData/" + this.editedItem.id,
+            "api/v1/educationalFunctionData/" + this.editedItem.id,
             this.editedItem
           )
           .then(function(resp) {
@@ -392,7 +392,7 @@ export default {
         var app = this;
         var index = this.functiondata.indexOf(fdata);
         axios
-          .delete("/api/v1/educationalFunctionData/" + fdata.id)
+          .delete("api/v1/educationalFunctionData/" + fdata.id)
           .then(function(resp) {
             app.functiondata.splice(index, 1);
             app.successSnack("Ambt verwijderd");
@@ -423,7 +423,7 @@ export default {
       var app = this;
       if (this.editedIndex == -1)
         axios
-          .post("/api/v1/employmentInterruption", this.editedItem)
+          .post("api/v1/employmentInterruption", this.editedItem)
           .then(function(resp) {
             //app.$router.push({ path: "/employees" });
             app.interruptions.push(resp.data);
@@ -437,7 +437,7 @@ export default {
         delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
         axios
           .patch(
-            "/api/v1/employmentInterruption/" + this.editedItem.id,
+            "api/v1/employmentInterruption/" + this.editedItem.id,
             this.editedItem
           )
           .then(function(resp) {
@@ -465,7 +465,7 @@ export default {
         var app = this;
         var index = this.interruptions.indexOf(item);
         axios
-          .delete("/api/v1/employmentInterruption/" + item.id)
+          .delete("api/v1/employmentInterruption/" + item.id)
           .then(function(resp) {
             app.interruptions.splice(index, 1);
             app.successSnack("Onderbreking verwijderd");
@@ -489,7 +489,7 @@ export default {
 
       // Lazily load input items
       axios
-        .get("/api/v1/employee/")
+        .get("api/v1/employee/")
         .then(function(resp) {
           app.entries = resp.data;
         })
@@ -503,7 +503,7 @@ export default {
       if (val) {
         var app = this;
         axios
-          .get("/api/v1/employee/functiondata/" + val.id)
+          .get("api/v1/employee/functiondata/" + val.id)
           .then(function(resp) {
             console.log("loaded function data for employee");
             console.log(JSON.stringify(resp.data));
@@ -517,7 +517,7 @@ export default {
             app.functiondatatab = 0;
           });
         axios
-          .get("/api/v1/employee/interruptions/" + val.id)
+          .get("api/v1/employee/interruptions/" + val.id)
           .then(function(resp) {
             console.log("loaded interruptions for employee");
             console.log(JSON.stringify(resp.data));
@@ -538,7 +538,7 @@ export default {
     //load school and ambt data on creation
     var app = this;
     axios
-      .get("/api/v1/ambt")
+      .get("api/v1/ambt")
       .then(function(resp) {
         app.ambten = resp.data;
       })
@@ -548,7 +548,7 @@ export default {
       });
 
     axios
-      .get("/api/v1/school")
+      .get("api/v1/school")
       .then(function(resp) {
         app.scholen = resp.data.scholen;
       })
@@ -559,6 +559,3 @@ export default {
   }
 };
 </script>
-
-<style>
-</style>

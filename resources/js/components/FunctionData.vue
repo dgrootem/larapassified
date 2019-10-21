@@ -249,7 +249,7 @@ export default {
         var app = this;
         var index = this.employments.indexOf(item);
         axios
-          .delete("/api/v1/employment/" + item.id)
+          .delete("api/v1/employment/" + item.id)
           .then(function(resp) {
             app.employments.splice(index, 1);
             app.emitSuccess("Aanstelling verwijderd");
@@ -268,7 +268,7 @@ export default {
       var app = this;
       if (this.editedIndex == -1)
         axios //we should retrieve the whole object set again from the server... trust only server data! :) TODO
-          .post("/api/v1/employment", this.editedItem)
+          .post("api/v1/employment", this.editedItem)
           .then(function(resp) {
             //app.$router.push({ path: "/employees" });
             app.employments.push(resp.data);
@@ -281,7 +281,7 @@ export default {
       else {
         delete this.editedItem.school; //remove this property before sending it to the server to prevent mixups
         axios
-          .patch("/api/v1/employment/" + this.editedItem.id, this.editedItem)
+          .patch("api/v1/employment/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
             //to keep reactivity
             //console.log("updating functiondata with index "+app.editedIndex);
@@ -313,6 +313,3 @@ export default {
   }
 };
 </script>
-
-<style>
-</style>

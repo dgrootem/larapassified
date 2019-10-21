@@ -191,7 +191,7 @@ export default {
         var app = this;
         var index = this.employees.indexOf(item);
         axios
-          .delete("/api/v1/employee/" + item.id)
+          .delete("api/v1/employee/" + item.id)
           .then(function(resp) {
             app.employees.splice(index, 1);
             app.successSnack("Personeelslid verwijderd");
@@ -209,7 +209,7 @@ export default {
       this.editedItem.isActive = !this.editedItem.isActive;
       this.editedIndex = this.employees.indexOf(item);
       axios
-        .patch("/api/v1/employee/" + this.editedItem.id, this.editedItem)
+        .patch("api/v1/employee/" + this.editedItem.id, this.editedItem)
         .then(function(resp) {
           //app.$router.push({ path: "/employees" });
           Object.assign(app.employees[app.editedIndex], resp.data);
@@ -225,7 +225,7 @@ export default {
       
       if (this.editedIndex > -1) {
         axios
-          .patch("/api/v1/employee/" + this.editedItem.id, this.editedItem)
+          .patch("api/v1/employee/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
             Object.assign(app.employees[app.editedIndex], resp.data);
             app.successSnack("Wijzigingen opgeslagen");
@@ -236,7 +236,7 @@ export default {
           });
       } else {
         axios
-          .post("/api/v1/employee", this.editedItem)
+          .post("api/v1/employee", this.editedItem)
           .then(function(resp) {
             app.employees.push(resp.data);
             app.successSnack("Personeelslid toegevoegd");
@@ -269,7 +269,7 @@ export default {
   created() {
     var app = this;
     axios
-      .get("/api/v1/employee")
+      .get("api/v1/employee")
       .then(function(resp) {
         app.employees = resp.data;
       })
@@ -291,6 +291,3 @@ export default {
   }
 };
 </script>
-
-<style>
-</style>

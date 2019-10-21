@@ -147,7 +147,7 @@ export default {
         var app = this;
         var index = this.users.indexOf(item);
         axios
-          .delete("/api/v1/user/" + item.id)
+          .delete("../api/v1/user/" + item.id)
           .then(function(resp) {
             app.users.splice(index, 1);
             app.successSnack("Gebruiker verwijderd");
@@ -162,7 +162,7 @@ export default {
       if (this.editedIndex > -1) {
         
         axios
-          .patch("/api/v1/user/" + this.editedItem.id, this.editedItem)
+          .patch("../api/v1/user/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
             Object.assign(app.users[app.editedIndex], resp.data);
             app.successSnack("Wijzigingen opgeslagen");
@@ -173,7 +173,7 @@ export default {
           });
       } else {
         axios
-          .post("/api/v1/user", this.editedItem)
+          .post("../api/v1/user", this.editedItem)
           .then(function(resp) {
             app.users.push(resp.data);
             app.successSnack("Gebruiker toegevoegd");
@@ -205,7 +205,7 @@ export default {
   created() {
     var app = this;
     axios
-      .get("/api/v1/user")
+      .get("../api/v1/user")
       .then(function(resp) {
         app.users = resp.data;
       })
@@ -226,6 +226,3 @@ export default {
   }
 };
 </script>
-
-<style>
-</style>

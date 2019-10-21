@@ -6,6 +6,8 @@
 
 require('./bootstrap');
 
+require('../sass/fake.scss');
+
 //window.Vue = require('vue');
 
 import Vue from 'vue'
@@ -16,10 +18,10 @@ import vuetify from './plugins/vuetify' // path to vuetify export
 
 // Vue.use(VueRouter);
 window.Vue = Vue;
-
+/*
 import CompaniesIndex from './components/companies/CompaniesIndex.vue';
 import CompaniesCreate from './components/companies/CompaniesCreate.vue';
-import CompaniesEdit from './components/companies/CompaniesEdit.vue';
+import CompaniesEdit from './components/companies/CompaniesEdit.vue';*/
 /*
 const routes = [
     {

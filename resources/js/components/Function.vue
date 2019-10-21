@@ -102,7 +102,7 @@ export default {
       if (confirm("Ambt echt verwijderen?")) {
                     var app = this;
                     var index = this.ambten.indexOf(item);
-                    axios.delete('/api/v1/ambt/' + item.id)
+                    axios.delete('api/v1/ambt/' + item.id)
                         .then(function (resp) {
                             app.ambten.splice(index, 1);
                             app.successSnack("School verwijderd");
@@ -120,7 +120,7 @@ export default {
       this.editedItem.isActive = !this.editedItem.isActive;
       this.editedIndex = this.ambten.indexOf(item);
       axios
-        .patch("/api/v1/ambt/" + this.editedItem.id, this.editedItem)
+        .patch("api/v1/ambt/" + this.editedItem.id, this.editedItem)
         .then(function(resp) {
           //app.$router.push({ path: "/employees" });
           Object.assign(app.ambten[app.editedIndex], resp.data);
@@ -135,7 +135,7 @@ export default {
       var app = this;
       if (this.editedIndex > -1) {
         axios
-          .patch("/api/v1/ambt/" + this.editedItem.id, this.editedItem)
+          .patch("api/v1/ambt/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
             Object.assign(app.ambten[app.editedIndex], resp.data);
             app.successSnack("Wijzigingen opgeslagen");
@@ -147,7 +147,7 @@ export default {
       } else {
         
         axios
-          .post("/api/v1/ambt", this.editedItem)
+          .post("api/v1/ambt", this.editedItem)
           .then(function(resp) {
             app.ambten.push(resp.data);
             app.successSnack("Ambt toegevoegd");
@@ -179,7 +179,7 @@ export default {
   created() {
     var app = this;
     axios
-      .get("/api/v1/ambt")
+      .get("api/v1/ambt")  // removed slash at beginning of url for deploy
       .then(function(resp) {
         app.ambten = resp.data; 
       })
@@ -198,6 +198,3 @@ export default {
   }
 };
 </script>
-
-<style>
-</style>
