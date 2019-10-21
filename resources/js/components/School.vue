@@ -18,14 +18,27 @@
                 width="25px"
               />
             </template>
-            <template v-slot:item.action="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
-              <v-icon small @click="deleteItem(item)">delete</v-icon>
+            <template v-slot:item.edit="{ item }">
+              <v-icon title="Bewerken" small class="mr-2" @click="editItem(item)">edit</v-icon>
+            </template>
+            <template v-slot:item.delete="{ item }">
+              <v-icon title="Verwijderen" v-if="item.cbd" small @click="deleteItem(item)">delete</v-icon>
+            </template>
+            <template v-slot:item.invis="{ item }">
               <v-icon
+                :title="item.isActive ?'Zichtbaar in lijsten':'NIET zichtbaar in lijsten' "
                 small
                 class="mr-2"
                 @click="toggleVisibility(item)"
               >{{ item.isActive ? 'visibility' : 'visibility_off' }}</v-icon>
+            </template>
+            <template v-slot:item.nocount="{ item }">
+              <v-icon
+                :title="item.useForCalculations ?'Meenemen in berekening':'NIET meenemen in berekening' "
+                small
+                :color="item.useForCalculations ?'green':'red'"
+                @click="toggleNocount(item)"
+              >{{ item.useForCalculations ? "exposure":"exposure_zero"}}</v-icon>
             </template>
           </v-data-table>
         </v-card-text>
@@ -43,23 +56,23 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" sm="6" md="4">
+              <v-col  sm="6" md="4">
                 <v-text-field v-model="editedItem.abbreviation" label="Afkorting"></v-text-field>
               </v-col>
-              <v-col cols="12" sm="6" md="8">
+              <v-col sm="6" md="8">
                 <v-text-field v-model="editedItem.name" label="Naam"></v-text-field>
               </v-col>
 
-              <v-col cols="12" sm="12" md="12">
+              <v-col m="12" md="12">
                 <v-text-field v-model="editedItem.adres" label="Adres"></v-text-field>
               </v-col>
-              <v-col cols="12" sm="6" md="4">
+              <v-col  sm="6" md="4">
                 <v-text-field v-model="editedItem.postcode" label="Postcode"></v-text-field>
               </v-col>
-              <v-col cols="12" sm="8" md="8">
+              <v-col sm="8" md="8">
                 <v-text-field v-model="editedItem.gemeente" label="Gemeente"></v-text-field>
               </v-col>
-              <v-col cols="12" sm="6" md="6">
+              <v-col sm="6" md="6">
                 <v-select
                   v-model="editedItem.school_type_id"
                   :items="schooltypes"
@@ -71,6 +84,14 @@
               </v-col>
               <v-col cols="12" sm="6" md="6">
                 <v-text-field v-model="editedItem.logo_filename" label="Logo"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col sm="6" md="6">
+                <v-checkbox v-model="editedItem.isActive" label="Zichtbaar"></v-checkbox>
+              </v-col>
+              <v-col sm="6" md="6">
+                <v-checkbox  v-model="editedItem.useForCalculations" label="Telt mee"></v-checkbox>
               </v-col>
             </v-row>
           </v-container>
@@ -107,7 +128,10 @@ export default {
         adres: "",
         abbreviation: "",
         logo_filename: "",
-        postcode: -1
+        postcode: -1,
+        useForCalculations: 1,
+        cbd: 1, //can be deleted
+        isActive: 1
       },
       editedIndex: -1,
       snackbar: false,
@@ -139,26 +163,46 @@ export default {
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
-    deleteItem(item){
+    deleteItem(item) {
       if (confirm("School echt verwijderen?")) {
-                    var app = this;
-                    var index = this.scholen.indexOf(item);
-                    axios.delete('api/v1/school/' + item.id)
-                        .then(function (resp) {
-                            app.scholen.splice(index, 1);
-                            app.successSnack("School verwijderd");
-                        })
-                        .catch(function (resp) {
-                            app.failSnack("Verwijderen mislukt");
-                        });
-                }
+        var app = this;
+        var index = this.scholen.indexOf(item);
+        axios
+          .delete("api/v1/school/" + item.id)
+          .then(function(resp) {
+            app.scholen.splice(index, 1);
+            app.successSnack("School verwijderd");
+          })
+          .catch(function(resp) {
+            app.failSnack("Verwijderen mislukt");
+          });
+      }
     },
     toggleVisibility(item) {
       var app = this;
       //first copy to editItem, which we will send to the server for processing
       //and we only update the model when server successfully processes data
       this.editedItem = Object.assign({}, item);
-      this.editedItem.isActive = !this.editedItem.isActive;
+      this.editedItem.isActive = (this.editedItem.isActive==1?0:1);
+      this.editedIndex = this.scholen.indexOf(item);
+      axios
+        .patch("api/v1/school/" + this.editedItem.id, this.editedItem)
+        .then(function(resp) {
+          //app.$router.push({ path: "/employees" });
+          Object.assign(app.scholen[app.editedIndex], resp.data);
+          app.successSnack("Wijzigingen opgeslagen");
+        })
+        .catch(function(resp) {
+          console.log(resp);
+          app.failSnack("Fout bij opslaan wijzigingen");
+        });
+    },
+    toggleNocount(item) {
+      var app = this;
+      //first copy to editItem, which we will send to the server for processing
+      //and we only update the model when server successfully processes data
+      this.editedItem = Object.assign({}, item);
+      this.editedItem.useForCalculations = !this.editedItem.useForCalculations;
       this.editedIndex = this.scholen.indexOf(item);
       axios
         .patch("api/v1/school/" + this.editedItem.id, this.editedItem)
@@ -175,7 +219,6 @@ export default {
     save() {
       var app = this;
       if (this.editedIndex > -1) {
-        
         axios
           .patch("api/v1/school/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
@@ -187,7 +230,6 @@ export default {
             app.failSnack("Fout bij opslaan wijzigingen");
           });
       } else {
-        
         axios
           .post("api/v1/school", this.editedItem)
           .then(function(resp) {
@@ -235,7 +277,10 @@ export default {
       { text: "", align: "center", value: "logo", width: "30px" },
       { text: "Naam", align: "left", value: "name" },
       { text: "Afkorting", align: "left", value: "abbreviation" },
-      { text: "", align: "center", value: "action" }
+      { text: "", align: "center", value: "edit", width: "16px" },
+      { text: "", align: "center", value: "delete", width: "16px" },
+      { text: "", align: "center", value: "invis", width: "16px" },
+      { text: "", align: "center", value: "nocount", width: "16px" }
     ];
     this.editedItem = Object.assign({}, this.defaultItem);
     console.log("Component School.vue created.");

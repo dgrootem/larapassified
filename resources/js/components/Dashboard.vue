@@ -142,9 +142,10 @@
                   @blur="setEnd"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="12" md="12">
+              <v-col cols="12" sm="8" md="8">
                 <v-switch v-model="editedItem.type" label="Telt mee voor rechtenopbouw"></v-switch>
               </v-col>
+              
             </v-row>
           </v-container>
         </v-card-text>
@@ -190,7 +191,8 @@ export default {
         endDate: new Date(),
         formattedEnd: null,
         employee_id: this.selectedEmployee,
-        type: 1
+        type: 1,
+        isnew : 1
       },
       //autocomplete stuff
       entries: [],
@@ -306,6 +308,14 @@ export default {
         this.editedItem.formattedEnd + " 12:00:00"
       );
     },
+    
+    eenDagAfwezig(){
+      this.editedItem.endDate = new Date(this.editedItem.beginDate);
+      this.editedItem.formattedEnd = this.editedItem.formattedBegin;
+      this.editedItem.type = 2;
+
+      
+    },
     successSnack(message) {
       this.snack_text = message;
       this.snack_color = "success";
@@ -316,6 +326,7 @@ export default {
       this.snack_color = "error";
       this.snackbar = true;
     },
+    
     setAvailableFunctions() {
       var app = this;
       axios
@@ -344,7 +355,8 @@ export default {
     },
     saveFunctionData() {
       var app = this;
-      if (this.editedIndex == -1)
+      if (this.editedIndex == -1){
+        
         axios
           .post("api/v1/educationalFunctionData", this.editedItem)
           .then(function(resp) {
@@ -356,6 +368,7 @@ export default {
             console.log(resp);
             app.failSnack("Fout bij aanmaken aanstelling");
           });
+      }
       else {
         delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
         axios
@@ -421,7 +434,9 @@ export default {
     },
     saveInterruption() {
       var app = this;
-      if (this.editedIndex == -1)
+      if (this.editedIndex == -1){
+        if (!this.editedItem.formattedBegin) {app.emitFail('Geen begindatum'); return;}
+        if (!this.editedItem.formattedEnd) this.eenDagAfwezig(); //creëer een korte vervanging voor 1 dag
         axios
           .post("api/v1/employmentInterruption", this.editedItem)
           .then(function(resp) {
@@ -433,6 +448,7 @@ export default {
             console.log(resp);
             app.failSnack("Fout bij aanmaken onderbreking");
           });
+      }
       else {
         delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
         axios

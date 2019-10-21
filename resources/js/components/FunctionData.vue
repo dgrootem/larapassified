@@ -68,13 +68,15 @@
                 <v-select
                   v-model="editedItem.school_id"
                   :items="scholen"
-                  item-text="abbreviation"
+                  item-text="name"
                   item-value="id"
                   item-key="id"
                   label="School"
                 ></v-select>
               </v-col>
-              <v-col cols="12" sm="4" md="4">
+            </v-row>
+            <v-row justify="space-between">
+              <v-col sm="4" md="4">
                 <v-text-field
                   v-if="editedItem"
                   v-model="editedItem.hours"
@@ -82,6 +84,10 @@
                   :suffix="hourSuffix"
                 ></v-text-field>
               </v-col>
+              
+            </v-row>
+            <v-row>
+              
             </v-row>
           </v-container>
         </v-card-text>
@@ -115,7 +121,8 @@ export default {
         formattedEnd: "", //this.defaultEmployment.endDate.format('MM-DD-YYYY'),
         hours: 0,
         school_id: -1,
-        edu_function_data_id: this.functiondata.id
+        edu_function_data_id: this.functiondata.id,
+        isnew : 1
       },
       employments: [],
 
@@ -221,7 +228,11 @@ export default {
         this.editedItem.formattedEnd + " 12:00:00"
       );
     },
-
+    korteVervanging1Dag(){
+      this.editedItem.endDate = new Date(this.editedItem.beginDate);
+      this.editedItem.formattedEnd = this.editedItem.formattedBegin;
+      this.editedItem.hours = this.functiondata.educational_function.denominator;
+    },
     imgUrl: function(school) {
       return (
         "http://www.skbl.be/joomla/images/logo/logo-scholen/" +
@@ -236,6 +247,7 @@ export default {
       this.editedIndex = this.employments.indexOf(item);
 
       this.editedItem = Object.assign({}, item);
+      this.editedItem.isnew = 0;
       this.editedItem.formattedBegin = this.formatDateFromDB(
         this.editedItem.beginDate
       );
@@ -266,7 +278,12 @@ export default {
     },
     saveEmployment() {
       var app = this;
-      if (this.editedIndex == -1)
+      if (this.editedIndex == -1){ //new object
+        //debugger;
+        if (!this.editedItem.formattedBegin) {app.emitFail('Geen begindatum'); return;}
+        if (this.editedItem.school_id == -1) {app.emitFail('Geen school gekozen'); return;}
+        if (!this.editedItem.formattedEnd) this.korteVervanging1Dag(); //creëer een korte vervanging voor 1 dag
+        //setTimeout(5000,function(){});
         axios //we should retrieve the whole object set again from the server... trust only server data! :) TODO
           .post("api/v1/employment", this.editedItem)
           .then(function(resp) {
@@ -278,6 +295,7 @@ export default {
             console.log(resp);
             app.emitFail("Fout bij aanmaken aanstelling");
           });
+      }
       else {
         delete this.editedItem.school; //remove this property before sending it to the server to prevent mixups
         axios

@@ -22,7 +22,10 @@ class CreateEmployeesTable extends Migration
             $table->date('birthDate')->nullable();
             $table->date('lastEmploymentDate')->default(null)->nullable();
             $table->boolean('isActive')->default(true);
-            $table->integer('startwaarde')->default(0);
+            $table->integer('startwaardeDA')->default(0);
+            $table->integer('startwaardeINT')->default(0);
+            $table->boolean('oudsysteem')->default(0); //aan te vinken wanneer iemand nog moet geteld worden volgens de regelgeving tem 2018-2019.
+            //$table->boolean('telVersie')->default(1);
             
         });
     }
