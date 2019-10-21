@@ -245,7 +245,7 @@ export default {
       this.employmentDialog = true;
     },
     deleteItem(item) {
-      if (confirm("School echt verwijderen?")) {
+      if (confirm("Aanstelling echt verwijderen?")) {
         var app = this;
         var index = this.employments.indexOf(item);
         axios
