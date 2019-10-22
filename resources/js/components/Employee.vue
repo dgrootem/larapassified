@@ -6,24 +6,28 @@
           Personeelsleden
           <div class="flex-grow-1"></div>
           <v-text-field
-        v-model="search"
-        append-icon="search"
-        label="Zoeken"
-        single-line
-        hide-details
-      ></v-text-field>
-      <div class="flex-grow-1"></div>
+            v-model="search"
+            append-icon="search"
+            label="Zoeken"
+            single-line
+            hide-details
+          ></v-text-field>
+          <div class="flex-grow-1"></div>
           <v-btn fab right absolute @click="dialog = !dialog">
             <v-icon>add</v-icon>
           </v-btn>
         </v-card-title>
         <v-card-text>
-          
           <v-data-table :items="employees" :headers="headers" :search="search" multi-sort>
             <template v-slot:item.birthDate="{ item }">{{ formatDateFromDB(item.birthDate) }}</template>
             <template v-slot:item.registrationNumber="{ item }">
               {{item.registrationNumber?item.registrationNumber:''}}
-              <span v-if="!item.registrationNumber">Geen Stamboeknummer<v-icon  color="warning">warning</v-icon></span>
+              <span
+                v-if="!item.registrationNumber"
+              >
+                Geen Stamboeknummer
+                <v-icon color="warning">warning</v-icon>
+              </span>
             </template>
             <template v-slot:item.action="{ item }">
               <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
@@ -59,7 +63,7 @@
             </v-row>
             <v-row>
               <v-col cols="12" sm="12" md="7">
-                <v-text-field 
+                <v-text-field
                   v-model="editedItem.registrationNumber"
                   @blur="calcBdate"
                   label="Stamboeknummer"
@@ -74,8 +78,34 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" sm="12" md="6">
-                <v-text-field v-model="editedItem.startwaarde" label="Startwaarde" type="number" min="0"></v-text-field>
+              <v-col sm="12" md="6">
+                <v-text-field
+                  v-model="editedItem.startwaardeDA"
+                  label="Startwaarde DA"
+                  type="number"
+                  min="0"
+                  suffix="dagen"
+                ></v-text-field>
+              </v-col>
+              <v-col sm="12" md="6">
+                <v-text-field
+                  v-model="editedItem.startwaardeINT"
+                  label="Onderbrekingen"
+                  type="number"
+                  min="0"
+                  :max="editedItem.startwaardeDA"
+                  suffix="dagen"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row dense>
+              <v-col sm="12" md="12">
+                <v-checkbox v-model="editedItem.isActive" label="Zichtbaar"></v-checkbox>
+              </v-col>
+            </v-row>
+            <v-row dense>
+              <v-col sm="12" md="12">
+                <v-checkbox v-model="editedItem.oudsysteem" label="Tellen volgens oud systeem"></v-checkbox>
               </v-col>
             </v-row>
           </v-container>
@@ -97,7 +127,7 @@
 
 <script>
 //import moment from "moment";
-import {parse,format} from "date-fns";
+import { parse, format } from "date-fns";
 
 export default {
   data: function() {
@@ -114,55 +144,58 @@ export default {
         registrationNumber: "",
         birthDate: null,
         isActive: true,
-        startwaarde: 0
+        startwaardeDA: 0,
+        startwaardeINT : 0,
+        oudsyssteem : 0
       },
       editedIndex: -1,
       snackbar: false,
       snack_text: "",
       snack_color: "",
       snack_timeout: 2000,
-      search : ""
+      search: ""
       // registrationNumberProxy : null
     };
   },
 
   methods: {
     calcBdate: function() {
-      
       if (this.editedItem.registrationNumber.length == 11) {
         if (!isNaN(this.editedItem.registrationNumber)) {
           //only do something when it is a number
           var bd = this.editedItem.registrationNumber.substring(1, 7);
           var year = bd.substring(0, 2);
-          if (parseInt(year) > 40) year = "19"+year;
-          else year = "20"+year;
-          this.editedItem.birthDate = parse
-            (bd.substring(4, 6) + "-" + bd.substring(2, 4) + "-" + year,'dd-MM-YYYY');
+          if (parseInt(year) > 40) year = "19" + year;
+          else year = "20" + year;
+          this.editedItem.birthDate = parse(
+            bd.substring(4, 6) + "-" + bd.substring(2, 4) + "-" + year,
+            "dd-MM-YYYY"
+          );
         }
       }
     },
     parseDate(val) {
-      if (val && val.length>=10){
-        let d = val.substring(0,10);
-        let pd = parse(d,"dd-MM-yyyy",new Date());
+      if (val && val.length >= 10) {
+        let d = val.substring(0, 10);
+        let pd = parse(d, "dd-MM-yyyy", new Date());
         return pd;
       } else return null;
     },
     formatDate(date) {
-      if (date && date.length>=10) {
+      if (date && date.length >= 10) {
         let d = this.parseDate(date);
-        let f = format(d,"dd-MM-yyyy");
+        let f = format(d, "dd-MM-yyyy");
         return f;
       } else return null;
     },
     formatDateFromDB(date) {
-      if (date && date.length>=10) {
-        let d = date.substring(0,10);
+      if (date && date.length >= 10) {
+        let d = date.substring(0, 10);
         console.log(d);
-        return format(parse(d,"yyyy-MM-dd",new Date()),"dd-MM-yyyy");
+        return format(parse(d, "yyyy-MM-dd", new Date()), "dd-MM-yyyy");
         //let f = format(parse(date.substring(0,10), "yyyy-MM-dd", new Date()), "dd-MM-yyyy"); //   moment(date, "YYYY-MM-DD hh:mi:ss").format("DD-MM-YYYY");
         //return f;
-      }else return null;
+      } else return null;
     },
 
     // formatDate: function(value) {
@@ -181,7 +214,6 @@ export default {
       this.snackbar = true;
     },
     editItem(item) {
-      
       this.editedIndex = this.employees.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
@@ -222,7 +254,7 @@ export default {
     },
     save() {
       var app = this;
-      
+
       if (this.editedIndex > -1) {
         axios
           .patch("api/v1/employee/" + this.editedItem.id, this.editedItem)
@@ -263,7 +295,6 @@ export default {
         ? "Nieuw personeelslid toevoegen"
         : "Bewerk gegevens";
     }
-    
   },
 
   created() {
@@ -283,7 +314,8 @@ export default {
       { text: "Voornaam", align: "left", value: "firstName" },
       { text: "Stamboeknummer", align: "left", value: "registrationNumber" },
       { text: "Geboortedatum", align: "left", value: "birthDate" },
-      { text: "Startwaarde", align: "right", value: "startwaarde" },
+      { text: "Startwaarde DA", align: "right", value: "startwaardeDA" },
+      { text: "Startwaarde OND ", align: "right", value: "startwaardeINT" },
       { text: "", align: "center", value: "action" }
     ];
     this.editedItem = Object.assign({}, this.defaultItem);

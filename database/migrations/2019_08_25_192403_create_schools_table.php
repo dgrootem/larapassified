@@ -18,12 +18,14 @@ class CreateSchoolsTable extends Migration
             $table->timestamps();
             $table->string('name');
             $table->string('abbreviation');
-            $table->string('adres');
-            $table->integer('postcode');
-            $table->string('logo_filename');
-            $table->string('gemeente');
+            // make theses fields nullable so they don't have to be filled in
+            $table->string('adres')->nullable();
+            $table->integer('postcode')->nullable();
+            $table->string('logo_filename')->nullable();
+            $table->string('gemeente')->nullable();
             $table->bigInteger('school_type_id')->unsigned();
-            $table->boolean('isActive')->default(1);
+            $table->boolean('isActive')->default(1); //deactivate school, so it cannot be selected
+            $table->boolean('useForCalculations')->default(1); //if this is 0, days in this schoo should not be counted towards TADD
 
             $table->foreign('school_type_id')->references('id')->on('school_types');
         });

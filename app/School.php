@@ -9,7 +9,7 @@ class School extends Model
 {
     protected $guarded = ["id"];
 
-    public function school_type()
+    public function schoolType()
     {
         return $this->belongsTo(SchoolType::class);
     }
@@ -17,4 +17,10 @@ class School extends Model
     public function employments(){
         return $this->hasMany(Employment::class);
     }
+
+    public function canBeDeleted(){
+        return ($this->employments()->count() === 0);
+    }
+
+    
 }

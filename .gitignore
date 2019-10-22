@@ -13,3 +13,5 @@ yarn-error.log
 /public/*.js
 /public/js
 /public/css
+/public/fonts
+/public/*.orig
