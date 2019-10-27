@@ -13,6 +13,10 @@ use Log;
 
 class UserController extends Controller
 {
+    private function safeColumns(){
+        return ['id','name','email','isactive','isadmin'];
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +25,7 @@ class UserController extends Controller
     public function index()
     {
         if (Auth::user()->isadmin && Auth::user()->isactive){
-            return User::all();
+            return User::select($this->safeColumns())->get(); //avoid leaking password info
         }
         else return '';
     }
@@ -34,10 +38,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        return $this->saveUser($request,null);
+        /*
         if (Auth::user()->isadmin && Auth::user()->isactive){
             $user = User::create($request->all());
-            return $user;
+            if (array_key_exists('password',$validatedData))
+                if (!empty($validatedData['password']))
+                    $user->password = Hash::make($request['password']);
+            return $user->pluck('name','email','isactive','isadmin');
         }
+        */
         //TODO: else throw exception!!
 
     }
@@ -50,11 +60,48 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
-        return User::findOrFail($id);
+        return $this->safeGetUserInfo($id);
+        
     }
 
-    
+    private function safeGetUserInfo($id){
+        return User::select($this->safeColumns())->where('id',$id)->get();
+    }
+
+    private function saveUser(Request $request,$id){
+        if (Auth::user()->isadmin && Auth::user()->isactive){
+            $validatedData = $request->validate([
+                'name' => 'required',
+                'password' => 'min:8',
+                'email' => 'required|email',
+            ]);
+            $check2 = User::where('email',$validatedData['email'])->get();
+            if (($check2->count()==1) && ($check2->first()->id != $id)) {
+                $check2Debug = $check2->first();
+                Log::debug("aantal users met dit emailadres=".$check2->count());
+                Log::debug("check2Debug->id=".$check2->first()->id);
+                Log::debug("id to check=".$id);
+                throw new Exception("email already taken by other user.");
+            }
+            if ($check2->count() >1) throw new Exception('multiple users with this emailadress found... aborting');
+            $user = null;
+            if ($id === null)
+                $user = User::create($request->all());
+            else
+                $user = User::findOrFail($id);
+
+            $user->name = $validatedData['name'];
+            $user->email = $validatedData['email'];
+            $user->isadmin = $request['isadmin'];
+            $user->isactive = $request['isactive'];
+            if (array_key_exists('password',$validatedData))
+                if (!empty($validatedData['password']))
+                    $user->password = Hash::make($request['password']);
+            $user->save();
+            return $this->safeGetUserInfo($id);
+        }
+        else return null;
+    }
 
     /**
      * Update the specified resource in storage.
@@ -65,6 +112,8 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        return $this->saveUser($request,$id);
+        /*
         if (Auth::user()->isadmin && Auth::user()->isactive){
             $validatedData = $request->validate([
                 'name' => 'required',
@@ -82,12 +131,15 @@ class UserController extends Controller
             $user = User::findOrFail($id);
             $user->name = $validatedData['name'];
             $user->email = $validatedData['email'];
+            $user->isadmin = $request['isadmin'];
+            $user->isactive = $request['isactive'];
             if (array_key_exists('password',$validatedData))
                 if (!empty($validatedData['password']))
                     $user->password = Hash::make($request['password']);
             $user->save();
-            return User::findOrFail($id)->pluck('name','email');
+            return User::findOrFail($id)->pluck('name','email','isactive','isadmin');
         }
+        */
         //TODO: else throw exception!!
     }
 

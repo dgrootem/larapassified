@@ -164,7 +164,12 @@ export default {
         axios
           .patch("../api/v1/user/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
-            Object.assign(app.users[app.editedIndex], resp.data);
+            /*Vue.set(
+                app.users,
+                app.editedIndex,
+                Object.assign({}, resp.data)
+              );*/
+            Object.assign(app.users[app.editedIndex], resp.data[0]);
             app.successSnack("Wijzigingen opgeslagen");
           })
           .catch(function(resp) {
@@ -175,7 +180,7 @@ export default {
         axios
           .post("../api/v1/user", this.editedItem)
           .then(function(resp) {
-            app.users.push(resp.data);
+            app.users.push(resp.data[0]);
             app.successSnack("Gebruiker toegevoegd");
           })
           .catch(function(resp) {
