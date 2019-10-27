@@ -65,11 +65,13 @@ class UserController extends Controller
     }
 
     private function safeGetUserInfo($id){
+        Log::debug("retrieving info for userid=".$id);
         return User::select($this->safeColumns())->where('id',$id)->get();
     }
 
     private function saveUser(Request $request,$id){
         if (Auth::user()->isadmin && Auth::user()->isactive){
+            
             $validatedData = $request->validate([
                 'name' => 'required',
                 'password' => 'min:8',
@@ -85,8 +87,10 @@ class UserController extends Controller
             }
             if ($check2->count() >1) throw new Exception('multiple users with this emailadress found... aborting');
             $user = null;
-            if ($id === null)
-                $user = User::create($request->all());
+            if ($id === null){
+                $user = new User;
+                Log::debug("creating user...");
+            }
             else
                 $user = User::findOrFail($id);
 
@@ -94,11 +98,14 @@ class UserController extends Controller
             $user->email = $validatedData['email'];
             $user->isadmin = $request['isadmin'];
             $user->isactive = $request['isactive'];
+            Log::debug("created user...".$user->name);
             if (array_key_exists('password',$validatedData))
                 if (!empty($validatedData['password']))
                     $user->password = Hash::make($request['password']);
             $user->save();
-            return $this->safeGetUserInfo($id);
+            $rid = $user->id;
+
+            return $this->safeGetUserInfo($rid);
         }
         else return null;
     }
