@@ -53,7 +53,6 @@
                   v-model="editedItem.formattedBegin"
                   label="Begin"
                   hint="DD-MM-YYYY"
-                  type="date"
                   @blur="setBegin"
                 ></v-text-field>
               </v-col>
@@ -62,7 +61,6 @@
                   v-model="editedItem.formattedEnd"
                   label="Einde"
                   hint="DD-MM-YYYY"
-                  type="date"
                   @blur="setEnd"
                 ></v-text-field>
               </v-col>
@@ -70,15 +68,13 @@
                 <v-select
                   v-model="editedItem.school_id"
                   :items="scholen"
-                  item-text="name"
+                  item-text="abbreviation"
                   item-value="id"
                   item-key="id"
                   label="School"
                 ></v-select>
               </v-col>
-            </v-row>
-            <v-row justify="space-between">
-              <v-col sm="4" md="4">
+              <v-col cols="12" sm="4" md="4">
                 <v-text-field
                   v-if="editedItem"
                   v-model="editedItem.hours"
@@ -86,10 +82,6 @@
                   :suffix="hourSuffix"
                 ></v-text-field>
               </v-col>
-              
-            </v-row>
-            <v-row>
-              
             </v-row>
           </v-container>
         </v-card-text>
@@ -106,7 +98,8 @@
 
 <script>
 //import moment from "moment";
-import { parse, format } from "date-fns";
+
+import * as DateUtil from "../DateUtil";
 
 export default {
   props: {
@@ -123,8 +116,7 @@ export default {
         formattedEnd: "", //this.defaultEmployment.endDate.format('MM-DD-YYYY'),
         hours: 0,
         school_id: -1,
-        edu_function_data_id: this.functiondata.id,
-        isnew : 1
+        edu_function_data_id: this.functiondata.id
       },
       employments: [],
 
@@ -152,89 +144,40 @@ export default {
         return "/" + this.functiondata.educational_function.denominator;
       else return "";
     }
-    /*employments() {
-      return this.functiondata.employments;
-    },
-*/
-
-    // formattedBegin: {
-    //   get() {
-    //     if (this.editedItem && this.editedItem.beginDate)
-    //       return this.editedItem.beginDate.format("DD-MM-YYYY");
-    //     else return "";
-    //   }/*,
-    //   set(val) {
-    //     this.editedItem.beginDate = moment(val, "DD-MM-YYYY");
-    //   }*/
-    // },
-    // formattedEnd: {
-    //   get() {
-    //     if (this.editedItem && this.editedItem.endDate)
-    //       return this.editedItem.endDate.format("DD-MM-YYYY");
-    //     else return "";
-    //   }/*,
-    //   set(val) {
-    //     this.editedItem.endDate = moment(val, "DD-MM-YYYY");
-    //   }*/
-    // }
+    
   },
   methods: {
-    // beginToday() {
-    //   this.formattedBegin = moment();
-    // },
-    // stopToday() {
-    //   this.formattedEnd = moment();
-    // },
-    parseDate(val) {
-      if (val && val.length>=10){
-        let d = val.substring(0,10);
-        let pd = parse(d,"dd-MM-yyyy",new Date());
-        return pd;
-      } else return null;
-    },
-    formatDate(date) {
-      if (date && date.length>=10) {
-        let d = this.parseDate(date);
-        let f = format(d,"dd-MM-yyyy");
-        return f;
-      } else return null;
-    },
-    formatDateFromDB(date) {
-      if (date && date.length>=10) {
-        let d = date.substring(0,10);
-        console.log(d);
-        return format(parse(d,"yyyy-MM-dd",new Date()),"dd-MM-yyyy");
-        //let f = format(parse(date.substring(0,10), "yyyy-MM-dd", new Date()), "dd-MM-yyyy"); //   moment(date, "YYYY-MM-DD hh:mi:ss").format("DD-MM-YYYY");
-        //return f;
-      }else return null;
-    },
-    // parseDate(val){
-    //   let v = moment(val,"DD-MM-YYYY hh:mi:ss");
-    //   return v;
-    // },
-    // formatDate(date){
-    //   let f = this.parseDate(date).format("DD-MM-YYYY");
-    //   return f;
-    // },
-    // formatDateFromDB(date){
-    //   let f = moment(date,'YYYY-MM-DD hh:mi:ss').format("DD-MM-YYYY");
-    //   return f;
-    // },
-    setBegin() {
-      this.editedItem.beginDate = this.parseDate(
-        this.editedItem.formattedBegin + " 12:00:00"
-      );
-    },
-    setEnd() {
-      this.editedItem.endDate = this.parseDate(
-        this.editedItem.formattedEnd + " 12:00:00"
-      );
-    },
     korteVervanging1Dag(){
-      this.editedItem.endDate = new Date(this.editedItem.beginDate);
       this.editedItem.formattedEnd = this.editedItem.formattedBegin;
       this.editedItem.hours = this.functiondata.educational_function.denominator;
+      this.setEnd();
     },
+    parseDate(val){return DateUtil.parseDate(val);},
+    formatDateFromDB(date){return DateUtil.formatDateFromDB(date);},
+    formatDate(date){return DateUtil.formatDate(date);},
+
+    setBegin() {
+      if (DateUtil.isDate(this.editedItem.formattedBegin)) {
+        this.editedItem.beginDate = DateUtil.formatDateToDB(this.parseDate(
+          this.editedItem.formattedBegin + " 12:00:00")
+        );
+        return true;
+      } else {
+          this.emitFail("Fout datumformaat");
+        return false;
+      }
+    },
+    setEnd() {
+      if (DateUtil.isDate(this.editedItem.formattedEnd)) {
+      this.editedItem.endDate = DateUtil.formatDateToDB(this.parseDate(
+        this.editedItem.formattedEnd + " 12:00:00")
+      );
+      } else {
+          this.emitFail("Fout datumformaat");
+        return false;
+      }
+    },
+
     imgUrl: function(school) {
       return (
         "http://www.skbl.be/joomla/images/logo/logo-scholen/" +
@@ -242,14 +185,17 @@ export default {
       );
     },
 
-    emitFail(msg) {this.$emit('fail',msg);},
-    emitSuccess(msg) {this.$emit('success',msg);},
+    emitFail(msg) {
+      this.$emit("fail", msg);
+    },
+    emitSuccess(msg) {
+      this.$emit("success", msg);
+    },
 
     editItem(item) {
       this.editedIndex = this.employments.indexOf(item);
 
       this.editedItem = Object.assign({}, item);
-      this.editedItem.isnew = 0;
       this.editedItem.formattedBegin = this.formatDateFromDB(
         this.editedItem.beginDate
       );
@@ -258,8 +204,20 @@ export default {
       );
       this.employmentDialog = true;
     },
+    validateFunctionData(){
+      if (!this.editedItem.formattedBegin) {this.emitFail('Geen begindatum'); return false;}
+      if (!this.editedItem.school_id || (this.editedItem.school_id==-1)) {this.emitFail('Geen school gekozen'); return false;}
+      if (!this.editedItem.formattedEnd) this.korteVervanging1Dag(); //creëer een korte vervanging voor 1 dag
+
+
+      if (!(DateUtil.isDate(this.editedItem.formattedBegin) && DateUtil.isDate(this.editedItem.formattedEnd))){
+        this.emitFail("Verkeerd datumformaat... kan niet opslaan!");
+        return false;
+      }
+      return true;
+    },
     deleteItem(item) {
-      if (confirm("Aanstelling echt verwijderen?")) {
+      if (confirm("School echt verwijderen?")) {
         var app = this;
         var index = this.employments.indexOf(item);
         axios
@@ -280,44 +238,41 @@ export default {
     },
     saveEmployment() {
       var app = this;
-      if (this.editedIndex == -1){ //new object
-        //debugger;
-        if (!this.editedItem.formattedBegin) {app.emitFail('Geen begindatum'); return;}
-        if (this.editedItem.school_id == -1) {app.emitFail('Geen school gekozen'); return;}
-        if (!this.editedItem.formattedEnd) this.korteVervanging1Dag(); //creëer een korte vervanging voor 1 dag
-        //setTimeout(5000,function(){});
-        axios //we should retrieve the whole object set again from the server... trust only server data! :) TODO
-          .post("api/v1/employment", this.editedItem)
-          .then(function(resp) {
-            //app.$router.push({ path: "/employees" });
-            app.employments.push(resp.data);
-            app.emitSuccess("Aanstelling toegevoegd");
-          })
-          .catch(function(resp) {
-            console.log(resp);
-            app.emitFail("Fout bij aanmaken aanstelling");
-          });
-      }
-      else {
-        delete this.editedItem.school; //remove this property before sending it to the server to prevent mixups
-        axios
-          .patch("api/v1/employment/" + this.editedItem.id, this.editedItem)
-          .then(function(resp) {
-            //to keep reactivity
-            //console.log("updating functiondata with index "+app.editedIndex);
-            Vue.set(
-              app.employments,
-              app.editedIndex,
-              Object.assign({}, resp.data)
-            );
-            app.emitSuccess("Wijzigingen opgeslagen");
-          })
-          .catch(function(resp) {
-            console.log(resp);
-            app.emitFail("Fout bij opslaan wijzigingen");
-          });
-      }
-      this.closeEmployment();
+      if (this.validateFunctionData())      
+        if (this.editedIndex == -1)
+          axios //we should retrieve the whole object set again from the server... trust only server data! :) TODO
+            .post("api/v1/employment", this.editedItem)
+            .then(function(resp) {
+              //app.$router.push({ path: "/employees" });
+              app.employments.push(resp.data);
+              app.emitSuccess("Aanstelling toegevoegd");
+              app.closeEmployment();
+            })
+            .catch(function(resp) {
+              console.log(resp);
+              app.emitFail("Fout bij aanmaken aanstelling");
+            });
+        else {
+          delete this.editedItem.school; //remove this property before sending it to the server to prevent mixups
+          axios
+            .patch("api/v1/employment/" + this.editedItem.id, this.editedItem)
+            .then(function(resp) {
+              //to keep reactivity
+              //console.log("updating functiondata with index "+app.editedIndex);
+              Vue.set(
+                app.employments,
+                app.editedIndex,
+                Object.assign({}, resp.data)
+              );
+              app.emitSuccess("Wijzigingen opgeslagen");
+              app.closeEmployment();
+            })
+            .catch(function(resp) {
+              console.log(resp);
+              app.emitFail("Fout bij opslaan wijzigingen");
+            });
+        }
+      
     },
     deleteEmployment() {},
     closeEmployment() {

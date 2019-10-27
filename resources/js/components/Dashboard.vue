@@ -131,7 +131,6 @@
                   v-model="editedItem.formattedBegin"
                   label="Begin"
                   hint="DD-MM-YYYY"
-                  type="date"
                   @blur="setBegin"
                 ></v-text-field>
               </v-col>
@@ -140,14 +139,17 @@
                   v-model="editedItem.formattedEnd"
                   label="Einde"
                   hint="DD-MM-YYYY"
-                  type="date"
                   @blur="setEnd"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="8" md="8">
-                <v-switch v-model="editedItem.type" label="Telt mee voor rechtenopbouw"></v-switch>
+                <v-switch
+                  v-model="editedItem.type"
+                  false-value="2"
+                  true-value="1"
+                  label="Telt mee voor rechtenopbouw"
+                ></v-switch>
               </v-col>
-              
             </v-row>
           </v-container>
         </v-card-text>
@@ -167,9 +169,9 @@
 </template>
 
 <script>
-//import moment from "moment";
 import FunctionData from "./FunctionData.vue";
-import {parse,format} from 'date-fns';
+import { parse, format } from "date-fns";
+import * as DateUtil from "../DateUtil";
 
 export default {
   components: {
@@ -194,7 +196,7 @@ export default {
         formattedEnd: null,
         employee_id: this.selectedEmployee,
         type: 1,
-        isnew : 1
+        isnew: 1
       },
       //autocomplete stuff
       entries: [],
@@ -224,13 +226,6 @@ export default {
         { text: "Telt mee", align: "left", value: "type" },
         { text: "", align: "center", value: "action" }
       ],
-      // employmentDialog: false,
-
-      /*datepickerMenu1 : false,
-      datepickerMenu2 : false,
-      datepickerMenu3 : false,
-      datepickerMenu4 : false,
-*/
       descriptionLimit: 45
     };
   },
@@ -243,29 +238,8 @@ export default {
         ? "Nieuwe onderbreking"
         : "Bewerk onderbrekeing";
     },
-    /*
-    formattedBegin: {
-      get() {
-        if (this.editedItem && this.editedItem.beginDate)
-          return this.editedItem.beginDate.format("DD-MM-YYYY");
-        else return "";
-      },
-      set(val) {
-        this.editedItem.beginDate = moment(val, "DD-MM-YYYY");
-      }
-    },
-    formattedEnd: {
-      get() {
-        if (this.editedItem && this.editedItem.endDate)
-          return this.editedItem.endDate.format("DD-MM-YYYY");
-        else return "";
-      },
-      set(val) {
-        this.editedItem.endDate = moment(val, "DD-MM-YYYY");
-      }
-    },*/
+
     items() {
-      //debugger;
       return this.entries.map(entry => {
         const Fullname =
           entry.fullname.length > this.descriptionLimit
@@ -278,45 +252,41 @@ export default {
   },
   methods: {
     parseDate(val) {
-      if (val && val.length>=10){
-        let d = val.substring(0,10);
-        let pd = parse(d,"dd-MM-yyyy",new Date());
-        return pd;
-      } else return null;
-    },
-    formatDate(date) {
-      if (date && date.length>=10) {
-        let d = this.parseDate(date);
-        let f = format(d,"dd-MM-yyyy");
-        return f;
-      } else return null;
+      return DateUtil.parseDate(val);
     },
     formatDateFromDB(date) {
-      if (date && date.length>=10) {
-        let d = date.substring(0,10);
-        console.log(d);
-        return format(parse(d,"yyyy-MM-dd",new Date()),"dd-MM-yyyy");
-        //let f = format(parse(date.substring(0,10), "yyyy-MM-dd", new Date()), "dd-MM-yyyy"); //   moment(date, "YYYY-MM-DD hh:mi:ss").format("DD-MM-YYYY");
-        //return f;
-      }else return null;
+      return DateUtil.formatDateFromDB(date);
     },
+    formatDate(date) {
+      return DateUtil.formatDate(date);
+    },
+
     setBegin() {
-      this.editedItem.beginDate = this.parseDate(
-        this.editedItem.formattedBegin + " 12:00:00"
-      );
+      if (DateUtil.isDate(this.editedItem.formattedBegin)) {
+        this.editedItem.beginDate = DateUtil.formatDateToDB(
+          this.parseDate(this.editedItem.formattedBegin + " 12:00:00")
+        );
+        return true;
+      } else {
+        this.failSnack("Fout datumformaat");
+        return false;
+      }
     },
     setEnd() {
-      this.editedItem.endDate = this.parseDate(
-        this.editedItem.formattedEnd + " 12:00:00"
-      );
+      if (DateUtil.isDate(this.editedItem.formattedEnd)) {
+        this.editedItem.endDate = DateUtil.formatDateToDB(
+          this.parseDate(this.editedItem.formattedEnd + " 12:00:00")
+        );
+      } else {
+        this.failSnack("Fout datumformaat");
+        return false;
+      }
     },
-    
-    eenDagAfwezig(){
-      this.editedItem.endDate = new Date(this.editedItem.beginDate);
-      this.editedItem.formattedEnd = this.editedItem.formattedBegin;
-      this.editedItem.type = 2;
 
-      
+    eenDagAfwezig() {
+      this.editedItem.formattedEnd = this.editedItem.formattedBegin;
+      this.setEnd();
+      this.editedItem.type = 2;
     },
     successSnack(message) {
       this.snack_text = message;
@@ -328,7 +298,7 @@ export default {
       this.snack_color = "error";
       this.snackbar = true;
     },
-    
+
     setAvailableFunctions() {
       var app = this;
       axios
@@ -357,8 +327,7 @@ export default {
     },
     saveFunctionData() {
       var app = this;
-      if (this.editedIndex == -1){
-        
+      if (this.editedIndex == -1) {
         axios
           .post("api/v1/educationalFunctionData", this.editedItem)
           .then(function(resp) {
@@ -370,8 +339,7 @@ export default {
             console.log(resp);
             app.failSnack("Fout bij aanmaken aanstelling");
           });
-      }
-      else {
+      } else {
         delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
         axios
           .patch(
@@ -434,24 +402,36 @@ export default {
       );
       this.interruptionDialog = true;
     },
+    validateInterruptionData(){
+        if (!this.editedItem.formattedBegin) {
+          this.failSnack("Geen begindatum");
+          return false;
+        }
+        console.log("DEBUG: formattedBegin is not empty");
+        if (!this.editedItem.formattedEnd) this.eenDagAfwezig(); //creëer een korte vervanging voor 1 dag
+        if (!(DateUtil.isDate(this.editedItem.formattedBegin) && DateUtil.isDate(this.editedItem.formattedEnd))) {
+          this.emitFail("Verkeerd datumformaat... kan niet opslaan!");
+          return false;
+        }
+        return true;
+    },
     saveInterruption() {
       var app = this;
-      if (this.editedIndex == -1){
-        if (!this.editedItem.formattedBegin) {app.emitFail('Geen begindatum'); return;}
-        if (!this.editedItem.formattedEnd) this.eenDagAfwezig(); //creëer een korte vervanging voor 1 dag
+      if (app.validateInterruptionData())
+      if (this.editedIndex == -1) {
         axios
           .post("api/v1/employmentInterruption", this.editedItem)
           .then(function(resp) {
             //app.$router.push({ path: "/employees" });
             app.interruptions.push(resp.data);
             app.successSnack("Onderbreking toegevoegd");
+            app.closeInterruption();
           })
           .catch(function(resp) {
             console.log(resp);
             app.failSnack("Fout bij aanmaken onderbreking");
           });
-      }
-      else {
+      } else {
         delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
         axios
           .patch(
@@ -466,13 +446,14 @@ export default {
               Object.assign({}, resp.data)
             );
             app.successSnack("Wijzigingen opgeslagen");
+            app.closeInterruption();
           })
           .catch(function(resp) {
             console.log(resp);
             app.failSnack("Fout bij opslaan wijzigingen");
           });
       }
-      this.closeInterruption();
+      
     },
     closeInterruption() {
       this.interruptionDialog = false;

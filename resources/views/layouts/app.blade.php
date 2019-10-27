@@ -20,17 +20,32 @@
         @auth
         <v-navigation-drawer v-model="drawer" app>
             <v-list dense>
+            <v-list-group
+                    prepend-icon="account_balance"
+                    value="true"
+                >
+                    <template v-slot:activator>
+                    <v-list-item-title>TADD</v-list-item-title>
+                    </template>
                 <v-list-item to="/">
                     <v-list-item-action>
-                        <v-icon>dashboard</v-icon>
+                        <v-icon>edit</v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
-                        <v-list-item-title>TADD</v-list-item-title>
+                        <v-list-item-title>Ingave</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
+                </v-list-group>
                 <v-list-item>
                 <v-divider></v-divider>
                 </v-list-item>
+                <v-list-group
+                    prepend-icon="list"
+                    
+                >
+                    <template v-slot:activator>
+                    <v-list-item-title>Lijsten</v-list-item-title>
+                    </template>
                 <v-list-item to="/function">
                     <v-list-item-action>
                         <v-icon>contact_mail</v-icon>
@@ -55,21 +70,32 @@
                         <v-list-item-title>Personeel</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
+                </v-list-group>
                 <v-list-item>
+            
                 <v-divider></v-divider>
                 </v-list-item>
                 @if (Auth::check() && Auth::user()->isadmin)
-                <v-list-item to="/admin/users">
-                    <v-list-item-action>
-                        <v-icon>settings</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
+                <v-list-group
+                    prepend-icon="settings"
+                    
+                    color="purple"
+                >
+                    <template v-slot:activator>
                         <v-list-item-title>Beheer</v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                <v-divider></v-divider>
-                </v-list-item>
+                    </template>
+                    <v-list-item to="/admin/users">
+                        <v-list-item-action>
+                            <v-icon>account_circle</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Gebruikers</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-divider></v-divider>
+                    </v-list-item>
+                </v-list-group>
                 @endif
                 <form id="logout-form" action="{{ route('logout') }}" method="POST">
                 <v-list-item>
