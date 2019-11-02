@@ -19,6 +19,7 @@
         </v-card-title>
         <v-card-text>
           <v-data-table :items="employees" :headers="headers" :search="search" multi-sort>
+            <template v-slot:item.ingave="{item}"><v-icon small class="mr-2" @click="navigateTo(item, false)">link</v-icon></template>
             <template v-slot:item.birthDate="{ item }">{{ formatDateFromDB(item.birthDate) }}</template>
             <template v-slot:item.registrationNumber="{ item }">
               {{item.registrationNumber?item.registrationNumber:''}}
@@ -146,7 +147,7 @@ export default {
         isActive: true,
         startwaardeDA: 0,
         startwaardeINT : 0,
-        oudsyssteem : 0
+        oudsysteem : 0
       },
       editedIndex: -1,
       snackbar: false,
@@ -159,6 +160,9 @@ export default {
   },
 
   methods: {
+    navigateTo(selectedItem,newEmployee){
+      this.$router.push({ name: 'dashboard', params: { selectedEmployee: selectedItem, newEmployee: newEmployee }});
+    },
     calcBdate: function() {
       if (this.editedItem.registrationNumber.length == 11) {
         if (!isNaN(this.editedItem.registrationNumber)) {
@@ -261,6 +265,8 @@ export default {
           .then(function(resp) {
             Object.assign(app.employees[app.editedIndex], resp.data);
             app.successSnack("Wijzigingen opgeslagen");
+            app.close();
+            if (app.naarIngaveNaAanmaak) app.navigateTo(resp.data,false);
           })
           .catch(function(resp) {
             console.log(resp);
@@ -272,13 +278,15 @@ export default {
           .then(function(resp) {
             app.employees.push(resp.data);
             app.successSnack("Personeelslid toegevoegd");
+            app.close();
+            if (app.naarIngaveNaUpdate) app.navigateTo(resp.data,app.showAddForNewEmployee);
           })
           .catch(function(resp) {
             console.log(resp);
             app.failSnack("Fout bij aanmaken personeelslid");
           });
       }
-      this.close();
+      
     },
     close() {
       this.dialog = false;
@@ -294,6 +302,15 @@ export default {
       return this.editedIndex === -1
         ? "Nieuw personeelslid toevoegen"
         : "Bewerk gegevens";
+    },
+    naarIngaveNaAanmaak: function(){
+      return true;
+    },
+    naarIngaveNaUpdate: function(){
+      return true;
+    },
+    showAddForNewEmployee: function(){
+      return true;
     }
   },
 
@@ -310,6 +327,7 @@ export default {
       });
 
     this.headers = [
+      { text: "",align: "center", value: "ingave"},
       { text: "Achternaam", align: "left", value: "lastName" },
       { text: "Voornaam", align: "left", value: "firstName" },
       { text: "Stamboeknummer", align: "left", value: "registrationNumber" },

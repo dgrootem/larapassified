@@ -41,7 +41,7 @@
       <v-col xs="12" sm="12" md="8">
         <v-card v-if="functiondata.length >0">
           <v-card-title>
-            <v-toolbar color="#c5f77e">Ambten</v-toolbar>
+            <v-toolbar color="#c5f77e">Ambten voor {{ selectedEmployee.firstName + " " + selectedEmployee.lastName}}</v-toolbar>
           </v-card-title>
           <v-container fluid>
             <v-tabs v-model="functiondatatab">
@@ -532,6 +532,22 @@ export default {
           (this.interruptions = []);
       }
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      
+    // access to component instance via `vm`
+      if (to.params.selectedEmployee){
+        vm.selectedEmployee = to.params.selectedEmployee;
+        if (to.params.newEmployee) vm.addFunctionData();
+      }
+    })
+  },
+  beforeRouteUpdate (to, from, next) {
+    // just use `this`
+    if (to.params.selectedEmployee)
+      this.selectedEmployee = to.params.selectedEmployee;
+    next()
   },
   created() {
     //load school and ambt data on creation

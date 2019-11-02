@@ -1,6 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 Vue.use(Router);
+
+
+const Dashboard = () => import('../components/Dashboard.vue');
+
 export default new Router({
     mode: 'history',
     base: //'/tadd2/public/' , 
@@ -9,7 +13,8 @@ export default new Router({
         {
             path: '/',
             name: 'dashboard',
-            component: () => import('../components/Dashboard.vue')
+            component: Dashboard,
+            props: true
         },
         {
             path: '/employee',
