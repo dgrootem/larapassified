@@ -1,0 +1,6 @@
+name,value,omschrijving
+naarIngaveNaAanmaak,1,"Open meteen na het creëren van een nieuw personeelslid het ingavescherm."
+naarIngaveNaUpdate,0,"Open meteen na het bijwerken van een bestaand personeelslid het ingavescherm."
+showAddForNewEmployee,1,"Open na het creëren van een nieuw personeelslid het aanmaakscherm voor een nieuw ambt."
+taddGrens1,220,"(effectief) , voor TADD"
+taddGrens2,110,"(effectief) na werkpunten, voor TADD"

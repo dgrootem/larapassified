@@ -92,6 +92,14 @@
                             <v-list-item-title>Gebruikers</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
+                    <v-list-item to="/admin/settings">
+                        <v-list-item-action>
+                            <v-icon>build</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Instellingen</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
                     <v-list-item>
                         <v-divider></v-divider>
                     </v-list-item>

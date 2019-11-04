@@ -127,7 +127,6 @@
 </template>
 
 <script>
-//import moment from "moment";
 import { parse, format } from "date-fns";
 
 export default {
@@ -147,7 +146,7 @@ export default {
         isActive: true,
         startwaardeDA: 0,
         startwaardeINT : 0,
-        oudsysteem : 0
+        oudsysteem : false
       },
       editedIndex: -1,
       snackbar: false,

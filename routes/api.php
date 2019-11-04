@@ -4,6 +4,7 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::resource('school','SchoolController',['except' => ['create', 'edit']]);
     Route::resource('ambt','EducationalFunctionController',['except' => ['create', 'edit']]);
     Route::resource('user','UserController',['except' => ['create', 'edit']]);
+    Route::resource('settings','SettingsController',['except' => ['create', 'edit']]);
     Route::resource('employee','EmployeeController',['except' => ['create', 'edit']]);
     Route::resource('employment','EmploymentController',['except' => ['create', 'edit']]);
     Route::resource('employmentInterruption','EmploymentInterruptionController',['except' => ['create', 'edit']]);
