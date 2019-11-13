@@ -28,7 +28,7 @@ class EmploymentInterruptionController extends Controller
         $employmentInterruption->beginDate = Carbon::parse(substr($request['beginDate'],0,10));
         $employmentInterruption->endDate = Carbon::parse(substr($request['endDate'],0,10));
         $employmentInterruption->employee_id = $request['employee_id'];
-        $employmentInterruption->type = $request['type'];
+        $employmentInterruption->interruption_type_id = $request['interruption_type_id'];
         
         $employmentInterruption->save();
     }

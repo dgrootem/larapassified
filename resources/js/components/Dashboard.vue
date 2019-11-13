@@ -73,10 +73,10 @@
             <v-data-table :items="interruptions" :headers="interruptionheaders">
               <template v-slot:item.beginDate="{ item }">{{ formatDateFromDB(item.beginDate)}}</template>
               <template v-slot:item.endDate="{ item }">{{ formatDateFromDB(item.endDate)}}</template>
-              <template v-slot:item.type="{ item }">
+              <template v-slot:item.interruption_type_id="{ item }">
                 <v-icon
-                  :color="item.type==1?'green':'red'"
-                >{{item.type==1?'check':'not_interested'}}</v-icon>
+                  :color="item.interruption_type_id==1?'green':'red'"
+                >{{item.interruption_type_id==1?'check':'not_interested'}}</v-icon>
               </template>
               <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editInterruption(item)">edit</v-icon>
@@ -146,9 +146,9 @@
               </v-col>
               <v-col cols="12" sm="8" md="8">
                 <v-switch
-                  v-model="editedItem.type"
-                  false-value="2"
-                  true-value="1"
+                  v-model="editedItem.interruption_type_id"
+                  :false-value="teltniet"
+                  :true-value="teltwel"
                   label="Telt mee voor rechtenopbouw"
                 ></v-switch>
               </v-col>
@@ -197,7 +197,7 @@ export default {
         endDate: new Date(),
         formattedEnd: null,
         employee_id: this.selectedEmployee,
-        type: 1,
+        interruption_type_id: 1,
         isnew: 1
       },
       //autocomplete stuff
@@ -222,10 +222,13 @@ export default {
       functionDataDialog: false,
       interruptionDialog: false,
 
+      teltniet: 2,
+      teltwel: 1,
+
       interruptionheaders: [
         { text: "Begin", align: "left", value: "beginDate" },
         { text: "Einde", align: "left", value: "endDate" },
-        { text: "Telt mee", align: "left", value: "type" },
+        { text: "Telt mee", align: "left", value: "interruption_type_id" },
         { text: "", align: "center", value: "action" }
       ],
       descriptionLimit: 45
@@ -288,7 +291,7 @@ export default {
     eenDagAfwezig() {
       this.editedItem.formattedEnd = this.editedItem.formattedBegin;
       this.setEnd();
-      this.editedItem.type = 2;
+      this.editedItem.interruption_type_id = 2;
     },
     successSnack(message) {
       this.snack_text = message;
