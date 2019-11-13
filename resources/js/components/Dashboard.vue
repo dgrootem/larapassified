@@ -41,7 +41,9 @@
       <v-col xs="12" sm="12" md="8">
         <v-card v-if="functiondata.length >0">
           <v-card-title>
-            <v-toolbar color="#c5f77e">Ambten voor {{ selectedEmployee.firstName + " " + selectedEmployee.lastName}}</v-toolbar>
+            <v-toolbar
+              color="#c5f77e"
+            >Ambten voor {{ selectedEmployee.firstName + " " + selectedEmployee.lastName}}</v-toolbar>
           </v-card-title>
           <v-container fluid>
             <v-tabs v-model="functiondatatab">
@@ -402,58 +404,77 @@ export default {
       );
       this.interruptionDialog = true;
     },
-    validateInterruptionData(){
-        if (!this.editedItem.formattedBegin) {
-          this.failSnack("Geen begindatum");
-          return false;
-        }
-        console.log("DEBUG: formattedBegin is not empty");
-        if (!this.editedItem.formattedEnd) this.eenDagAfwezig(); //creëer een korte vervanging voor 1 dag
-        if (!(DateUtil.isDate(this.editedItem.formattedBegin) && DateUtil.isDate(this.editedItem.formattedEnd))) {
-          this.emitFail("Verkeerd datumformaat... kan niet opslaan!");
-          return false;
-        }
-        return true;
+    validateInterruptionData() {
+      if (!this.editedItem.formattedBegin) {
+        this.failSnack("Geen begindatum");
+        return false;
+      }
+      console.log("DEBUG: formattedBegin is not empty");
+      if (!this.editedItem.formattedEnd) this.eenDagAfwezig(); //creëer een korte vervanging voor 1 dag
+      if (
+        !(
+          DateUtil.isDate(this.editedItem.formattedBegin) &&
+          DateUtil.isDate(this.editedItem.formattedEnd)
+        )
+      ) {
+        this.emitFail("Verkeerd datumformaat... kan niet opslaan!");
+        return false;
+      }
+      return true;
     },
     saveInterruption() {
       var app = this;
       if (app.validateInterruptionData())
-      if (this.editedIndex == -1) {
-        axios
-          .post("api/v1/employmentInterruption", this.editedItem)
-          .then(function(resp) {
-            //app.$router.push({ path: "/employees" });
-            app.interruptions.push(resp.data);
-            app.successSnack("Onderbreking toegevoegd");
-            app.closeInterruption();
-          })
-          .catch(function(resp) {
-            console.log(resp);
-            app.failSnack("Fout bij aanmaken onderbreking");
-          });
-      } else {
-        delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
-        axios
-          .patch(
-            "api/v1/employmentInterruption/" + this.editedItem.id,
-            this.editedItem
-          )
-          .then(function(resp) {
-            //to keep reactivity
-            Vue.set(
-              app.interruptions,
-              app.editedIndex,
-              Object.assign({}, resp.data)
-            );
-            app.successSnack("Wijzigingen opgeslagen");
-            app.closeInterruption();
-          })
-          .catch(function(resp) {
-            console.log(resp);
-            app.failSnack("Fout bij opslaan wijzigingen");
-          });
-      }
-      
+        if (this.editedIndex == -1) {
+          axios
+            .post("api/v1/employmentInterruption", this.editedItem)
+            .then(function(resp) {
+              //app.$router.push({ path: "/employees" });
+              app.interruptions.push(resp.data);
+              app.successSnack("Onderbreking toegevoegd");
+              app.closeInterruption();
+            })
+            .catch(function(resp) {
+              console.log(resp);
+              app.failSnack("Fout bij aanmaken onderbreking");
+            });
+        } else {
+          delete this.editedItem.educational_function; //remove this property before sending it to the server to prevent mixups
+          axios
+            .patch(
+              "api/v1/employmentInterruption/" + this.editedItem.id,
+              this.editedItem
+            )
+            .then(function(resp) {
+              //to keep reactivity
+              Vue.set(
+                app.interruptions,
+                app.editedIndex,
+                Object.assign({}, resp.data)
+              );
+              app.successSnack("Wijzigingen opgeslagen");
+              app.closeInterruption();
+            })
+            .catch(function(resp) {
+              console.log(resp);
+              app.failSnack("Fout bij opslaan wijzigingen");
+            });
+        }
+    },
+    updateAllSeniorityDays() {
+      var app = this;
+      axios
+        .patch(
+          "api/v1/taddCalculator/updateAllSeniorityDays/" +
+            app.editedItem.employee_id
+        )
+        .then(function(resp) {
+          app.reloadEmployeeData(app.editedItem.employee_id);
+        })
+        .catch(function(resp) {
+          console.log(resp);
+          app.emitFail("Fout bij berekenen of updaten van dagen anciënniteit");
+        });
     },
     closeInterruption() {
       this.interruptionDialog = false;
@@ -473,6 +494,34 @@ export default {
             app.failSnack("Verwijderen mislukt");
           });
       }
+    },
+    reloadEmployeeData(employee_id) {
+      var app = this;
+      axios
+        .get("api/v1/employee/functiondata/" + employee_id)
+        .then(function(resp) {
+          console.log("loaded function data for employee");
+          console.log(JSON.stringify(resp.data));
+          app.functiondata = resp.data;
+          app.functiondatatab = 0;
+        })
+        .then(app.setAvailableFunctions(employee_id))
+        .catch(function(resp) {
+          console.log(resp);
+          alert("Could not load functiondata");
+          app.functiondatatab = 0;
+        });
+      axios
+        .get("api/v1/employee/interruptions/" + employee_id)
+        .then(function(resp) {
+          console.log("loaded interruptions for employee");
+          console.log(JSON.stringify(resp.data));
+          app.interruptions = resp.data;
+        })
+        .catch(function(resp) {
+          console.log(resp);
+          alert("Could not load functiondata");
+        });
     }
   },
   watch: {
@@ -500,32 +549,7 @@ export default {
 
     selectedEmployee(val) {
       if (val) {
-        var app = this;
-        axios
-          .get("api/v1/employee/functiondata/" + val.id)
-          .then(function(resp) {
-            console.log("loaded function data for employee");
-            console.log(JSON.stringify(resp.data));
-            app.functiondata = resp.data;
-            app.functiondatatab = 0;
-          })
-          .then(app.setAvailableFunctions(val.id))
-          .catch(function(resp) {
-            console.log(resp);
-            alert("Could not load functiondata");
-            app.functiondatatab = 0;
-          });
-        axios
-          .get("api/v1/employee/interruptions/" + val.id)
-          .then(function(resp) {
-            console.log("loaded interruptions for employee");
-            console.log(JSON.stringify(resp.data));
-            app.interruptions = resp.data;
-          })
-          .catch(function(resp) {
-            console.log(resp);
-            alert("Could not load functiondata");
-          });
+        this.reloadEmployeeData(val.id);
       } else {
         (this.functiondata = []),
           (this.employments = []),
@@ -533,21 +557,21 @@ export default {
       }
     }
   },
-  beforeRouteEnter (to, from, next) {
+
+  beforeRouteEnter(to, from, next) {
     next(vm => {
-      
-    // access to component instance via `vm`
-      if (to.params.selectedEmployee){
+      // access to component instance via `vm`
+      if (to.params.selectedEmployee) {
         vm.selectedEmployee = to.params.selectedEmployee;
         if (to.params.newEmployee) vm.addFunctionData();
       }
-    })
+    });
   },
-  beforeRouteUpdate (to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     // just use `this`
     if (to.params.selectedEmployee)
       this.selectedEmployee = to.params.selectedEmployee;
-    next()
+    next();
   },
   created() {
     //load school and ambt data on creation

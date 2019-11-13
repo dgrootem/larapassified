@@ -15,4 +15,6 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::get('ambt/availableForEmployee/{id}','EducationalFunctionController@availableForEmployee')->name('ambt.availableForEmployee');
     Route::get('educationalFunctionData/{id}/addEmployement/{employment_id}','EduFunctionDataController@addEmployement')->name('educationalFunctionData.addEmployement');
     Route::get('educationalFunctionData/{id}/removeEmployement/{employment_id}','EduFunctionDataController@removeEmployement')->name('educationalFunctionData.removeEmployement');
+    Route::patch('taddCalculator/updateSeniorityDays/{functionData_id}','TaddCalculationController@updateSeniorityDays')->name('taddCalculator.updateSeniorityDays');
+    Route::patch('taddCalculator/updateAllSeniorityDays/{employee_id}','TaddCalculationController@updateAllSeniorityDays')->name('taddCalculator.updateAllSeniorityDays');
 });

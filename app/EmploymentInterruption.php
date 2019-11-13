@@ -13,4 +13,8 @@ class EmploymentInterruption extends Model
     public function employee(){
         return $this->belongsTo(Employee::class);
     }
+
+    public function interruption_type(){
+        return $this->belongsTo(InterruptionType::class);
+    }
 }

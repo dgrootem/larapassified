@@ -1,4 +1,4 @@
-id,employee_id,beginDate,endDate,type
+id,employee_id,beginDate,endDate,interruption_type_id
 1,1,2002-12-04,2002-12-06,2
 2,1,2003-04-29,2003-04-29,2
 3,1,2003-12-10,2003-12-16,2

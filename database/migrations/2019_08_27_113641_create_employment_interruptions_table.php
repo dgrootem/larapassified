@@ -18,11 +18,12 @@ class CreateEmploymentInterruptionsTable extends Migration
             $table->timestamps();
             $table->date('beginDate');
             $table->date('endDate');
-            $table->integer('type')->default(1);
+            $table->bigInteger('interruption_type_id')->unsigned()->default(1);
 
             $table->bigInteger('employee_id')->unsigned();
 
             $table->foreign('employee_id')->references('id')->on('employees');
+            $table->foreign('interruption_type_id')->references('id')->on('interruption_types');
         });
     }
 

@@ -265,7 +265,7 @@ export default {
             Object.assign(app.employees[app.editedIndex], resp.data);
             app.successSnack("Wijzigingen opgeslagen");
             app.close();
-            if (app.naarIngaveNaAanmaak) app.navigateTo(resp.data,false);
+            if (app.naarIngaveNaUpdate) app.navigateTo(resp.data,false);
           })
           .catch(function(resp) {
             console.log(resp);
@@ -278,7 +278,7 @@ export default {
             app.employees.push(resp.data);
             app.successSnack("Personeelslid toegevoegd");
             app.close();
-            if (app.naarIngaveNaUpdate) app.navigateTo(resp.data,app.showAddForNewEmployee);
+            if (app.naarIngaveNaAanmaak) app.navigateTo(resp.data,app.showAddForNewEmployee);
           })
           .catch(function(resp) {
             console.log(resp);
@@ -303,13 +303,13 @@ export default {
         : "Bewerk gegevens";
     },
     naarIngaveNaAanmaak: function(){
-      return true;
+      return this.$root.settings.naarIngaveNaAanmaak.value;
     },
     naarIngaveNaUpdate: function(){
-      return true;
+      return this.$root.settings.naarIngaveNaUpdate.value;
     },
     showAddForNewEmployee: function(){
-      return true;
+      return this.$root.settings.showAddForNewEmployee.value;
     }
   },
 

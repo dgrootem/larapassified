@@ -144,36 +144,41 @@ export default {
         return "/" + this.functiondata.educational_function.denominator;
       else return "";
     }
-    
   },
   methods: {
-    korteVervanging1Dag(){
+    korteVervanging1Dag() {
       this.editedItem.formattedEnd = this.editedItem.formattedBegin;
       this.editedItem.hours = this.functiondata.educational_function.denominator;
       this.setEnd();
     },
-    parseDate(val){return DateUtil.parseDate(val);},
-    formatDateFromDB(date){return DateUtil.formatDateFromDB(date);},
-    formatDate(date){return DateUtil.formatDate(date);},
+    parseDate(val) {
+      return DateUtil.parseDate(val);
+    },
+    formatDateFromDB(date) {
+      return DateUtil.formatDateFromDB(date);
+    },
+    formatDate(date) {
+      return DateUtil.formatDate(date);
+    },
 
     setBegin() {
       if (DateUtil.isDate(this.editedItem.formattedBegin)) {
-        this.editedItem.beginDate = DateUtil.formatDateToDB(this.parseDate(
-          this.editedItem.formattedBegin + " 12:00:00")
+        this.editedItem.beginDate = DateUtil.formatDateToDB(
+          this.parseDate(this.editedItem.formattedBegin + " 12:00:00")
         );
         return true;
       } else {
-          this.emitFail("Fout datumformaat");
+        this.emitFail("Fout datumformaat");
         return false;
       }
     },
     setEnd() {
       if (DateUtil.isDate(this.editedItem.formattedEnd)) {
-      this.editedItem.endDate = DateUtil.formatDateToDB(this.parseDate(
-        this.editedItem.formattedEnd + " 12:00:00")
-      );
+        this.editedItem.endDate = DateUtil.formatDateToDB(
+          this.parseDate(this.editedItem.formattedEnd + " 12:00:00")
+        );
       } else {
-          this.emitFail("Fout datumformaat");
+        this.emitFail("Fout datumformaat");
         return false;
       }
     },
@@ -204,13 +209,23 @@ export default {
       );
       this.employmentDialog = true;
     },
-    validateFunctionData(){
-      if (!this.editedItem.formattedBegin) {this.emitFail('Geen begindatum'); return false;}
-      if (!this.editedItem.school_id || (this.editedItem.school_id==-1)) {this.emitFail('Geen school gekozen'); return false;}
+    validateFunctionData() {
+      if (!this.editedItem.formattedBegin) {
+        this.emitFail("Geen begindatum");
+        return false;
+      }
+      if (!this.editedItem.school_id || this.editedItem.school_id == -1) {
+        this.emitFail("Geen school gekozen");
+        return false;
+      }
       if (!this.editedItem.formattedEnd) this.korteVervanging1Dag(); //creëer een korte vervanging voor 1 dag
 
-
-      if (!(DateUtil.isDate(this.editedItem.formattedBegin) && DateUtil.isDate(this.editedItem.formattedEnd))){
+      if (
+        !(
+          DateUtil.isDate(this.editedItem.formattedBegin) &&
+          DateUtil.isDate(this.editedItem.formattedEnd)
+        )
+      ) {
         this.emitFail("Verkeerd datumformaat... kan niet opslaan!");
         return false;
       }
@@ -238,15 +253,18 @@ export default {
     },
     saveEmployment() {
       var app = this;
-      if (this.validateFunctionData())      
+      if (this.validateFunctionData())
         if (this.editedIndex == -1)
           axios //we should retrieve the whole object set again from the server... trust only server data! :) TODO
             .post("api/v1/employment", this.editedItem)
             .then(function(resp) {
               //app.$router.push({ path: "/employees" });
               app.employments.push(resp.data);
+              debugger;
+              app.updateSeniorityDays();
               app.emitSuccess("Aanstelling toegevoegd");
               app.closeEmployment();
+              
             })
             .catch(function(resp) {
               console.log(resp);
@@ -264,6 +282,7 @@ export default {
                 app.editedIndex,
                 Object.assign({}, resp.data)
               );
+              app.updateSeniorityDays();
               app.emitSuccess("Wijzigingen opgeslagen");
               app.closeEmployment();
             })
@@ -272,7 +291,25 @@ export default {
               app.emitFail("Fout bij opslaan wijzigingen");
             });
         }
-      
+    },
+    updateSeniorityDays() {
+      var app = this;
+      axios
+        .patch(
+          "api/v1/taddCalculator/updateSeniorityDays/" +
+            this.editedItem.edu_function_data_id
+        )
+        .then(function(resp) {
+          Vue.set(
+            app.employments,
+            app.editedIndex,
+            Object.assign({}, resp.data)
+          );
+        })
+        .catch(function(resp) {
+          console.log(resp);
+          app.emitFail("Fout bij berekenen of updaten van dagen anciënniteit");
+        });
     },
     deleteEmployment() {},
     closeEmployment() {

@@ -97,13 +97,7 @@
 export default {
   data: function() {
     return {
-      settings: {
-        taddGrens1: { name: null, value: null, omschrijving: "" },
-        taddGrens2: { name: null, value: null, omschrijving: "" },
-        naarIngaveNaAanmaak: { name: null, value: true, omschrijving: "" },
-        naarIngaveNaUpdate: { name: null, value: false, omschrijving: "" },
-        showAddForNewEmployee: { name: null, value: true, omschrijving: "" }
-      },
+      settings : this.$root.settings,
       snackbar: false,
       snack_text: "",
       snack_color: "",
@@ -121,17 +115,7 @@ export default {
       this.snack_color = "error";
       this.snackbar = true;
     },
-    initSettingsFromDB(settingsFromDB) {
-      let app = this;
-      let s = null;
-      for (s in settingsFromDB) {
-        let n = settingsFromDB[s].name;
-        app.settings[n] = settingsFromDB[s];
-        try {
-          app.settings[n].value = parseInt(app.settings[n].value);
-        } catch (e) {}
-      }
-    },
+    
     labelFor(item) {
       return !!item ? item.omschrijving : "";
     },
@@ -140,9 +124,14 @@ export default {
       axios
         .patch("../api/v1/settings/1", this.settings)
         .then(function(resp) {
-          app.initSettingsFromDB(resp.data);
-          //Object.assign(app.employees[app.editedIndex], resp.data);
-          app.successSnack("Wijzigingen opgeslagen");
+          try{
+            app.$root.loadSettings();
+            app.successSnack("Wijzigingen opgeslagen");
+          }
+          catch(e){
+            console.log(resp);
+            app.failSnack("Fout bij ophalen wijzigingen");
+          }
         })
         .catch(function(resp) {
           console.log(resp);
@@ -150,18 +139,6 @@ export default {
         });
     }
   },
-  created() {
-    var app = this;
-    axios
-      .get("../api/v1/settings")
-      .then(function(resp) {
-        app.initSettingsFromDB(resp.data);
-        //app.settings = resp.data;
-      })
-      .catch(function(resp) {
-        console.log(resp);
-        alert("Could not load settings");
-      });
-  }
+  
 };
 </script>
