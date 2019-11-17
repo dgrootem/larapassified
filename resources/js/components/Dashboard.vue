@@ -47,10 +47,14 @@
           </v-card-title>
           <v-container fluid>
             <v-tabs v-model="functiondatatab">
-              <v-tab v-for="fdata in functiondata" v-bind:key="fdata.id">
-                {{ fdata.educational_function.name }} [ {{ fdata.seniority_days }} dagen ]
+              <v-tab :id="generateRef(fdata)" v-for="fdata in functiondata" v-bind:key="generateRef(fdata)" :ref="generateRef(fdata)">
+                {{ fdata.educational_function.name }} 
+                <v-progress-circular class="mx-4" size="30" :color="progressColor(fdata.seniority_days,400)" :value="(fdata.seniority_days / 400.0) * 100.0">EF</v-progress-circular>
+                <v-progress-circular class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days,400)" :value="(fdata.seniority_days / 580.0) * 100.0">TO</v-progress-circular>
+                <!-- [ {{ fdata.seniority_days }} dagen ] -->
                 <v-icon small class="mx-4" @click="editFunctionData(fdata)" >edit</v-icon>
               </v-tab>
+              <!-- <v-tabs-items v-model="tabs"> -->
               <v-tab-item v-for="fdata in functiondata" v-bind:key="fdata.id">
                 <functiondatacomp
                   :functiondata="fdata"
@@ -61,6 +65,7 @@
                   @reloademployeedata="reloadEmployeeData"
                 ></functiondatacomp>
               </v-tab-item>
+              <!-- </v-tabs-items> -->
             </v-tabs>
           </v-container>
         </v-card>
@@ -212,6 +217,7 @@ export default {
       fab: false,
       //tab stuff
       functiondatatab: null,
+      tabs : null,
       loadingtabs: false,
       // interruptiontab: null,
 
@@ -257,6 +263,15 @@ export default {
     }
   },
   methods: {
+    progressColor(value,max){
+      let v = value / max * 100.0;
+      if (v < 33) return 'red';
+      else if (v < 66) return 'orange';
+      else return 'green';
+    },
+    generateRef(fdata){
+      return 'tab-'+fdata.employee_id+'-'+fdata.id;
+    },
     parseDate(val) {
       return DateUtil.parseDate(val);
     },
@@ -311,7 +326,7 @@ export default {
         .get("api/v1/ambt/availableForEmployee/" + this.selectedEmployee.id)
         .then(function(resp) {
           app.ambten = resp.data;
-          app.functiondatatab = 0;
+          //app.functiondatatab = 0;
         })
         .catch(function(resp) {
           console.log(resp);
@@ -503,22 +518,29 @@ export default {
       debugger;
       this.reloadEmployeeData(employee_id);
     },
-    reloadEmployeeData(employee_id) {
+    reloadEmployeeData(employee_id,setFirstTab) {
       console.log("employee_id="+employee_id);
       var app = this;
+      
       axios
         .get("api/v1/employee/functiondata/" + employee_id)
         .then(function(resp) {
           console.log("loaded function data for employee "+ employee_id);
           console.log(JSON.stringify(resp.data));
           app.functiondata = resp.data;
-          app.functiondatatab = 0;
+          //app.functiondatatab = 0;
+          //debugger;
+          //if ((setFirstTab) && (app.functiondata.length>0)){
+          //  let r = app.generateRef(app.functiondata[0]);
+          //  this.$refs[r].click();
+          //}
+          if ((setFirstTab) && (app.functiondata.length>0)) app.functiondatatab = 0;
         })
         .then(app.setAvailableFunctions(employee_id))
         .catch(function(resp) {
           console.log(resp);
           alert("Could not load functiondata");
-          app.functiondatatab = 0;
+          //app.functiondatatab = 0;
         });
       axios
         .get("api/v1/employee/interruptions/" + employee_id)
@@ -558,7 +580,7 @@ export default {
 
     selectedEmployee(val) {
       if (val) {
-        this.reloadEmployeeData(val.id);
+        this.reloadEmployeeData(val.id,true);
       } else {
         (this.functiondata = []),
           (this.employments = []),
