@@ -7,6 +7,6 @@ taddGrens1,140 ,effectief,2019-09-01,,number,calc,Max dat meetelt
 taddGrens2,70,effectief (na werkpunten),2019-09-01,,number,calc,Max dat meetelt
 taddNeededTotal,720,totaal,1970-01-01,2019-08-30,number,calc,Te presteren dagen 
 taddNeededEffective,600,effectief,1970-01-01,2019-08-30,number,calc,Te presteren dagen 
-taddNeededTotal,720,totaal,2019-09-01,,number,calc,Te presteren dagen 
-taddNeededEffective,600,effectief,2019-09-01,,number,calc,Te presteren dagen 
+taddNeededTotal,580,totaal,2019-09-01,,number,calc,Te presteren dagen 
+taddNeededEffective,400,effectief,2019-09-01,,number,calc,Te presteren dagen 
 taddNeededEffective2,200,effectief (na werkpunten),2019-09-01,,number,calc,Te presteren dagen 
