@@ -60,18 +60,17 @@ new Vue({
     data: () => ({
         drawer: null,
         settings: {
-            taddGrens1: { name: null, value: null, omschrijving: "" },
-            taddGrens2: { name: null, value: null, omschrijving: "" },
             naarIngaveNaAanmaak: { name: null, value: true, omschrijving: "" },
             naarIngaveNaUpdate: { name: null, value: false, omschrijving: "" },
             showAddForNewEmployee: { name: null, value: true, omschrijving: "" }
           },
+        
       }),
       methods:{
         loadSettings() {
             var app = this;
             axios
-            .get("../api/v1/settings")
+            .get("../api/v1/settingsByContext/app")
             .then(function(resp) {
                 let settingsFromDB = resp.data;
                 let s = null;

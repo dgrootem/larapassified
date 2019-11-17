@@ -48,8 +48,8 @@
           <v-container fluid>
             <v-tabs v-model="functiondatatab">
               <v-tab v-for="fdata in functiondata" v-bind:key="fdata.id">
-                {{ fdata.educational_function.name }}
-                <v-icon small class="mx-4" @click="editFunctionData(fdata)">edit</v-icon>
+                {{ fdata.educational_function.name }} [ {{ fdata.seniority_days }} dagen ]
+                <v-icon small class="mx-4" @click="editFunctionData(fdata)" >edit</v-icon>
               </v-tab>
               <v-tab-item v-for="fdata in functiondata" v-bind:key="fdata.id">
                 <functiondatacomp
@@ -58,6 +58,7 @@
                   @delete="deleteFunctionData(fdata)"
                   @fail="failSnack"
                   @success="successSnack"
+                  @reloademployeedata="reloadEmployeeData"
                 ></functiondatacomp>
               </v-tab-item>
             </v-tabs>
@@ -498,12 +499,17 @@ export default {
           });
       }
     },
+    reloadEmployeeData2(evt,employee_id){
+      debugger;
+      this.reloadEmployeeData(employee_id);
+    },
     reloadEmployeeData(employee_id) {
+      console.log("employee_id="+employee_id);
       var app = this;
       axios
         .get("api/v1/employee/functiondata/" + employee_id)
         .then(function(resp) {
-          console.log("loaded function data for employee");
+          console.log("loaded function data for employee "+ employee_id);
           console.log(JSON.stringify(resp.data));
           app.functiondata = resp.data;
           app.functiondatatab = 0;
@@ -517,7 +523,7 @@ export default {
       axios
         .get("api/v1/employee/interruptions/" + employee_id)
         .then(function(resp) {
-          console.log("loaded interruptions for employee");
+          console.log("loaded interruptions for employee "+ employee_id);
           console.log(JSON.stringify(resp.data));
           app.interruptions = resp.data;
         })
@@ -579,6 +585,7 @@ export default {
   created() {
     //load school and ambt data on creation
     var app = this;
+    
     axios
       .get("api/v1/ambt")
       .then(function(resp) {

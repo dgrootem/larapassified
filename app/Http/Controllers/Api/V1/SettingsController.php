@@ -14,9 +14,14 @@ class SettingsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function indexByContext($context)
+    {
+        return Setting::where('context',$context)->get();
+    }
+
     public function index()
     {
-        return Setting::all();
+        return null;
     }
 
     /**

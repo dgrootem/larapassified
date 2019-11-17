@@ -239,6 +239,8 @@ export default {
           .delete("api/v1/employment/" + item.id)
           .then(function(resp) {
             app.employments.splice(index, 1);
+            console.log(JSON.stringify(app.employments));
+            app.updateSeniorityDays("");
             app.emitSuccess("Aanstelling verwijderd");
           })
           .catch(function(resp) {
@@ -249,20 +251,20 @@ export default {
 
     addEmployment() {
       this.editedItem = Object.assign({}, this.defaultEmployment);
+      this.editedIndex = -1;
       this.employmentDialog = true;
     },
     saveEmployment() {
       var app = this;
       if (this.validateFunctionData())
-        if (this.editedIndex == -1)
+        if (this.editedIndex == -1){
+          console.log('adding employment');
           axios //we should retrieve the whole object set again from the server... trust only server data! :) TODO
             .post("api/v1/employment", this.editedItem)
             .then(function(resp) {
               //app.$router.push({ path: "/employees" });
               app.employments.push(resp.data);
-              debugger;
-              app.updateSeniorityDays();
-              app.emitSuccess("Aanstelling toegevoegd");
+              app.updateSeniorityDays('Aanstelling toegevoegd');
               app.closeEmployment();
               
             })
@@ -270,7 +272,9 @@ export default {
               console.log(resp);
               app.emitFail("Fout bij aanmaken aanstelling");
             });
+        }
         else {
+          console.log("editing employment "+this.editedItem.id);
           delete this.editedItem.school; //remove this property before sending it to the server to prevent mixups
           axios
             .patch("api/v1/employment/" + this.editedItem.id, this.editedItem)
@@ -282,8 +286,8 @@ export default {
                 app.editedIndex,
                 Object.assign({}, resp.data)
               );
-              app.updateSeniorityDays();
-              app.emitSuccess("Wijzigingen opgeslagen");
+              app.updateSeniorityDays("Wijzigingen opgeslagen");
+              
               app.closeEmployment();
             })
             .catch(function(resp) {
@@ -292,19 +296,23 @@ export default {
             });
         }
     },
-    updateSeniorityDays() {
+    updateSeniorityDays(successmsg) {
       var app = this;
+      
       axios
         .patch(
           "api/v1/taddCalculator/updateSeniorityDays/" +
-            this.editedItem.edu_function_data_id
+            this.functiondata.id
         )
         .then(function(resp) {
+          app.$emit('reloademployeedata',resp.data.employee_id);
+          /*
           Vue.set(
             app.employments,
             app.editedIndex,
             Object.assign({}, resp.data)
           );
+          app.emitSuccess(successmsg);*/
         })
         .catch(function(resp) {
           console.log(resp);

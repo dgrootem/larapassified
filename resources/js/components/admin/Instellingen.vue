@@ -11,39 +11,7 @@
             <v-card>
               <v-card-title>Grenswaarden</v-card-title>
               <v-card-text>
-                <v-row dense>
-                  <v-col sm="12" md="12">
-                    <v-label>Benodigd aantal dagen gepresteerd door een personeelslid</v-label>
-                  </v-col>
-                </v-row>
-                <v-row dense align="end">
-                  <v-col sm="12" md="8">
-                    <v-label>{{labelFor(settings.taddGrens1)}}</v-label>
-                  </v-col>
-                  <v-col sm="4" md="4">
-                    <v-text-field
-                      hide-details
-                      type="number"
-                      min="0"
-                      suffix="dagen"
-                      v-model="settings.taddGrens1.value"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row dense align="end">
-                  <v-col sm="12" md="8">
-                    <v-label>{{labelFor(settings.taddGrens2)}}</v-label>
-                  </v-col>
-                  <v-col sm="4" md="4">
-                    <v-text-field
-                      hide-details
-                      type="number"
-                      min="0"
-                      suffix="dagen"
-                      v-model="settings.taddGrens2.value"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
+                <v-data-table :items="grenswaarden" :headers="grensheaders" group-by="categorie"></v-data-table>
               </v-card-text>
             </v-card>
           </v-row>
@@ -54,24 +22,24 @@
                 <v-row dense>
                   <v-col sm="12" md="12">
                     <v-checkbox
-                      v-model="settings.naarIngaveNaAanmaak.value"
-                      :label="labelFor(settings.naarIngaveNaAanmaak)"
+                      v-model="appsettings.naarIngaveNaAanmaak.value"
+                      :label="labelFor(appsettings.naarIngaveNaAanmaak)"
                     ></v-checkbox>
                   </v-col>
                 </v-row>
                 <v-row dense>
                   <v-col sm="12" md="12">
                     <v-checkbox
-                      v-model="settings.naarIngaveNaUpdate.value"
-                      :label="labelFor(settings.naarIngaveNaUpdate)"
+                      v-model="appsettings.naarIngaveNaUpdate.value"
+                      :label="labelFor(appsettings.naarIngaveNaUpdate)"
                     ></v-checkbox>
                   </v-col>
                 </v-row>
                 <v-row dense>
                   <v-col sm="12" md="12">
                     <v-checkbox
-                      v-model="settings.showAddForNewEmployee.value"
-                      :label="labelFor(settings.showAddForNewEmployee)"
+                      v-model="appsettings.showAddForNewEmployee.value"
+                      :label="labelFor(appsettings.showAddForNewEmployee)"
                     ></v-checkbox>
                   </v-col>
                 </v-row>
@@ -82,7 +50,7 @@
       </v-card-text>
 
       <v-card-actions>
-        <div class="flex-grow-1"></div>
+        <!-- <div class="flex-grow-1"></div> -->
         <v-btn color="blue darken-1" text @click="save">Opslaan</v-btn>
       </v-card-actions>
     </v-card>
@@ -97,11 +65,18 @@
 export default {
   data: function() {
     return {
-      settings : this.$root.settings,
+      appsettings : this.$root.settings,
+      grenswaarden: [],
       snackbar: false,
       snack_text: "",
       snack_color: "",
-      snack_timeout: 2000
+      snack_timeout: 2000,
+      grensheaders: [
+        { text: 'omschrijving', align: 'left', value: 'omschrijving'},
+        { text: 'waarde', align: 'left', value: 'value'},
+        { text: 'van', align: 'left', value: 'van'},
+        { text: 'tot', align: 'left', value: 'tot'}
+      ]
     };
   },
   methods: {
@@ -139,6 +114,18 @@ export default {
         });
     }
   },
+  created(){
+    var app = this;
+      axios
+        .get("../api/v1/settingsByContext/calc", this.grenswaarden)
+        .then(function(resp) {
+            app.grenswaarden = resp.data;
+        })
+        .catch(function(resp) {
+          console.log(resp);
+            app.failSnack("Fout bij ophalen grenswaarden");
+        });
+  }
   
 };
 </script>
