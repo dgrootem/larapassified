@@ -4,6 +4,7 @@ Vue.use(Router);
 
 
 const Dashboard = () => import('../components/Dashboard.vue');
+const Ingave = () => import('../components/Ingave.vue');
 
 export default new Router({
     mode: 'history',
@@ -13,7 +14,12 @@ export default new Router({
         {
             path: '/',
             name: 'dashboard',
-            component: Dashboard,
+            component: Dashboard
+        },
+        {
+            path: '/ingave',
+            name: 'ingave',
+            component: Ingave,
             props: true
         },
         {

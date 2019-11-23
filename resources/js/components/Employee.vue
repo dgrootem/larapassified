@@ -160,7 +160,7 @@ export default {
 
   methods: {
     navigateTo(selectedItem,newEmployee){
-      this.$router.push({ name: 'dashboard', params: { selectedEmployee: selectedItem, newEmployee: newEmployee }});
+      this.$router.push({ name: 'ingave', params: { selectedEmployee: selectedItem, newEmployee: newEmployee }});
     },
     calcBdate: function() {
       if (this.editedItem.registrationNumber.length == 11) {

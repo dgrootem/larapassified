@@ -27,7 +27,7 @@
                     <template v-slot:activator>
                     <v-list-item-title>TADD</v-list-item-title>
                     </template>
-                <v-list-item to="/">
+                <v-list-item to="/ingave">
                     <v-list-item-action>
                         <v-icon>edit</v-icon>
                     </v-list-item-action>

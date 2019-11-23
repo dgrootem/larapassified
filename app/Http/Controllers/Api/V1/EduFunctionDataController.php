@@ -70,8 +70,11 @@ class EduFunctionDataController extends Controller
         $eduFunctionData->employee_id = $request['employee_id'];
 
         $eduFunctionData->save();
+        $id = $eduFunctionData->id;
+        $eduFunctionData = EduFunctionData::findOrFail($id);
 
         Log::debug("newly created edufunctiondata id=".$eduFunctionData->id);
+        Log::debug($eduFunctionData);
         
         $eduFunctionData->employments;
         $eduFunctionData->educationalFunction;
