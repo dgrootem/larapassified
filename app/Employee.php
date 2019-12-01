@@ -15,6 +15,11 @@ class Employee extends Model
         return "{$this->firstName} {$this->lastName}";
     }
 
+    public function getFullnameExtendedAttribute()
+    {
+        return "{$this->firstName} {$this->lastName} [{$this->registrationNumber}]";
+    }
+
     public function educationalFunctionData()
     {
         return $this->hasMany(EduFunctionData::class);

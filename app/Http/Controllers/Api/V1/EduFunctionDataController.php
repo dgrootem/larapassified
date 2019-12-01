@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\EduFunctionData;
 use App\Employment;
+use App\Setting;
 use Log;
 use Carbon\Carbon;
 
@@ -18,7 +19,33 @@ class EduFunctionDataController extends Controller
      */
     public function index()
     {
-        return EduFunctionData::with('educationalFunction')->get();
+        return EduFunctionData::with(['educationalFunction','employee'])->get();
+    }
+
+    //todo: pagination voorzien
+    // zie https://laravel.com/docs/5.5/pagination
+    public function fullIndex(){
+        //Log::debug("trying to find some data");
+        //return EduFunctionData::with(['educationalFunction','employee'])->get();
+        $now = new Carbon();
+
+        $neededTotal = Setting::where('name','taddNeededTotal')->where('van','<',$now)->where('tot','>',$now)->pluck('value')[0];
+        $neededEffective1 = Setting::where('name','taddNeededEffective')->where('van','<',$now)->where('tot','>',$now)->pluck('value')[0];
+        $neededEffective2 = Setting::where('name','taddNeededEffective2')->where('van','<',$now)->where('tot','>',$now)->pluck('value')[0];
+
+        return EduFunctionData::join('employees','employees.id','=','employee_id')
+                ->join('educational_functions','educational_function_id','=','educational_functions.id')
+                ->select('employees.firstname',
+                         'employees.lastname',
+                         'edu_function_data.id',
+                         'educational_functions.name as ambt',
+                         \DB::raw('edu_function_data.seniority_days / '.$neededEffective1 . ' * 100.0 as seniority_days'),
+                         \DB::raw('edu_function_data.total_seniority_days / '.$neededTotal. ' * 100.0 as total_seniority_days'),
+                         'edu_function_data.datum_verbetering_nodig_gezet as werkpunt',
+                         'edu_function_data.istadd')
+                ->orderBy('employees.lastName', 'asc')
+                ->orderBy('educational_functions.name', 'asc')
+                ->get();
     }
 
     public function show($id)

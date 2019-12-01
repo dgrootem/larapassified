@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Employee;
 use Carbon\Carbon;
+use Log;
 
 class EmployeeController extends Controller
 {
@@ -17,16 +18,19 @@ class EmployeeController extends Controller
     public function index()
     {
         //
-        return Employee::selectRaw('*, CONCAT(lastName," ",firstName) as fullname')->get();
+        $result = Employee::selectRaw('*,concat(firstname," ",lastname," [",ifnull(registrationNumber,""),"]") as fullNameExtended')->orderBy('firstname','asc')->get();
+        //return Employee::where('isActive', true)->get();
+        Log::debug($result);//->fullNameExtended);
+        return $result;
     }
 
     public function filterByName(String $value){
-        return Employee::where('lastName','like','%'.$value.'%')->orWhere('firstName','like','%'.$value.'%')->selectRaw('*, CONCAT(lastName," ",firstName) as fullname')->get();
+        return Employee::where('lastName','like','%'.$value.'%')->orWhere('firstName','like','%'.$value.'%')->selectRaw('*, CONCAT(lastName," ",firstName," [",registrationNumber,"]") as fullname')->get();
     }
 
     public function visible()
     {
-        return Employee::where('isActive', true);
+        return Employee::where('isActive', true)->get();
     }
 
     public function limitedTo5Years($visibleOnly = true)

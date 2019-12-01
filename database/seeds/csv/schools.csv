@@ -1,13 +1,20 @@
 id,name,isActive,abbreviation,adres,postcode,gemeente,school_type_id,logo_filename
-1,Sancta Maria Basisschool,1,SM,Charles Deberiostraat 3,3000,Leuven,1,SM.jpg
-2,Paridaensinstituut Basis,1,PAR,Janseniusstraat 2,3000,Leuven,1,Pari.png
-3,Sint-Jan Basisschool,1,SJ,Mechelsevest 2,3000,Leuven,1,SJ.jpg
-4,Mater Dei kleuterschool,1,MD-KS,Sint-jacobsplein 13,3000,Leuven,1,MD2.png
+1,Sancta Maria Basisschool,1,Sanct Maria,Charles Deberiostraat 3,3000,Leuven,1,SM.jpg
+2,Paridaensinstituut Basis,1,Paridaens,Janseniusstraat 2,3000,Leuven,1,Pari.png
+3,Sint-Jan Basisschool,1,Sint Jan,Mechelsevest 2,3000,Leuven,1,SJ.jpg
+4,Mater Dei kleuterschool,1,Mater Dei-KS,Sint-jacobsplein 13,3000,Leuven,1,MD2.png
 5,HDC Lagere school,1,HDC,Oude Markt 28,3000,Leuven,1,Logo_HDC.jpg
 6,De Ark Lagere school,0,ArkLager,ddd,3000,Leuven,1,"nologo"
 7,De Ark Kleuterschool,0,ArkKleuter,ddd,3000,Leuven,1,"nologo"
-8,Don Bosco Basisschool,1,DB,Groenveldstraat 46,3001,Heverlee,1,Logo_DB.jpg
-9,Sint-Pietersschool Basis,1,STP,Kloosterstraat 6,3360, Korbeek-Lo,1,"nologo"
-10,Windekind BuBaO,1,WIN,Schapenstraat 98,3000,Leuven,2,Wind.jpg
-11,Ter Bank BuBaO,1,TB,Tervuursesteenweg 295,3001,Heverlee,2,BoTer.jpg
-12,Mater Dei Lagere school,1,MD-LS,Sint-jacobsplein 15,3000,Leuven,1,MD2.png
+8,Don Bosco Basisschool,1,DonBosco,Groenveldstraat 46,3001,Heverlee,1,Logo_DB.jpg
+9,Sint-Pietersschool Basis,1,StPieter,Kloosterstraat 6,3360, Korbeek-Lo,1,"nologo"
+10,Windekind BuBaO,1,Windekind,Schapenstraat 98,3000,Leuven,2,Wind.jpg
+11,Ter Bank BuBaO,1,TerBank BuBaO,Tervuursesteenweg 295,3001,Heverlee,2,BoTer.jpg
+12,Mater Dei Lagere school,1,Mater Dei-LS,Sint-jacobsplein 15,3000,Leuven,1,MD2.png
+13,De Mozaïek Roosbeek,1,Mozaiek,,,,1,"nologo"
+14,Sint-Joris,1,StJoris,,,,1,"nologo"
+15,Basisschool De Linde,1,DeLinde,,,,1,"nologo"
+16,BuBao Ten Desselaer,1,TenDesselaer,,,,2,"nologo"
+17,Terbank Egenhoven,1,Terbank,,,,1,"nologo"
+18,Sint-Martinus Basisschool Lubbeek,1,StMartinus,,,,1,"nologo"
+19,De Kinderberg Bierbeek,1,Kinderberg,,,,1,"nologo"

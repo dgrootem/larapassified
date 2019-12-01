@@ -10,7 +10,7 @@
             :search-input.sync="search"
             hide-no-data
             hide-selected
-            item-text="fullname"
+            item-text="fullNameExtended"
             item-value="id"
             label="Personeelslid"
             placeholder="Typ om te zoeken"
@@ -52,9 +52,9 @@
                 <v-progress-circular class="mx-4" size="30" :color="progressColor(fdata.seniority_days,400)" :value="(fdata.seniority_days / 400.0) * 100.0">EF</v-progress-circular>
                 <v-progress-circular class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days,400)" :value="(fdata.seniority_days / 580.0) * 100.0">TO</v-progress-circular>
                 <!-- [ {{ fdata.seniority_days }} dagen ] -->
-                <v-icon small class="mx-4" @click="editFunctionData(fdata)" >edit</v-icon>
+                <!-- <v-icon small class="mx-4" @click="editFunctionData(fdata)" >edit</v-icon> -->
               </v-tab>
-              <!-- <v-tabs-items v-model="tabs"> -->
+              <v-tabs-items v-model="functiondatatab">
               <v-tab-item v-for="fdata in functiondata" v-bind:key="fdata.id">
                 <functiondatacomp
                   :functiondata="fdata"
@@ -65,7 +65,7 @@
                   @reloademployeedata="reloadEmployeeData"
                 ></functiondatacomp>
               </v-tab-item>
-              <!-- </v-tabs-items> -->
+              </v-tabs-items>
             </v-tabs>
           </v-container>
         </v-card>
@@ -218,8 +218,8 @@ export default {
 
       fab: false,
       //tab stuff
-      functiondatatab: null,
-      tabs : null,
+      functiondatatab: 0,
+      //tabs : null,
       loadingtabs: false,
       // interruptiontab: null,
 
@@ -237,7 +237,7 @@ export default {
       interruptionheaders: [
         { text: "Begin", align: "left", value: "beginDate" },
         { text: "Einde", align: "left", value: "endDate" },
-        { text: "Telt mee", align: "left", value: "interruption_type_id" },
+        { text: "Dagen tellen mee", align: "left", value: "interruption_type_id" },
         { text: "", align: "center", value: "action" }
       ],
       descriptionLimit: 45
@@ -255,10 +255,11 @@ export default {
 
     items() {
       return this.entries.map(entry => {
+        console.log(entry.fullNameExtended);
         const Fullname =
-          entry.fullname.length > this.descriptionLimit
-            ? entry.fullname.slice(0, this.descriptionLimit) + "..."
-            : entry.fullname;
+          entry.fullNameExtended.length > this.descriptionLimit
+            ? entry.fullNameExtended.slice(0, this.descriptionLimit) + "..."
+            : entry.fullNameExtended;
 
         return Object.assign({}, entry, { Fullname });
       });
@@ -283,7 +284,6 @@ export default {
     formatDate(date) {
       return DateUtil.formatDate(date);
     },
-
     setBegin() {
       if (DateUtil.isDate(this.editedItem.formattedBegin)) {
         this.editedItem.beginDate = DateUtil.formatDateToDB(
@@ -613,7 +613,7 @@ export default {
     axios
       .get("api/v1/ambt")
       .then(function(resp) {
-        app.ambten = resp.data;
+        app.ambten = resp.data.filter(a => (a.isActive == 1));
       })
       .catch(function(resp) {
         console.log(resp);
@@ -623,7 +623,9 @@ export default {
     axios
       .get("api/v1/school")
       .then(function(resp) {
-        app.scholen = resp.data.scholen;
+        
+        app.scholen = resp.data.scholen.filter(s => (s.isActive == 1));
+
       })
       .catch(function(resp) {
         console.log(resp);

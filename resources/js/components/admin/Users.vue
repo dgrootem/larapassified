@@ -61,9 +61,11 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="12" md="12">
+                Beheerders kunnen gebruikers aanmaken en instellingen aanpassen.
                 <v-checkbox v-model="editedItem.isadmin" label="Beheerder"></v-checkbox>
               </v-col>
               <v-col cols="12" sm="12" md="12">
+                Enkel actieve gebuikers kunnen inloggen in het systeem.
                 <v-checkbox v-model="editedItem.isactive" label="Actief"></v-checkbox>
               </v-col>
             </v-row>
