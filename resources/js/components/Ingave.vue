@@ -27,10 +27,10 @@
             <v-icon v-else>add</v-icon>
           </v-btn>
         </template>
-        <v-btn fab dark small color="#c5f77e" @click="addFunctionData">
+        <v-btn fab dark small color="#c5f77e" @click="addFunctionData" title="Ambt toevoegen">
           <v-icon>work</v-icon>
         </v-btn>
-        <v-btn fab dark small color="#f7dc6d" @click="addInterruption">
+        <v-btn fab dark small color="#f7dc6d" @click="addInterruption" title="Onderbreking toevoegen">
           <v-icon>work_off</v-icon>
         </v-btn>
       </v-speed-dial>
@@ -49,8 +49,8 @@
             <v-tabs v-model="functiondatatab">
               <v-tab :id="generateRef(fdata)" v-for="fdata in functiondata" v-bind:key="generateRef(fdata)" :ref="generateRef(fdata)">
                 {{ fdata.educational_function.name }} 
-                <v-progress-circular class="mx-4" size="30" :color="progressColor(fdata.seniority_days,400)" :value="(fdata.seniority_days / 400.0) * 100.0">EF</v-progress-circular>
-                <v-progress-circular class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days,400)" :value="(fdata.seniority_days / 580.0) * 100.0">TO</v-progress-circular>
+                <v-progress-circular title="Dagen effectief" class="mx-4" size="30" :color="progressColor(fdata.seniority_days,400)" :value="(fdata.seniority_days / 400.0) * 100.0">EF</v-progress-circular>
+                <v-progress-circular title="Dagen totaal" class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days,400)" :value="(fdata.seniority_days / 580.0) * 100.0">TO</v-progress-circular>
                 <!-- [ {{ fdata.seniority_days }} dagen ] -->
                 <!-- <v-icon small class="mx-4" @click="editFunctionData(fdata)" >edit</v-icon> -->
               </v-tab>
@@ -85,8 +85,8 @@
                 >{{item.interruption_type_id==1?'check':'not_interested'}}</v-icon>
               </template>
               <template v-slot:item.action="{ item }">
-                <v-icon small class="mr-2" @click="editInterruption(item)">edit</v-icon>
-                <v-icon small class="mr-2" @click="deleteInterruption(item)">delete</v-icon>
+                <v-icon small class="mr-2" @click="editInterruption(item)" title="Aanstelling aanpassen">edit</v-icon>
+                <v-icon small class="mr-2" @click="deleteInterruption(item)" title="Aanstelling verwijderen">delete</v-icon>
               </template>
             </v-data-table>
           </v-container>

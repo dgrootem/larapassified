@@ -79,6 +79,7 @@
                   v-if="editedItem"
                   v-model="editedItem.hours"
                   label="Uren"
+                  type="number"
                   :suffix="hourSuffix"
                 ></v-text-field>
               </v-col>
