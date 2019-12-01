@@ -100,6 +100,8 @@
 <script>
 //import moment from "moment";
 
+
+import { compareAsc } from "date-fns";
 import * as DateUtil from "../DateUtil";
 
 export default {
@@ -230,10 +232,15 @@ export default {
         this.emitFail("Verkeerd datumformaat... kan niet opslaan!");
         return false;
       }
+      let compasc = compareAsc(DateUtil.parseDate(this.editedItem.formattedBegin),DateUtil.parseDate(this.editedItem.formattedEnd));
+      if(compasc==1) {
+        this.emitFail("Einddatum mag niet voor begindatum vallen!");
+        return false;
+      }
       return true;
     },
     deleteItem(item) {
-      if (confirm("School echt verwijderen?")) {
+      if (confirm("Aanstelling echt verwijderen?")) {
         var app = this;
         var index = this.employments.indexOf(item);
         axios

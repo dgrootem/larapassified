@@ -178,7 +178,7 @@
 
 <script>
 import FunctionData from "./FunctionData.vue";
-import { parse, format } from "date-fns";
+import { compareAsc,parse, format } from "date-fns";
 import * as DateUtil from "../DateUtil";
 
 export default {
@@ -255,7 +255,7 @@ export default {
 
     items() {
       return this.entries.map(entry => {
-        console.log(entry.fullNameExtended);
+        //console.log(entry.fullNameExtended);
         const Fullname =
           entry.fullNameExtended.length > this.descriptionLimit
             ? entry.fullNameExtended.slice(0, this.descriptionLimit) + "..."
@@ -430,7 +430,7 @@ export default {
         this.failSnack("Geen begindatum");
         return false;
       }
-      console.log("DEBUG: formattedBegin is not empty");
+      //console.log("DEBUG: formattedBegin is not empty");
       if (!this.editedItem.formattedEnd) this.eenDagAfwezig(); //creëer een korte vervanging voor 1 dag
       if (
         !(
@@ -438,7 +438,12 @@ export default {
           DateUtil.isDate(this.editedItem.formattedEnd)
         )
       ) {
-        this.emitFail("Verkeerd datumformaat... kan niet opslaan!");
+        this.failSnack("Verkeerd datumformaat... kan niet opslaan!");
+        return false;
+      }
+      let compasc = compareAsc(DateUtil.parseDate(this.editedItem.formattedBegin),DateUtil.parseDate(this.editedItem.formattedEnd));
+      if(compasc==1) {
+        this.failSnack("Einddatum mag niet voor begindatum vallen!");
         return false;
       }
       return true;
@@ -456,7 +461,7 @@ export default {
               app.closeInterruption();
             })
             .catch(function(resp) {
-              console.log(resp);
+              //console.log(resp);
               app.failSnack("Fout bij aanmaken onderbreking");
             });
         } else {
@@ -477,7 +482,7 @@ export default {
               app.closeInterruption();
             })
             .catch(function(resp) {
-              console.log(resp);
+              //console.log(resp);
               app.failSnack("Fout bij opslaan wijzigingen");
             });
         }
@@ -493,7 +498,7 @@ export default {
           app.reloadEmployeeData(app.editedItem.employee_id);
         })
         .catch(function(resp) {
-          console.log(resp);
+          //console.log(resp);
           app.emitFail("Fout bij berekenen of updaten van dagen anciënniteit");
         });
     },
@@ -521,14 +526,14 @@ export default {
       this.reloadEmployeeData(employee_id);
     },
     reloadEmployeeData(employee_id,setFirstTab) {
-      console.log("employee_id="+employee_id);
+      //console.log("employee_id="+employee_id);
       var app = this;
       
       axios
         .get("api/v1/employee/functiondata/" + employee_id)
         .then(function(resp) {
-          console.log("loaded function data for employee "+ employee_id);
-          console.log(JSON.stringify(resp.data));
+          //console.log("loaded function data for employee "+ employee_id);
+          //console.log(JSON.stringify(resp.data));
           app.functiondata = resp.data;
           //app.functiondatatab = 0;
           //debugger;
@@ -540,15 +545,15 @@ export default {
         })
         .then(app.setAvailableFunctions(employee_id))
         .catch(function(resp) {
-          console.log(resp);
+          //console.log(resp);
           alert("Could not load functiondata");
           //app.functiondatatab = 0;
         });
       axios
         .get("api/v1/employee/interruptions/" + employee_id)
         .then(function(resp) {
-          console.log("loaded interruptions for employee "+ employee_id);
-          console.log(JSON.stringify(resp.data));
+          //console.log("loaded interruptions for employee "+ employee_id);
+          //console.log(JSON.stringify(resp.data));
           app.interruptions = resp.data;
         })
         .catch(function(resp) {

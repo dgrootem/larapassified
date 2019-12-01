@@ -3,27 +3,17 @@
     <v-card width="100%">
       <v-container fluid>
         <v-tabs v-model="dashtab">
-          <v-tab key="onvoldoende" >Onvoldoende
-          </v-tab>
           <v-tab key="voldoende" >Voldoende
           </v-tab>
           <v-tab key="TADD" >TADD
           </v-tab>
           <v-tab key="benoemd" >Benoemd
           </v-tab>
-          
+          <v-tab key="onvoldoende" >Onvoldoende
+          </v-tab>
         </v-tabs>
         <v-tabs-items v-model="dashtab">
-          <v-tab-item key="onvoldoende">
-            <v-data-table :items="ambtenOnvoldoende" :headers="headersOnvoldoende">
-              <template v-slot:item.seniority_days="{ item }">
-                <v-progress-linear :value="item.seniority_days"></v-progress-linear>
-              </template>
-              <template v-slot:item.total_seniority_days="{ item }">
-                <v-progress-linear :value="item.total_seniority_days"></v-progress-linear>
-              </template>
-            </v-data-table>
-          </v-tab-item>
+          
           <v-tab-item key="voldoende">
             <v-data-table :items="ambtenVoldoende" :headers="headersVoldoende">
               <template v-slot:item.seniority_days="{ item }">
@@ -55,8 +45,21 @@
               <template v-slot:item.benoemd="{ item }">
                 <v-icon title="maakBenoemd" color="gray" @click="zetBenoemd(item,true)">star</v-icon>
               </template>
+            </v-data-table>
+          </v-tab-item>
+          <v-tab-item key="benoemd">
+            <v-data-table :items="ambtenBenoemd" :headers="headersBenoemd">
               
-
+            </v-data-table>
+          </v-tab-item>
+          <v-tab-item key="onvoldoende">
+            <v-data-table :items="ambtenOnvoldoende" :headers="headersOnvoldoende">
+              <template v-slot:item.seniority_days="{ item }">
+                <v-progress-linear :value="item.seniority_days"></v-progress-linear>
+              </template>
+              <template v-slot:item.total_seniority_days="{ item }">
+                <v-progress-linear :value="item.total_seniority_days"></v-progress-linear>
+              </template>
             </v-data-table>
           </v-tab-item>
         </v-tabs-items>
@@ -165,6 +168,14 @@ export default {
         
         return ((a.total_seniority_days >= 100) && (a.seniority_days >= 100)
                 && (a.istadd == 1));
+      });
+    },
+    ambtenBenoemd(){
+      var app = this;
+      return this.ambten.filter(a =>{
+        return [];
+        /*return ((a.total_seniority_days >= 100) && (a.seniority_days >= 100)
+                && (a.istadd == 1));*/
       });
     },
     headersOnvoldoende(){
