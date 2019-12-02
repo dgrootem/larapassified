@@ -49,13 +49,14 @@
             <v-tabs v-model="functiondatatab">
               <v-tab :id="generateRef(fdata)" v-for="fdata in functiondata" v-bind:key="generateRef(fdata)" :ref="generateRef(fdata)">
                 {{ fdata.educational_function.name }} 
+                <v-icon v-if="fdata.isTadd == 1" color="golden">star</v-icon>
                 <v-progress-circular title="Dagen effectief" class="mx-4" size="30" :color="progressColor(fdata.seniority_days,400)" :value="(fdata.seniority_days / 400.0) * 100.0">EF</v-progress-circular>
                 <v-progress-circular title="Dagen totaal" class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days,400)" :value="(fdata.seniority_days / 580.0) * 100.0">TO</v-progress-circular>
                 <!-- [ {{ fdata.seniority_days }} dagen ] -->
                 <!-- <v-icon small class="mx-4" @click="editFunctionData(fdata)" >edit</v-icon> -->
               </v-tab>
               <v-tabs-items v-model="functiondatatab">
-              <v-tab-item v-for="fdata in functiondata" v-bind:key="fdata.id">
+              <v-tab-item v-for="fdata in functiondata" v-bind:key="generateRef(fdata)">
                 <functiondatacomp
                   :functiondata="fdata"
                   :scholen="scholen"

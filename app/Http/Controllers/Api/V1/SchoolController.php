@@ -49,7 +49,7 @@ class SchoolController extends Controller
         $school->isActive = $request['isActive'];
         $school->schoolType()->associate($schoolType);
         $school->save();
-        $school->cbd = true;
+        $school->cbd = $school->canBeDeleted();
         return $school;
     }
 
