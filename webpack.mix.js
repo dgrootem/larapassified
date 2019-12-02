@@ -13,13 +13,13 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
    .sass('resources/sass/app.scss', 'public/css')
-//   .setResourceRoot('/tadd2/public');
+   .setResourceRoot('/tadd2/public');
    //.setPublicPath('public');
 
    mix.webpackConfig({
       output: {
           //chunkFilename: '[id].chunk.[chunkhash].js',
-//        chunkFilename: 'js/chunks/[name].js?id=[chunkhash]',
+        chunkFilename: 'js/chunks/[name].js?id=[chunkhash]',
           
       },
       optimization : {

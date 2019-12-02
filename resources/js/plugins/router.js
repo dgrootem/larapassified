@@ -8,8 +8,8 @@ const Ingave = () => import('../components/Ingave.vue');
 
 export default new Router({
     mode: 'history',
-    base: //'/tadd2/public/' , 
-    process.env.BASE_URL,  // aangepast voor deploy
+    base: '/tadd2/public/' , 
+    //process.env.BASE_URL,  // aangepast voor deploy
     routes: [
         {
             path: '/',

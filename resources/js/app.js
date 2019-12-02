@@ -70,7 +70,7 @@ new Vue({
         loadSettings() {
             var app = this;
             axios
-            .get("../api/v1/settingsByContext/app")
+            .get("api/v1/settingsByContext/app")
             .then(function(resp) {
                 let settingsFromDB = resp.data;
                 let s = null;
