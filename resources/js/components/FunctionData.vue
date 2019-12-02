@@ -3,6 +3,9 @@
     <!-- <v-container fluid>
     <v-layout row>-->
     <v-container>
+      <v-row>
+        <v-label>Reeds opgebouwde dagen: {{functiondata.total_seniority_days}} TOT / {{functiondata.seniority_days}} EFF</v-label>
+      </v-row>
       <v-row justify="space-between">
         <v-col cols="4" xs="8" sm="5" md="4">
           <v-btn color="primary" @click="addEmployment">Aanstelling toevoegen</v-btn>
