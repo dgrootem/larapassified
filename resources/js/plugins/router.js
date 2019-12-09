@@ -48,6 +48,11 @@ export default new Router({
             name: 'settings',
             component: () => import('../components/admin/Instellingen.vue')
         },
+        {
+            path: '/admin/archief',
+            name: 'settings',
+            component: () => import('../components/admin/Archief.vue')
+        },
         /*{
             path: '/calendar',
             name: 'calendar',

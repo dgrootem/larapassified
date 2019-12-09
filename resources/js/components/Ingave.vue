@@ -576,7 +576,7 @@ export default {
 
       // Lazily load input items
       axios
-        .get("api/v1/employee/")
+        .get("api/v1/employee/activeOnly/1")
         .then(function(resp) {
           app.entries = resp.data;
         })

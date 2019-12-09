@@ -108,6 +108,14 @@
                             <v-list-item-title>Instellingen</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
+                    <v-list-item to="/admin/archief">
+                        <v-list-item-action>
+                            <v-icon>send</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Archivering</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
                     <v-list-item>
                         <v-divider></v-divider>
                     </v-list-item>

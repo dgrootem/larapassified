@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Employee;
 use Carbon\Carbon;
 use Log;
+use App\EduFunctionData;
+use App\Setting;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
@@ -17,15 +20,26 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        //
-        $result = Employee::selectRaw('*,concat(firstname," ",lastname," [",ifnull(registrationNumber,""),"]") as fullNameExtended')->orderBy('firstname','asc')->get();
-        //return Employee::where('isActive', true)->get();
-        Log::debug($result);//->fullNameExtended);
-        return $result;
+        Log::debug("returning all employees");
+        return $this->buildIndexQuery(false);
     }
 
-    public function filterByName(String $value){
-        return Employee::where('lastName','like','%'.$value.'%')->orWhere('firstName','like','%'.$value.'%')->selectRaw('*, CONCAT(lastName," ",firstName," [",registrationNumber,"]") as fullname')->get();
+    private function buildIndexQuery($activeOnly)
+    {
+        $result = Employee::selectRaw('*,concat(firstname," ",lastname," [",ifnull(registrationNumber,""),"]") as fullNameExtended');
+        if ($activeOnly) $result = $result->where('isActive', 1);
+        return $result->orderBy('firstname', 'asc')->get();
+    }
+
+    public function indexActive()
+    {
+        Log::debug("returning active employees only");
+        return $this->buildIndexQuery(true);
+    }
+
+    public function filterByName(String $value)
+    {
+        return Employee::where('lastName', 'like', '%' . $value . '%')->orWhere('firstName', 'like', '%' . $value . '%')->selectRaw('*, CONCAT(lastName," ",firstName," [",registrationNumber,"]") as fullname')->get();
     }
 
     public function visible()
@@ -48,7 +62,7 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $employee = new Employee();
-        return $this->saveEmployee($employee,$request);
+        return $this->saveEmployee($employee, $request);
     }
 
     /**
@@ -74,13 +88,13 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         $employee = Employee::findOrFail($id);
-        return $this->saveEmployee($employee,$request);
+        return $this->saveEmployee($employee, $request);
     }
 
     private function getBirthDate(Request $request)
     {
         if (array_key_exists('registrationNumber', $request->all())) {
-            if (strlen($request['registrationNumber']>10)){
+            if (strlen($request['registrationNumber'] > 10)) {
                 $parseDate = substr($request['registrationNumber'], 1, 6);
                 $year = substr($parseDate, 0, 2);
                 //fix years only represented with two digits: put them in correct century
@@ -92,7 +106,7 @@ class EmployeeController extends Controller
         else return null;
     }
 
-    private function saveEmployee(Employee $employee,Request $request)
+    private function saveEmployee(Employee $employee, Request $request)
     {
         $employee->birthDate = $this->getBirthDate($request);
         $employee->registrationNumber = $request['registrationNumber'];
@@ -117,5 +131,32 @@ class EmployeeController extends Controller
         $employee = Employee::findOrFail($id);
         $employee->delete();
         return '';
+    }
+
+    public function archiveOldOrTADDEmployees(/*Request $request*/)
+    {
+        //if (Auth::user()->isadmin && Auth::user()->isactive) {
+            Log::info("archiving...");
+            //TODO: nagaan of de user een admin is
+            $query = "update employees set isActive = 0 where id in ".
+                "(select r1.id from ".
+                    "(select e.id, max(ifNull(endDate, curdate())) as laatstedatum ".
+                        "from employees e ".
+                        "inner join edu_function_data edf on e.id = edf.employee_id ".
+                        "inner join employments emp on emp.edu_function_data_id = edf.id ".
+                        "group by e.id) r1 ".
+                    "where r1.laatstedatum < DATE_SUB(curdate(), INTERVAL 5 YEAR) ) ;";
+            \DB::statement($query);
+            $query2 = "update employees set isActive = 0 where id not in (select edf.employee_id from edu_function_data edf where edf.isTadd = 0);";
+            \DB::statement($query2);
+            Log::info("done!");
+        //}
+    }
+
+    public function toggleEmployeesVisibility($visiblity)
+    {
+        $v = ($visiblity == true ? "1" : "0");
+        Employee::where('isActive',0)->update(["isActive" => 1]);
+        //\DB::raw("update employees set isActive = " . $v . ";");
     }
 }

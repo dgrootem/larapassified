@@ -139,6 +139,30 @@ export default {
             app.failSnack("Verwijderen mislukt");
           });
     },
+    zetTADD(item,state) {
+      var app = this;
+      var id = item.id;
+      if (state)
+        axios
+          .post("api/v1/educationalFunctionData/"+item.id+"/tadd")
+          .then(function(resp) {
+            item.istadd = true;
+            app.successSnack("TADD toegevoegd");
+          })
+          .catch(function(resp) {
+            app.failSnack("TADD toevoegen mislukt");
+          });
+      else
+      axios
+          .delete("api/v1/educationalFunctionData/"+item.id+"/werkpunt")
+          .then(function(resp) {
+            item.istadd = false;
+            app.successSnack("TADD verwijderd");
+          })
+          .catch(function(resp) {
+            app.failSnack("TADD verwijderen mislukt");
+          });
+    },
   },
 
   computed: {

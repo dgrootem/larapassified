@@ -121,4 +121,32 @@ class EduFunctionDataController extends Controller
         $result =  EduFunctionData::where('employee_id',$id)->with('educationalFunction','employments.school')->get();
         return $result;
     }
+
+    public function addWerkpunt($id){
+        $efd = EduFunctionData::findOrFail($id);
+        $efd->datum_verbetering_nodig_gezet = Carbon::today();
+        $efd->save();
+        return $efd;
+    }
+
+    public function verwijderWerkpunt($id){
+        $efd = EduFunctionData::findOrFail($id);
+        $efd->datum_verbetering_nodig_gezet = null;
+        $efd->save();
+        return $efd;
+    }
+
+    public function addTADD($id){
+        $efd = EduFunctionData::findOrFail($id);
+        $efd->isTadd = true;
+        $efd->save();
+        return $efd;
+    }
+
+    public function verwijderTADD($id){
+        $efd = EduFunctionData::findOrFail($id);
+        $efd->isTadd = false;
+        $efd->save();
+        return $efd;
+    }
 }
