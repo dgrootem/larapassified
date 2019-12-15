@@ -15,7 +15,7 @@ class UserController extends Controller
 {
     private function safeColumns()
     {
-        return ['id', 'name', 'email', 'isactive', 'isadmin'];
+        return ['id', 'name', 'email', 'isactive', 'isadmin','readonly'];
     }
 
     /**

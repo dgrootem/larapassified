@@ -20,6 +20,9 @@
             <template v-slot:item.isactive="{ item }">
               <v-icon color="success"  class="mr-2" v-if="item.isactive">check</v-icon>
             </template>
+            <template v-slot:item.readonly="{ item }">
+              <v-icon color="success"  class="mr-2" v-if="item.readonly">check</v-icon>
+            </template>
           </v-data-table>
         </v-card-text>
       </v-container>
@@ -230,8 +233,9 @@ export default {
     this.headers = [
       { text: "Naam", align: "left", value: "name" },
       { text: "email", align: "left", value: "email" },
-      { text: "admin", align: "left", value: "isadmin" },
-      { text: "active", align: "left", value: "isactive" },
+      { text: "Beheerder", align: "left", value: "isadmin" },
+      { text: "Actief", align: "left", value: "isactive" },
+      { text: "Alleen-lezen", align: "left", value: "readonly" },
       { text: "", align: "center", value: "action" }
     ];
     this.editedItem = Object.assign({}, this.defaultItem);
