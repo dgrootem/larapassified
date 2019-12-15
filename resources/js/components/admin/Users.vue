@@ -24,7 +24,7 @@
         </v-card-text>
       </v-container>
     </v-card>
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-dialog v-model="dialog" max-width="800px">
       <v-card>
         <v-card-title>
           <span class="headline">{{ formTitle }}</span>
@@ -33,13 +33,13 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" sm="8" md="8">
+              <v-col cols="12" sm="8" md="4">
                 <v-text-field v-model="editedItem.name" label="Naam"></v-text-field>
               </v-col>
               <v-col cols="12" sm="8" md="8">
                 <v-text-field v-model="editedItem.email" label="email"></v-text-field>
               </v-col>
-              <v-col cols="12" sm="12" md="12">
+              <v-col cols="12" sm="12" md="6">
                 <v-text-field
                   v-model="editedItem.password"
                   :type="show1 ? 'text' : 'password'"
@@ -50,7 +50,7 @@
                   counter
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="12" md="12">
+              <v-col cols="12" sm="12" md="6">
                 <v-text-field
                   v-model="editedItem.confirm"
                   :type="show1 ? 'text' : 'password'"
@@ -60,6 +60,7 @@
                   @click:append="show1 = !show1"
                 ></v-text-field>
               </v-col>
+            </v-row><v-row dense>
               <v-col cols="12" sm="12" md="12">
                 Beheerders kunnen gebruikers aanmaken en instellingen aanpassen.
                 <v-checkbox v-model="editedItem.isadmin" label="Beheerder"></v-checkbox>
@@ -67,6 +68,10 @@
               <v-col cols="12" sm="12" md="12">
                 Enkel actieve gebuikers kunnen inloggen in het systeem.
                 <v-checkbox v-model="editedItem.isactive" label="Actief"></v-checkbox>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                Alleen-lezen gebruikers kunnen geen wijzigingen aanbrengen.
+                <v-checkbox v-model="editedItem.readonly" label="Alleen-lezen"></v-checkbox>
               </v-col>
             </v-row>
           </v-container>
@@ -102,7 +107,8 @@ export default {
         password: null,
         confirm: null,
         isadmin: false,
-        isactive: false
+        isactive: true,
+        readonly : true
       },
       editedIndex: -1,
       snackbar: false,

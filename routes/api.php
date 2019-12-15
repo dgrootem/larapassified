@@ -9,6 +9,7 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::resource('employment','EmploymentController',['except' => ['create', 'edit']]);
     Route::resource('employmentInterruption','EmploymentInterruptionController',['except' => ['create', 'edit']]);
     Route::resource('educationalFunctionData','EduFunctionDataController',['except' => ['create', 'edit']]);
+    Route::get('user/attributes/{id}','UserController@userattribs')->name('user.attributes');
     Route::get('employee/functiondata/{id}','EduFunctionDataController@functionDataForEmployee')->name('employee.functionData');
     Route::get('employee/activeOnly/1','EmployeeController@indexActive')->name('employee.active');
     Route::post('employee/archive/1','EmployeeController@archiveOldOrTADDEmployees')->name('employee.archiveOldOrTADDEmployees');

@@ -100,6 +100,7 @@
                             <v-list-item-title>Gebruikers</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
+                    
                     <v-list-item to="/admin/settings">
                         <v-list-item-action>
                             <v-icon>build</v-icon>
@@ -116,11 +117,21 @@
                             <v-list-item-title>Archivering</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
+                    
                     <v-list-item>
                         <v-divider></v-divider>
                     </v-list-item>
                 </v-list-group>
                 @endif
+                <v-list-item :to="{name : 'myprofile', params: {user : {{Auth::user()->id}} } }">
+                    <v-list-item-action>
+                        <v-icon>account_circle</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Mijn profiel</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+            
                 <form id="logout-form" action="{{ route('logout') }}" method="POST">
                 <v-list-item>
                     <v-list-item-action>

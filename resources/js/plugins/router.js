@@ -5,6 +5,7 @@ Vue.use(Router);
 
 const Dashboard = () => import('../components/Dashboard.vue');
 const Ingave = () => import('../components/Ingave.vue');
+const Profile = () => import('../components/admin/Profile.vue');
 
 export default new Router({
     mode: 'history',
@@ -50,8 +51,14 @@ export default new Router({
         },
         {
             path: '/admin/archief',
-            name: 'settings',
+            name: 'archief',
             component: () => import('../components/admin/Archief.vue')
+        },
+        {
+            path: '/admin/myprofile',
+            name: 'myprofile',
+            component: Profile,
+            props: true
         },
         /*{
             path: '/calendar',
