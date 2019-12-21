@@ -37,16 +37,27 @@
                 </v-list-item>
                 <v-list-item to="/ingave">
                     <v-list-item-action>
+                    @if(Auth::user()->readonly)
+                        <v-icon>visibility</v-icon>
+                    @else
                         <v-icon>edit</v-icon>
+                    @endif
                     </v-list-item-action>
                     <v-list-item-content>
+                    @if(Auth::user()->readonly)
+                        <v-list-item-title>Details</v-list-item-title>
+                    @else
                         <v-list-item-title>Ingave</v-list-item-title>
+                    @endif
                     </v-list-item-content>
                 </v-list-item>
                 </v-list-group>
                 <v-list-item>
+                
                 <v-divider></v-divider>
+                
                 </v-list-item>
+                @if(!(Auth::user()->readonly))
                 <v-list-group
                     prepend-icon="list"
                     
@@ -123,6 +134,7 @@
                     </v-list-item>
                 </v-list-group>
                 @endif
+                @endif
                 <v-list-item :to="{name : 'myprofile', params: {user : {{Auth::user()->id}} } }">
                     <v-list-item-action>
                         <v-icon>account_circle</v-icon>
@@ -186,6 +198,14 @@
 
     </v-app>
     <script src="{{ asset('js/app.js') }}"></script>
+    <script>
+        window.u53r = {
+            id : {{ Auth::user()->id }}, 
+            isadmin :  {{ Auth::user()->isadmin }},
+            isactive :  {{ Auth::user()->isactive }},
+            readonly :  {{ Auth::user()->readonly }},
+        };
+    </script>
 </body>
 
 

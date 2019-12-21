@@ -22,11 +22,11 @@
               <template v-slot:item.total_seniority_days="{ item }">
                 <v-progress-linear :value="item.total_seniority_days"></v-progress-linear>
               </template>
-              <template v-slot:item.werkpunt="{ item }">
+              <template v-if="!ro" v-slot:item.werkpunt="{ item }">
                 <v-icon :title="'Verwijder werkpunten van '+item.werkpunt" color="red" v-if="!!item.werkpunt" @click="zetWerkpunten(item,false)">thumb_down</v-icon>
                 <v-icon title="Geef werkpunten" color="green" v-if="!item.werkpunt" @click="zetWerkpunten(item,true)">thumb_up</v-icon>
               </template>
-              <template v-slot:item.istadd="{ item }">
+              <template v-if="!ro" v-slot:item.istadd="{ item }">
                 <v-icon title="maakTADD" color="gray" v-if="!item.werkpunt" @click="zetTADD(item,true)">star</v-icon>
               </template>
             </v-data-table>
@@ -39,10 +39,10 @@
               <template v-slot:item.total_seniority_days="{ item }">
                 <v-progress-linear :value="item.total_seniority_days"></v-progress-linear>
               </template>
-              <template v-slot:item.istadd="{ item }">
+              <template v-if="!ro" v-slot:item.istadd="{ item }">
                 <v-icon title="verwijder TADD status" color="yellow" @click="zetTADD(item,false)">star</v-icon>
               </template>
-              <template v-slot:item.benoemd="{ item }">
+              <template v-if="!ro" v-slot:item.benoemd="{ item }">
                 <v-icon title="maakBenoemd" color="gray" @click="zetBenoemd(item,true)">star</v-icon>
               </template>
             </v-data-table>
@@ -166,6 +166,9 @@ export default {
   },
 
   computed: {
+    ro() { //shorthand for "read only"
+      return window.u53r.readonly;
+    },
     formTitle() {
       return this.editedIndex === -1
         ? "Nieuwe school toevoegen"

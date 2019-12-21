@@ -8,9 +8,9 @@
       </v-row>
       <v-row justify="space-between">
         <v-col cols="4" xs="8" sm="5" md="4">
-          <v-btn color="primary" @click="addEmployment">Aanstelling toevoegen</v-btn>
+          <v-btn v-if="!ro" color="primary" @click="addEmployment">Aanstelling toevoegen</v-btn>
         </v-col>
-        <v-col cols="4" xs="8" sm="5" md="4">
+        <v-col v-if="!ro" cols="4" xs="8" sm="5" md="4">
           <v-btn color="red" @click="deleteFunctionData" width="100%">
             Ambt verwijderen
             <v-icon>delete</v-icon>
@@ -35,14 +35,14 @@
         {{item.school.name}} [{{item.school.abbreviation}}]
         <!-- </v-label> -->
       </template>
-      <template v-slot:item.action="{ item }">
+      <template v-if="!ro" v-slot:item.action="{ item }">
         <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
         <v-icon small @click="deleteItem(item)">delete</v-icon>
       </template>
     </v-data-table>
     <!-- </v-layout>
     </v-container>-->
-    <v-dialog v-model="employmentDialog" max-width="500px">
+    <v-dialog v-if="!ro" v-model="employmentDialog" max-width="500px">
       <v-card>
         <v-card-title>
           <span class="headline">{{ formTitleEmployment }}</span>
@@ -149,6 +149,9 @@ export default {
       if (this.functiondata.educational_function)
         return "/" + this.functiondata.educational_function.denominator;
       else return "";
+    },
+    ro() { //shorthand for "read only"
+      return window.u53r.readonly;
     }
   },
   methods: {

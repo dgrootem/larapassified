@@ -57,6 +57,14 @@ const router = new VueRouter({ routes })
 
 new Vue({
     vuetify, router,
+    props: {
+        user : {
+            id : -1,
+            isadmin : false,
+            isactive : false,
+            readonly : true
+        },
+    },
     data: () => ({
         drawer: null,
         settings: {

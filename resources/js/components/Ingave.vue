@@ -20,7 +20,7 @@
         </v-col>
         <!-- <v-col xs="12" sm="4" md="4"> -->
       </v-row>
-      <v-speed-dial v-model="fab" absolute top right direction="bottom" v-if="selectedEmployee">
+      <v-speed-dial v-if="(!ro) && selectedEmployee" v-model="fab" absolute top right direction="bottom" >
         <template v-slot:activator>
           <v-btn v-model="fab" color="blue darken-2" dark fab>
             <v-icon v-if="fab">close</v-icon>
@@ -85,7 +85,7 @@
                   :color="item.interruption_type_id==1?'green':'red'"
                 >{{item.interruption_type_id==1?'check':'not_interested'}}</v-icon>
               </template>
-              <template v-slot:item.action="{ item }">
+              <template v-if="!ro" v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editInterruption(item)" title="Aanstelling aanpassen">edit</v-icon>
                 <v-icon small class="mr-2" @click="deleteInterruption(item)" title="Aanstelling verwijderen">delete</v-icon>
               </template>
@@ -94,7 +94,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog v-model="functionDataDialog" max-width="500px">
+    <v-dialog v-if="!ro" v-model="functionDataDialog" max-width="500px">
       <v-card>
         <v-card-title>
           <span class="headline">{{ formTitleFD }}</span>
@@ -124,7 +124,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="interruptionDialog" max-width="500px">
+    <v-dialog v-if="!ro" v-model="interruptionDialog" max-width="500px">
       <v-card>
         <v-card-title>
           <span class="headline">{{ formTitleInterruption }}</span>
@@ -253,7 +253,9 @@ export default {
         ? "Nieuwe onderbreking"
         : "Bewerk onderbrekeing";
     },
-
+    ro() { //shorthand for "read only"
+      return window.u53r.readonly;
+    },
     items() {
       return this.entries.map(entry => {
         //console.log(entry.fullNameExtended);
