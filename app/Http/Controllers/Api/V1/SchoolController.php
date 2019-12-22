@@ -6,9 +6,15 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use \App\School;
 use \App\SchoolType;
+use Illuminate\Support\Facades\Auth;
 
 class SchoolController extends Controller
 {
+
+    public function authorizeRO(){
+        if (Auth::user()->readonly) throw new Exception('not authorized'); 
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -31,7 +37,7 @@ class SchoolController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $this->authorizeRO();
         $school = new School();
         $this->saveSchool($school,$request);
         return $school;
@@ -75,6 +81,7 @@ class SchoolController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->authorizeRO();
         $school = School::findOrFail($id);
         $this->saveSchool($school,$request);
         //$school->update($request->all());
@@ -89,6 +96,7 @@ class SchoolController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorizeRO();
         $school = School::findOrFail($id);
         $school->delete();
         return '';

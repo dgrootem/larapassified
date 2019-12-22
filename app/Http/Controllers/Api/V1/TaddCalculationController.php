@@ -8,14 +8,19 @@ use App\Employee;
 use App\EduFunctionData;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 use Log;
 
 class TaddCalculationController extends Controller
 {
-    
+    public function authorizeRO(){
+        if (Auth::user()->readonly) throw new Exception('not authorized'); 
+    }
 
     function updateSeniorityDays($functionData_id){
+        $this->authorizeRO();
         $functionData = EduFunctionData::findOrFail($functionData_id);
         Log::debug($functionData);
         Log::debug("EMPLOYEE=".$functionData->employee);
@@ -32,6 +37,7 @@ class TaddCalculationController extends Controller
     }
 
     function updateAllSeniorityDays(Employee $employee){
+        $this->authorizeRO();
         foreach($employee->educationalFunctionData as $functionData){
             $this->updateSeniorityDays($employee,$functionData);
         }

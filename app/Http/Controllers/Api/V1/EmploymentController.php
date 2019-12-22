@@ -6,9 +6,16 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Employment;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class EmploymentController extends Controller
 {
+
+    public function authorizeRO(){
+        if (Auth::user()->readonly) throw new Exception('not authorized'); 
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -35,6 +42,7 @@ class EmploymentController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeRO();
         $employment = Employment::findOrFail($id);
         $this->saveEmployment($request,$employment);
         //$employment->update($request->all());
@@ -44,6 +52,7 @@ class EmploymentController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeRO();
         $employment = new Employment();
         //Log::debug(substr($request['beginDate'],0,10));
         // Carbon::createFromFormat('DD-MM-YYYY',$request['beginDate']);
@@ -56,6 +65,7 @@ class EmploymentController extends Controller
 
     public function destroy($id)
     {
+        $this->authorizeRO();
         $employment = Employment::findOrFail($id);
         $employment->delete();
         return '';

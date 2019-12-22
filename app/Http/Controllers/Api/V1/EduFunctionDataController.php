@@ -9,6 +9,8 @@ use App\Employment;
 use App\Setting;
 use Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class EduFunctionDataController extends Controller
 {
@@ -20,6 +22,10 @@ class EduFunctionDataController extends Controller
     public function index()
     {
         return EduFunctionData::with(['educationalFunction','employee'])->get();
+    }
+
+    public function authorizeRO(){
+        if (Auth::user()->readonly) throw new Exception('not authorized'); 
     }
 
     //todo: pagination voorzien
@@ -54,6 +60,7 @@ class EduFunctionDataController extends Controller
     }
 
     private function saveAndReturn($eduFunctionData){
+        $this->authorizeRO();
         $eduFunctionData->save();
         $eduFunctionData->educationalFunction;
         $eduFunctionData->employments;
@@ -64,6 +71,7 @@ class EduFunctionDataController extends Controller
     //set ambt
     public function update(Request $request, $id)
     {
+        $this->authorizeRO();
         $eduFunctionData = EduFunctionData::findOrFail($id);
         Log::debug($request->all());
         $eduFunctionData->educational_function_id= $request['educational_function_id'];
@@ -72,6 +80,7 @@ class EduFunctionDataController extends Controller
 
     //add employment
     public function addEmployment(Request $request,$id){
+        $this->authorizeRO();
         $eduFunctionData = EduFunctionData::findOrFail($id);
         $employment = Employment::findOrFail($request['employment_id']);
         $eduFunctionData->employments()->associate($employment);
@@ -80,6 +89,7 @@ class EduFunctionDataController extends Controller
 
     //remove employment
     public function removeEmployment(Request $request,$id,$employment_id){
+        $this->authorizeRO();
         $eduFunctionData = EduFunctionData::findOrFail($id);
         $eduFunctionData->employments()->detach($employment_id);
         return $this->saveAndReturn($eduFunctionData);
@@ -88,6 +98,7 @@ class EduFunctionDataController extends Controller
     //create a new instance
     public function store(Request $request)
     {
+        $this->authorizeRO();
         Log::debug($request->all());
         //link with employee and educational function 
         $eduFunctionData = new EduFunctionData();
@@ -112,6 +123,7 @@ class EduFunctionDataController extends Controller
 
     public function destroy($id)
     {
+        $this->authorizeRO();
         $eduFunctionData = EduFunctionData::findOrFail($id);
         $eduFunctionData->delete();
         return '';
@@ -123,6 +135,7 @@ class EduFunctionDataController extends Controller
     }
 
     public function addWerkpunt($id){
+        $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);
         $efd->datum_verbetering_nodig_gezet = Carbon::today();
         $efd->save();
@@ -130,6 +143,7 @@ class EduFunctionDataController extends Controller
     }
 
     public function verwijderWerkpunt($id){
+        $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);
         $efd->datum_verbetering_nodig_gezet = null;
         $efd->save();
@@ -137,6 +151,7 @@ class EduFunctionDataController extends Controller
     }
 
     public function addTADD($id){
+        $this->authorizeRO() ;
         $efd = EduFunctionData::findOrFail($id);
         $efd->isTadd = true;
         $efd->save();
@@ -144,6 +159,7 @@ class EduFunctionDataController extends Controller
     }
 
     public function verwijderTADD($id){
+        $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);
         $efd->isTadd = false;
         $efd->save();

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use \App\EducationalFunction;
 use App\EduFunctionData;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class EducationalFunctionController extends Controller
 {
@@ -25,6 +27,14 @@ class EducationalFunctionController extends Controller
         $ids = EduFunctionData::where('employee_id',$id)->pluck('educational_function_id');
         return EducationalFunction::whereNotIn('id',$ids)->get();
     }
+
+    public function authorizeAdmin(){
+        if (!Auth::user()->isadmin) throw new Exception('not authorized'); 
+    }
+
+    public function authorizeRO(){
+        if (Auth::user()->readonly) throw new Exception('not authorized'); 
+    }
     
 
     /**
@@ -35,6 +45,7 @@ class EducationalFunctionController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorizeRO();
         $func = EducationalFunction::create($request->all());
         return $func;
     }
@@ -48,6 +59,7 @@ class EducationalFunctionController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->authorizeRO();
         $func = EducationalFunction::findOrFail($id);
         $func->update($request->all());
         return $func;
@@ -61,6 +73,7 @@ class EducationalFunctionController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorizeRO();
         $func = EducationalFunction::findOrFail($id);
         $func->delete();
         return '';

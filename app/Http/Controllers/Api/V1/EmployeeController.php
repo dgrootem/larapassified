@@ -10,9 +10,15 @@ use Log;
 use App\EduFunctionData;
 use App\Setting;
 use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class EmployeeController extends Controller
 {
+
+    public function authorizeRO(){
+        if (Auth::user()->readonly) throw new Exception('not authorized'); 
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -61,6 +67,7 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorizeRO();
         $employee = new Employee();
         return $this->saveEmployee($employee, $request);
     }
@@ -87,6 +94,7 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->authorizeRO();
         $employee = Employee::findOrFail($id);
         return $this->saveEmployee($employee, $request);
     }
@@ -108,6 +116,7 @@ class EmployeeController extends Controller
 
     private function saveEmployee(Employee $employee, Request $request)
     {
+        $this->authorizeRO();
         $employee->birthDate = $this->getBirthDate($request);
         $employee->registrationNumber = $request['registrationNumber'];
         $employee->firstName = $request['firstName'];
@@ -128,6 +137,7 @@ class EmployeeController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorizeRO();
         $employee = Employee::findOrFail($id);
         $employee->delete();
         return '';
@@ -135,6 +145,7 @@ class EmployeeController extends Controller
 
     public function archiveOldOrTADDEmployees(/*Request $request*/)
     {
+        if (!Auth::user()->isadmin) throw new Exception('not authorized'); 
         //if (Auth::user()->isadmin && Auth::user()->isactive) {
             Log::info("archiving...");
             //TODO: nagaan of de user een admin is
@@ -155,6 +166,7 @@ class EmployeeController extends Controller
 
     public function toggleEmployeesVisibility($visiblity)
     {
+        if (!Auth::user()->isadmin) throw new Exception('not authorized'); 
         $v = ($visiblity == true ? "1" : "0");
         Employee::where('isActive',0)->update(["isActive" => 1]);
         //\DB::raw("update employees set isActive = " . $v . ";");

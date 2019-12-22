@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class BenoemingController extends Controller
 {
@@ -36,6 +37,7 @@ class BenoemingController extends Controller
     public function store(Request $request)
     {
         //
+        $this->authorizeRO();
     }
 
     /**
@@ -70,6 +72,7 @@ class BenoemingController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $this->authorizeRO();
     }
 
     /**
@@ -81,5 +84,6 @@ class BenoemingController extends Controller
     public function destroy($id)
     {
         //
+        $this->authorizeRO();
     }
 }

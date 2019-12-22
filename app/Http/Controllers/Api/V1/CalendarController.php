@@ -4,9 +4,14 @@ namespace App\Http\Controllers\Api\V1;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CalendarController extends Controller
 {
+    public function authorizeRO(){
+        if (Auth::user()->readonly) throw new Exception('not authorized'); 
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -36,6 +41,7 @@ class CalendarController extends Controller
     public function store(Request $request)
     {
         //
+        $this->authorizeRO();
     }
 
     /**
@@ -70,6 +76,7 @@ class CalendarController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $this->authorizeRO();
     }
 
     /**
@@ -81,5 +88,6 @@ class CalendarController extends Controller
     public function destroy($id)
     {
         //
+        $this->authorizeRO();
     }
 }

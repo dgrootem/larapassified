@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\EmploymentInterruption;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class EmploymentInterruptionController extends Controller
 {
@@ -17,6 +19,10 @@ class EmploymentInterruptionController extends Controller
     public function index()
     {
         return EmploymentInterruption::all();
+    }
+
+    public function authorizeRO(){
+        if (Auth::user()->readonly) throw new Exception('not authorized'); 
     }
 
     public function show($id)
@@ -35,6 +41,7 @@ class EmploymentInterruptionController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeRO();
         $employmentInterruption = EmploymentInterruption::findOrFail($id);
         $this->saveInterruption($request,$employmentInterruption);
 
@@ -43,6 +50,7 @@ class EmploymentInterruptionController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeRO();
         $employmentInterruption = new EmploymentInterruption();
         $this->saveInterruption($request,$employmentInterruption);
         return $employmentInterruption;
@@ -50,6 +58,7 @@ class EmploymentInterruptionController extends Controller
 
     public function destroy($id)
     {
+        $this->authorizeRO();
         $employmentInterruption = EmploymentInterruption::findOrFail($id);
         $employmentInterruption->delete();
         return '';

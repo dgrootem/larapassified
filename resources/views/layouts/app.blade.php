@@ -198,6 +198,7 @@
 
     </v-app>
     <script src="{{ asset('js/app.js') }}"></script>
+    @auth
     <script>
         window.u53r = {
             id : {{ Auth::user()->id }}, 
@@ -206,6 +207,7 @@
             readonly :  {{ Auth::user()->readonly }},
         };
     </script>
+    @endauth
 </body>
 
 
