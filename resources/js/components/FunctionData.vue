@@ -55,6 +55,7 @@
                 <v-text-field
                   v-model="editedItem.formattedBegin"
                   label="Begin"
+                  v-mask="mask"
                   hint="DD-MM-YYYY"
                   @blur="setBegin"
                 ></v-text-field>
@@ -63,6 +64,7 @@
                 <v-text-field
                   v-model="editedItem.formattedEnd"
                   label="Einde"
+                  v-mask="mask"
                   hint="DD-MM-YYYY"
                   @blur="setEnd"
                 ></v-text-field>
@@ -129,6 +131,8 @@ export default {
       editedIndex: -1,
       editedItem: Object.assign({}, this.defaultEmployment),
       employmentDialog: false,
+
+      mask : '##-##-####',
 
       headers: [
         { text: "Begin", align: "left", value: "beginDate" },

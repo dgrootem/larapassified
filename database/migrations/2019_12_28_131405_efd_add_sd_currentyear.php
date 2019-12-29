@@ -15,6 +15,7 @@ class EfdAddSdCurrentyear extends Migration
     {
         Schema::table('edu_function_data', function($table) {
             $table->integer('seniority_days_currentyear')->default(0);
+            $table->date('seniority_days_calculated_on')->nullable();
         });
     }
 
@@ -27,6 +28,7 @@ class EfdAddSdCurrentyear extends Migration
     {
         Schema::table('edu_function_data', function($table) {
             $table->dropColumn('seniority_days_currentyear');
+            $table->dropColumn('seniority_days_calculated_on');
         });
     }
 }

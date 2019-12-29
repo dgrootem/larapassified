@@ -139,6 +139,7 @@
                 <v-text-field
                   v-model="editedItem.formattedBegin"
                   label="Begin"
+                  v-mask="mask"
                   hint="DD-MM-YYYY"
                   @blur="setBegin"
                 ></v-text-field>
@@ -147,6 +148,7 @@
                 <v-text-field
                   v-model="editedItem.formattedEnd"
                   label="Einde"
+                  v-mask="mask"
                   hint="DD-MM-YYYY"
                   @blur="setEnd"
                 ></v-text-field>
@@ -192,6 +194,7 @@
 import FunctionData from "./FunctionData.vue";
 import { compareAsc,parse, format } from "date-fns";
 import * as DateUtil from "../DateUtil";
+import { mask } from 'vue-the-mask'
 
 export default {
   components: {
@@ -227,6 +230,8 @@ export default {
       search: null,
 
       scholen: [],
+
+      mask : '##-##-####',
 
       fab: false,
       //tab stuff
