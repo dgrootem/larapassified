@@ -16,8 +16,9 @@ class CreateEduFunctionDataTable extends Migration
         Schema::create('edu_function_data', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->integer('seniority_days')->default(0); //zijn deze nodig? is waarschijnlijk optimalisatie
-            $table->integer('total_seniority_days')->default(0); //zijn deze nodig? is waarschijnlijk optimalisatie
+            $table->integer('seniority_days')->default(0); 
+            
+            $table->integer('total_seniority_days')->default(0); 
             $table->boolean('isTadd')->default(false);
             $table->date('datum_verbetering_nodig_gezet')->nullable()->default(null);
 

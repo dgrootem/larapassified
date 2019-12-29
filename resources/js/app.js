@@ -92,7 +92,8 @@ new Vue({
                 return true;
             })
             .catch(function(resp) {
-                throw new Exception(resp);
+                console.error(resp);
+                throw "Could not load settings";
             });
           }
       },

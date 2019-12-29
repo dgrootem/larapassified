@@ -2,25 +2,39 @@
   <div>
     <v-card width="100%">
       <v-container fluid>
+        <v-text-field
+            v-model="search"
+            append-icon="search"
+            label="Zoeken"
+            single-line
+            hide-details
+          ></v-text-field>
         <v-tabs v-model="dashtab">
-          <v-tab key="voldoende" >Voldoende
+          <v-tab key="Volgend jaar gerechtigd" >Volgend jaar gerechtigd
+          </v-tab>
+          <v-tab key="TADD gerechtigd" >TADD gerechtigd
           </v-tab>
           <v-tab key="TADD" >TADD
           </v-tab>
-          <v-tab key="benoemd" >Benoemd
-          </v-tab>
-          <v-tab key="onvoldoende" >Onvoldoende
-          </v-tab>
         </v-tabs>
         <v-tabs-items v-model="dashtab">
-          
-          <v-tab-item key="voldoende">
-            <v-data-table :items="ambtenVoldoende" :headers="headersVoldoende">
+          <v-tab-item key="Volgend jaar gerechtigd">
+            <v-data-table :items="nextYearTADD" :headers="headersVolgendJaarTADD" :search="search">
+              <template v-slot:item.seniority_days_perc="{ item }">
+                <v-progress-linear dark height="20" background-opacity="0.5" :value="Number(item.seniority_days_perc)">{{item.seniority_days}}</v-progress-linear>
+              </template>
+              <template v-slot:item.total_seniority_days_perc="{ item }">
+                <v-progress-linear dark height="20" background-opacity="0.5" :value="Number(item.total_seniority_days_perc)">{{item.total_seniority_days}}</v-progress-linear>
+              </template>
+            </v-data-table>
+          </v-tab-item>
+          <v-tab-item key="TADD gerechtigd">
+            <v-data-table :items="thisYearTADD" :headers="headersVoldoende">
               <template v-slot:item.seniority_days="{ item }">
-                <v-progress-linear :value="item.seniority_days"></v-progress-linear>
+                <v-progress-linear :value="item.seniority_days_perc"></v-progress-linear>
               </template>
               <template v-slot:item.total_seniority_days="{ item }">
-                <v-progress-linear :value="item.total_seniority_days"></v-progress-linear>
+                <v-progress-linear :value="item.total_seniority_days_perc"></v-progress-linear>
               </template>
               <template v-if="!ro" v-slot:item.werkpunt="{ item }">
                 <v-icon :title="'Verwijder werkpunten van '+item.werkpunt" color="red" v-if="!!item.werkpunt" @click="zetWerkpunten(item,false)">thumb_down</v-icon>
@@ -32,33 +46,18 @@
             </v-data-table>
           </v-tab-item>
           <v-tab-item key="TADD">
-            <v-data-table :items="ambtenTADD" :headers="headersTADD">
+            <v-data-table :items="alreadyTADD" :headers="headersTADD">
               <template v-slot:item.seniority_days="{ item }">
-                <v-progress-linear :value="item.seniority_days"></v-progress-linear>
+                <v-progress-linear :value="item.seniority_days_perc"></v-progress-linear>
               </template>
               <template v-slot:item.total_seniority_days="{ item }">
-                <v-progress-linear :value="item.total_seniority_days"></v-progress-linear>
+                <v-progress-linear :value="item.total_seniority_days_perc"></v-progress-linear>
               </template>
               <template v-if="!ro" v-slot:item.istadd="{ item }">
                 <v-icon title="verwijder TADD status" color="yellow" @click="zetTADD(item,false)">star</v-icon>
               </template>
               <template v-if="!ro" v-slot:item.benoemd="{ item }">
                 <v-icon title="maakBenoemd" color="gray" @click="zetBenoemd(item,true)">star</v-icon>
-              </template>
-            </v-data-table>
-          </v-tab-item>
-          <v-tab-item key="benoemd">
-            <v-data-table :items="ambtenBenoemd" :headers="headersBenoemd">
-              
-            </v-data-table>
-          </v-tab-item>
-          <v-tab-item key="onvoldoende">
-            <v-data-table :items="ambtenOnvoldoende" :headers="headersOnvoldoende">
-              <template v-slot:item.seniority_days="{ item }">
-                <v-progress-linear :value="item.seniority_days"></v-progress-linear>
-              </template>
-              <template v-slot:item.total_seniority_days="{ item }">
-                <v-progress-linear :value="item.total_seniority_days"></v-progress-linear>
               </template>
             </v-data-table>
           </v-tab-item>
@@ -74,12 +73,18 @@
 </template>
 
 <script>
+import { compareAsc} from "date-fns";
+import * as DateUtil from "../DateUtil";
+
 export default {
   data: function() {
     return {
       message: "Some Message",
-      ambten : [],
+      alreadyTADD : [],
+      thisYearTADD : [],
+      nextYearTADD : [],
       headers: [],
+      grenswaarden: [],
 
       taddNeededTotal : 580,
       taddNeededEffective : 400,
@@ -89,7 +94,9 @@ export default {
       snack_color: "",
       snack_timeout: 2000,
 
-      dashtab : null
+      dashtab : null,
+
+      search : null
     };
   },
 
@@ -148,22 +155,65 @@ export default {
           .then(function(resp) {
             item.istadd = true;
             app.successSnack("TADD toegevoegd");
+            app.alreadyTADD.push(item);
+            let index = app.thisYearTADD.findIndex(a => a.id == item.id);
+            app.thisYearTADD.splice(index,1);
           })
           .catch(function(resp) {
+            console.log(resp);
             app.failSnack("TADD toevoegen mislukt");
           });
       else
-      axios
+        axios
           .delete("api/v1/educationalFunctionData/"+item.id+"/werkpunt")
           .then(function(resp) {
             item.istadd = false;
             app.successSnack("TADD verwijderd");
+            app.thisYearTADD.push(item);
+            let index = app.alreadyTADD.findIndex(a => a.id == item.id);
+            app.alreadyTADD.splice(index,1);
           })
           .catch(function(resp) {
+            console.log(resp);
             app.failSnack("TADD verwijderen mislukt");
           });
     },
+    grens(name){
+      let result = -100;
+      let grenzen = [];
+      if (this.grenswaarden.length > 0) {
+        grenzen = this.grenswaarden.filter(function(f){
+          //console.log('====================================');
+          console.log(f.name+ '['+f.van+'->'+f.tot+']');
+          let compasc1 = compareAsc(DateUtil.parseDateFromDB(f.van),new Date());
+          let compasc2 = compareAsc(DateUtil.parseDateFromDB(f.tot),new Date());
+          // console.log('van is voor nu ?' + (compasc1 < 1));
+          // console.log('tot is na nu ?' + (compasc2 > -1));
+          return ((f.name == name) && (compasc1 < 1) && (compasc2 > -1));
+        });
+        console.log('#grenzen='+grenzen.length);
+        if (grenzen.length == 0){
+          this.failSnack('Fout bij bepalen grenswaarden');
+          result = 100;
+        }
+        if (grenzen.length == 1) result = grenzen[0].value;
+        else{
+          
+          let grens = grenzen[0].value;
+          let i=1;
+          for(i=1;i!=grenzen.length;i++) if (grenzen[i].value > grens) grens = grenzen[i].value;
+          result = grens;
+        }
+      }
+      console.log(name+'='+result);
+
+      return result;
+    },
+    laadAmbten(){
+      
+    }
   },
+  
 
   computed: {
     ro() { //shorthand for "read only"
@@ -174,38 +224,34 @@ export default {
         ? "Nieuwe school toevoegen"
         : "Bewerk schoolgegevens";
     },
-    ambtenOnvoldoende(){
+    volgendJaarTADD(){
       var app = this;
+      return this.nextYearTADD;
+      /*
       return this.ambten.filter(a =>{
         
-        return ((a.total_seniority_days < 100) || (a.seniority_days < 100));
-      });
+        return ((a.total_seniority_days < this.grenswaarden.) || (a.seniority_days < 100));
+      });*/
     },
     ambtenVoldoende(){
+      return this.thisYearTADD;/*
       var app = this;
       return this.ambten.filter(a =>{
         
         return ((a.total_seniority_days >= 100) && (a.seniority_days >= 100)
                 && (a.istadd == 0));
-      });
+      });*/
     },
     ambtenTADD(){
-      var app = this;
-      return this.ambten.filter(a =>{
+      return this.alreadyTADD;
+      /*return this.ambten.filter(a =>{
         
         return ((a.total_seniority_days >= 100) && (a.seniority_days >= 100)
                 && (a.istadd == 1));
-      });
+      });*/
     },
-    ambtenBenoemd(){
-      var app = this;
-      return this.ambten.filter(a =>{
-        return [];
-        /*return ((a.total_seniority_days >= 100) && (a.seniority_days >= 100)
-                && (a.istadd == 1));*/
-      });
-    },
-    headersOnvoldoende(){
+    
+    headersVolgendJaarTADD(){
       return this.headers.filter(h => (h.o ==1));
     },
     headersVoldoende(){
@@ -214,33 +260,71 @@ export default {
     headersTADD(){
       return this.headers.filter(h => (h.t ==1));
     },
-    headersBenoemd(){
-      return this.headers.filter(h => (h.b ==1));
+    
+    grensEff(){
+      return this.grens('taddNeededEffective');
     },
+    grensTot(){
+      return this.grens('taddNeededTotal');
+    }
+    
 
   },
-
   created() {
     var app = this;
     axios
-      .get("api/v1/educationalFunctionData/tadd/fullIndex")
+      .get("api/v1/settingsByContext/calc")
       .then(function(resp) {
-        app.ambten = resp.data;
+        console.log('retrieved grenswaarden');
+        app.grenswaarden = resp.data;
+        app.laadAmbten();
       })
       .catch(function(resp) {
         console.log(resp);
-        alert("Could not load schools");
+        alert("Could not load grenswaarden");
       });
+    axios
+      .get("api/v1/educationalFunctionData/tadd/nextyear")
+      .then(function(resp) {
+        console.log('loaded nextYearTADD');
+        app.nextYearTADD = resp.data;
+      })
+      .catch(function(resp) {
+        console.log(resp);
+        alert("Could not load data");
+      });
+    axios
+      .get("api/v1/educationalFunctionData/tadd/thisyear")
+      .then(function(resp) {
+        app.thisYearTADD = resp.data;
+        console.log('loaded thisYearTADD');
+      })
+      .catch(function(resp) {
+        console.log(resp);
+        alert("Could not load data");
+      });
+    axios
+      .get("api/v1/educationalFunctionData/tadd/alreadytadd")
+      .then(function(resp) {
+        app.alreadyTADD = resp.data;
+        console.log('loaded alreadyTADD');
+      })
+      .catch(function(resp) {
+        console.log(resp);
+        alert("Could not load data");
+      });
+    
+    
 
     this.headers = [
-      { text: "Voornaam", align: "left", value: "firstname" , o: 1, v:1,t:1,b:1},
-      { text: "Naam", align: "left", value: "lastname" , o: 1, v:1,t:1,b:1},
-      { text: "Ambt", align: "left", value: "ambt" , o: 1, v:1,t:1,b:1},
-      { text: "TOT", align: "center", value: "total_seniority_days", width: "16px" , o: 1, v:1,t:0,b:0},
-      { text: "EFF", align: "center", value: "seniority_days", width: "16px" , o: 1, v:1,t:0,b:0},
-      { text: "werkpunt", align: "center", value: "werkpunt", width: "16px" , o: 0, v:1,t:0,b:0},
-      { text: "TADD", align: "center", value: "istadd", width: "16px" , o: 0, v:1,t:1,b:0},
-      { text: "benoemd", align: "center", value: "benoemd", width: "16px" , o: 0, v:0,t:1,b:1}
+      { o: 1, v:1,t:1,b:1, text: "Voornaam", align: "left", value: "firstname"                               },
+      { o: 1, v:1,t:1,b:1, text: "Naam", align: "left", value: "lastname"                                    },
+      { o: 1, v:1,t:1,b:1, text: "Ambt", align: "left", value: "ambt"                                        },
+      { o: 1, v:1,t:0,b:0, text: "TOT", align: "center", value: "total_seniority_days_perc", width: "200px"   },
+      { o: 1, v:1,t:0,b:0, text: "EFF", align: "center", value: "seniority_days_perc", width: "200px"         },
+      { o: 0, v:1,t:0,b:0, text: "werkpunt", align: "center", value: "werkpunt", width: "16px"               },
+      { o: 0, v:1,t:1,b:0, text: "TADD", align: "center", value: "istadd", width: "16px"                     },
+      { o: 0, v:0,t:1,b:1, text: "benoemd", align: "center", value: "benoemd", width: "16px"                 }
       //{ text: "Benoemd", align: "center", value: "nocount", width: "16px" }
     ];
     this.editedItem = Object.assign({}, this.defaultItem);

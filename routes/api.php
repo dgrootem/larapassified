@@ -20,6 +20,11 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::get('educationalFunctionData/{id}/addEmployement/{employment_id}','EduFunctionDataController@addEmployement')->name('educationalFunctionData.addEmployement');
     Route::get('educationalFunctionData/{id}/removeEmployement/{employment_id}','EduFunctionDataController@removeEmployement')->name('educationalFunctionData.removeEmployement');
     Route::get('educationalFunctionData/tadd/fullIndex','EduFunctionDataController@fullIndex')->name('educationalFunctionData.fullindex');
+
+    Route::get('educationalFunctionData/tadd/nextyear','EduFunctionDataController@nextYearTADD')->name('educationalFunctionData.nextyear');
+    Route::get('educationalFunctionData/tadd/thisyear','EduFunctionDataController@thisYearTADD')->name('educationalFunctionData.thisyear');
+    Route::get('educationalFunctionData/tadd/alreadytadd','EduFunctionDataController@alreadyTADD')->name('educationalFunctionData.alreadytadd');
+
     Route::post('educationalFunctionData/{id}/werkpunt','EduFunctionDataController@addWerkpunt')->name('educationalFunctionData.addWerkpunt');
     Route::delete('educationalFunctionData/{id}/werkpunt','EduFunctionDataController@verwijderWerkpunt')->name('educationalFunctionData.verwijderWerkpunt');
     Route::post('educationalFunctionData/{id}/tadd','EduFunctionDataController@addTADD')->name('educationalFunctionData.addTADD');

@@ -124,7 +124,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-if="!ro" v-model="interruptionDialog" max-width="500px">
+    <v-dialog v-if="!ro" v-model="interruptionDialog" max-width="600px">
       <v-card>
         <v-card-title>
           <span class="headline">{{ formTitleInterruption }}</span>
@@ -151,13 +151,24 @@
                   @blur="setEnd"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="8" md="8">
-                <v-switch
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="12" md="12">
+                <!-- {{ editedItem.interruption_type_id }} -->
+                <v-radio-group v-model="editedItem.interruption_type_id">
+                  <v-radio :value="1"
+                    label="Telt wel mee voor rechtenopbouw (zwangerschapsverlof, ...)">
+                  </v-radio>
+                  <v-radio :value="2"
+                    label="Telt niet mee voor rechtenopbouw">
+                  </v-radio>
+                </v-radio-group>
+                <!-- <v-switch
                   v-model="editedItem.interruption_type_id"
                   :false-value="teltniet"
                   :true-value="teltwel"
                   label="Telt mee voor rechtenopbouw"
-                ></v-switch>
+                ></v-switch> -->
               </v-col>
             </v-row>
           </v-container>

@@ -10,7 +10,7 @@ const Profile = () => import('../components/admin/Profile.vue');
 export default new Router({
     mode: 'history',
     base: 
-        //'/tadd2/public/' ,  //uncomment for deploy!!
+    //    '/tadd2/public/' ,  //uncomment for deploy!!
     process.env.BASE_URL,  // aangepast voor deploy
     routes: [
         {
