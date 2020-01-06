@@ -279,4 +279,8 @@ class TaddCalculationController extends Controller
 
         return compact(['aantalDagen','effectieveAantalDagen']);
     }
+
+    function calculateForThisSchoolYear(){
+        
+    }
 }

@@ -31,6 +31,7 @@
               </span>
             </template>
             <template v-slot:item.action="{ item }">
+              <v-icon small class="mr-2" @click="showPDF(item)">download</v-icon>
               <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
               <v-icon small class="mr-2" @click="deleteItem(item)">delete</v-icon>
               <v-icon
@@ -161,6 +162,10 @@ export default {
   methods: {
     navigateTo(selectedItem,newEmployee){
       this.$router.push({ name: 'ingave', params: { selectedEmployee: selectedItem, newEmployee: newEmployee }});
+    },
+    showPDF(selectedItem){
+      debugger;
+      window.open('api/v1/employee/pdf/'+selectedItem.id,'_blank');
     },
     calcBdate: function() {
       if (this.editedItem.registrationNumber.length == 11) {

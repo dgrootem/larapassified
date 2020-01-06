@@ -50,8 +50,8 @@
               <v-tab :id="generateRef(fdata)" v-for="fdata in functiondata" v-bind:key="generateRef(fdata)" :ref="generateRef(fdata)">
                 {{ fdata.educational_function.name }} 
                 <v-icon v-if="fdata.isTadd == 1" color="golden">star</v-icon>
-                <v-progress-circular title="Dagen effectief" class="mx-4" size="30" :color="progressColor(fdata.seniority_days,400)" :value="(fdata.seniority_days / 400.0) * 100.0">EF</v-progress-circular>
-                <v-progress-circular title="Dagen totaal" class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days,400)" :value="(fdata.seniority_days / 580.0) * 100.0">TO</v-progress-circular>
+                <v-progress-circular title="Dagen totaal" class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days_perc)" :value="fdata.total_seniority_days_perc">TO</v-progress-circular>
+                <v-progress-circular title="Dagen effectief" class="mx-4" size="30" :color="progressColor(fdata.seniority_days_perc)" :value="fdata.seniority_days_perc">EF</v-progress-circular>
                 <!-- [ {{ fdata.seniority_days }} dagen ] -->
                 <!-- <v-icon small class="mx-4" @click="editFunctionData(fdata)" >edit</v-icon> -->
               </v-tab>
@@ -212,7 +212,9 @@ export default {
         educational_function_id: -1,
         employee_id: this.selectedEmployee,
         seniority_days : 0,
-        total_seniority_days : 0
+        total_seniority_days : 0,
+        seniority_days_perc : 0,
+        total_seniority_days_perc : 0
       },
       defaultInterruption: {
         beginDate: new Date(),
@@ -235,7 +237,7 @@ export default {
 
       fab: false,
       //tab stuff
-      functiondatatab: 0,
+      functiondatatab: null,
       //tabs : null,
       loadingtabs: false,
       // interruptiontab: null,
@@ -285,10 +287,9 @@ export default {
     }
   },
   methods: {
-    progressColor(value,max){
-      let v = value / max * 100.0;
-      if (v < 33) return 'red';
-      else if (v < 66) return 'orange';
+    progressColor(percentage){
+      if (percentage < 33) return 'red';
+      else if (percentage < 66) return 'orange';
       else return 'green';
     },
     generateRef(fdata){
@@ -560,7 +561,8 @@ export default {
           //  let r = app.generateRef(app.functiondata[0]);
           //  this.$refs[r].click();
           //}
-          if ((setFirstTab) && (app.functiondata.length>0)) app.functiondatatab = 0;
+          if ((setFirstTab) && (app.functiondata.length>0)) 
+            app.functiondatatab = app.generateRef(app.functiondata[0]);
         })
         .then(app.setAvailableFunctions(employee_id))
         .catch(function(resp) {
@@ -655,6 +657,7 @@ export default {
         console.log(resp);
         alert("Could not load schools");
       });
+    
   }
 };
 </script>

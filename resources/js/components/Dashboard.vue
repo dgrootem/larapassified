@@ -19,7 +19,7 @@
         </v-tabs>
         <v-tabs-items v-model="dashtab">
           <v-tab-item key="Volgend jaar gerechtigd">
-            <v-data-table :items="nextYearTADD" :headers="headersVolgendJaarTADD" :search="search">
+            <v-data-table :items="nextYearTADD" :headers="headersVolgendJaarTADD" :sort-by="sortby" :search="search" :items-per-page="10000" hide-default-footer>
               <template v-slot:item.seniority_days_perc="{ item }">
                 <v-progress-linear dark height="20" background-opacity="0.5" :value="Number(item.seniority_days_perc)">{{item.seniority_days}}</v-progress-linear>
               </template>
@@ -29,16 +29,19 @@
             </v-data-table>
           </v-tab-item>
           <v-tab-item key="TADD gerechtigd">
-            <v-data-table :items="thisYearTADD" :headers="headersVoldoende">
-              <template v-slot:item.seniority_days="{ item }">
-                <v-progress-linear :value="item.seniority_days_perc"></v-progress-linear>
+            <v-data-table :items="thisYearTADD" :headers="headersVoldoende" :sort-by="sortby" :search="search" :items-per-page="10000" hide-default-footer>
+              <template v-slot:item.seniority_days_perc="{ item }">
+                <!-- <v-progress-linear :value="item.seniority_days"></v-progress-linear> -->
+                {{item.seniority_days}}
               </template>
-              <template v-slot:item.total_seniority_days="{ item }">
-                <v-progress-linear :value="item.total_seniority_days_perc"></v-progress-linear>
+              <template v-slot:item.total_seniority_days_perc="{ item }">
+                <!-- <v-progress-linear :value="item.total_seniority_days"></v-progress-linear> -->
+                {{item.total_seniority_days}}
               </template>
               <template v-if="!ro" v-slot:item.werkpunt="{ item }">
-                <v-icon :title="'Verwijder werkpunten van '+item.werkpunt" color="red" v-if="!!item.werkpunt" @click="zetWerkpunten(item,false)">thumb_down</v-icon>
-                <v-icon title="Geef werkpunten" color="green" v-if="!item.werkpunt" @click="zetWerkpunten(item,true)">thumb_up</v-icon>
+
+                <v-icon :title="'Verwijder werkpunten van '+item.werkpunt" color="red" v-if="!!item.werkpunt && (item.oudsysteem==0)" @click="zetWerkpunten(item,false)">thumb_down</v-icon>
+                <v-icon title="Geef werkpunten" color="green" v-if="!item.werkpunt && (item.oudsysteem==0)" @click="zetWerkpunten(item,true)">thumb_up</v-icon>
               </template>
               <template v-if="!ro" v-slot:item.istadd="{ item }">
                 <v-icon title="maakTADD" color="gray" v-if="!item.werkpunt" @click="zetTADD(item,true)">star</v-icon>
@@ -46,7 +49,7 @@
             </v-data-table>
           </v-tab-item>
           <v-tab-item key="TADD">
-            <v-data-table :items="alreadyTADD" :headers="headersTADD">
+            <v-data-table :items="alreadyTADD" :headers="headersTADD" :sort-by="sortby" :search="search" :items-per-page="10000" hide-default-footer>
               <template v-slot:item.seniority_days="{ item }">
                 <v-progress-linear :value="item.seniority_days_perc"></v-progress-linear>
               </template>
@@ -96,7 +99,9 @@ export default {
 
       dashtab : null,
 
-      search : null
+      search : null,
+
+      sortby : ['lastname','firstname']
     };
   },
 

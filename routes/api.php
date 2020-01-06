@@ -32,4 +32,6 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::get('settingsByContext/{context}','SettingsController@indexByContext')->name('settings.byContext');
     Route::patch('taddCalculator/updateSeniorityDays/{functionData_id}','TaddCalculationController@updateSeniorityDays')->name('taddCalculator.updateSeniorityDays');
     Route::patch('taddCalculator/updateAllSeniorityDays/{employee_id}','TaddCalculationController@updateAllSeniorityDays')->name('taddCalculator.updateAllSeniorityDays');
+
+    Route::get('employee/pdf/{id}','PDFController@createPDF')->name('employee.createpdf');
 });
