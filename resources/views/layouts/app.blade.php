@@ -18,6 +18,7 @@
 <body>
     <v-app id="app">
         @auth
+	@if(Auth::user()->isactive == 1)
         <v-navigation-drawer v-model="drawer" app>
             <v-list dense>
             <v-list-group
@@ -161,6 +162,7 @@
                 </form>
             </v-list>
         </v-navigation-drawer>
+	@endif
         @endauth
 
         <v-app-bar app color="indigo" dark>
@@ -168,7 +170,7 @@
             <v-toolbar-title>TADD Calc</v-toolbar-title>
         </v-app-bar>
         <v-content>
-            @auth
+	    @if(Auth::check() && (Auth::user()->isactive == 1))
             <router-view></router-view>
             @else
             <v-container fluid>
@@ -189,8 +191,7 @@
                     </v-col>
                 </v-row>
             </v-container>
-            @endauth
-
+    	    @endif
 
             @yield('content')
         </v-content>
@@ -199,6 +200,7 @@
     </v-app>
     <script src="{{ asset('js/app.js') }}"></script>
     @auth
+    @if(Auth::user()->isactive == 1)
     <script>
         window.u53r = {
             id : {{ Auth::user()->id }}, 
@@ -207,6 +209,7 @@
             readonly :  {{ Auth::user()->readonly }},
         };
     </script>
+    @endif
     @endauth
 </body>
 
