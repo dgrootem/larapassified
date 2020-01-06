@@ -180,11 +180,11 @@
                                     <v-btn>Login</v-btn>
                                 </a>
                             </v-card>
-                            <v-card class="ma-3 pa-6" flat>
+                            <!-- <v-card class="ma-3 pa-6" flat>
                                 <a href="{{ route('register') }}">
                                     <v-btn>Register</v-btn>
                                 </a>
-                            </v-card>
+                            </v-card> -->
                         </v-row>
                     </v-col>
                 </v-row>
