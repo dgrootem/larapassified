@@ -46,9 +46,9 @@
                     </v-list-item-action>
                     <v-list-item-content>
                     @if(Auth::user()->readonly)
-                        <v-list-item-title>Details</v-list-item-title>
+                        <v-list-item-title>Details personeel</v-list-item-title>
                     @else
-                        <v-list-item-title>Ingave</v-list-item-title>
+                        <v-list-item-title>Ingave details personeel</v-list-item-title>
                     @endif
                     </v-list-item-content>
                 </v-list-item>

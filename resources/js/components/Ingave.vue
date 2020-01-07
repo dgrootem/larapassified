@@ -49,9 +49,10 @@
             <v-tabs v-model="functiondatatab">
               <v-tab :id="generateRef(fdata)" v-for="fdata in functiondata" v-bind:key="generateRef(fdata)" :ref="generateRef(fdata)">
                 {{ fdata.educational_function.name }} 
-                <v-icon v-if="fdata.isTadd == 1" color="golden">star</v-icon>
-                <v-progress-circular title="Dagen totaal" class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days_perc)" :value="fdata.total_seniority_days_perc">TO</v-progress-circular>
-                <v-progress-circular title="Dagen effectief" class="mx-4" size="30" :color="progressColor(fdata.seniority_days_perc)" :value="fdata.seniority_days_perc">EF</v-progress-circular>
+                <!-- <v-icon v-if="fdata.isTadd == 1" color="golden">star</v-icon> -->
+                <span v-if="fdata.isTadd == 1" style="font-variant: small-caps; font-size: 10px; color: #ebc034;" class="mx-4">TADD</span>
+                <v-progress-circular v-if="fdata.isTadd == 0" title="Dagen totaal" class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days_perc)" :value="fdata.total_seniority_days_perc">TO</v-progress-circular>
+                <v-progress-circular v-if="fdata.isTadd == 0 "title="Dagen effectief" class="mx-4" size="30" :color="progressColor(fdata.seniority_days_perc)" :value="fdata.seniority_days_perc">EF</v-progress-circular>
                 <!-- [ {{ fdata.seniority_days }} dagen ] -->
                 <!-- <v-icon small class="mx-4" @click="editFunctionData(fdata)" >edit</v-icon> -->
               </v-tab>
@@ -77,6 +78,7 @@
             <v-toolbar color="#f7dc6d">Onderbrekingen</v-toolbar>
           </v-card-title>
           <v-container fluid>
+            <v-label><i>Tellen mee = Dagen tellen mee als effectief gepresteerd.</i></v-label>
             <v-data-table :items="interruptions" :headers="interruptionheaders">
               <template v-slot:item.beginDate="{ item }">{{ formatDateFromDB(item.beginDate)}}</template>
               <template v-slot:item.endDate="{ item }">{{ formatDateFromDB(item.endDate)}}</template>
@@ -159,7 +161,7 @@
                 <!-- {{ editedItem.interruption_type_id }} -->
                 <v-radio-group v-model="editedItem.interruption_type_id">
                   <v-radio :value="1"
-                    label="Telt wel mee voor rechtenopbouw (zwangerschapsverlof, ...)">
+                    label="Telt wel mee als effectief gepresteerd: zwangerschapsverlof, moederschapsbescherming, bedreigde beroepsziekte.">
                   </v-radio>
                   <v-radio :value="2"
                     label="Telt niet mee voor rechtenopbouw">
@@ -256,7 +258,7 @@ export default {
       interruptionheaders: [
         { text: "Begin", align: "left", value: "beginDate" },
         { text: "Einde", align: "left", value: "endDate" },
-        { text: "Dagen tellen mee", align: "left", value: "interruption_type_id" },
+        { text: "Tellen mee", align: "left", value: "interruption_type_id" , width: "60px"},
         { text: "", align: "center", value: "action" }
       ],
       descriptionLimit: 45
