@@ -2,34 +2,49 @@
   <div>
     <v-card width="100%">
       <v-container fluid>
-        <v-text-field
-            v-model="search"
-            append-icon="search"
-            label="Zoeken"
-            single-line
-            hide-details
-          ></v-text-field>
+        <v-text-field v-model="search" append-icon="search" label="Zoeken" single-line hide-details></v-text-field>
         <v-tabs v-model="dashtab">
-          <v-tab key="Volgend jaar gerechtigd" >Volgend jaar gerechtigd
-          </v-tab>
-          <v-tab key="TADD gerechtigd" >TADD gerechtigd
-          </v-tab>
-          <v-tab key="TADD" >TADD
-          </v-tab>
+          <v-tab key="Volgend jaar gerechtigd">Volgend jaar gerechtigd</v-tab>
+          <v-tab key="TADD gerechtigd">TADD gerechtigd</v-tab>
+          <v-tab key="TADD">TADD</v-tab>
         </v-tabs>
         <v-tabs-items v-model="dashtab">
           <v-tab-item key="Volgend jaar gerechtigd">
-            <v-data-table :items="nextYearTADD" :headers="headersVolgendJaarTADD" :sort-by="sortby" :search="search" :items-per-page="10000" hide-default-footer>
+            <v-data-table
+              :items="nextYearTADD"
+              :headers="headersVolgendJaarTADD"
+              :sort-by="sortby"
+              :search="search"
+              :items-per-page="10000"
+              hide-default-footer
+            >
               <template v-slot:item.seniority_days_perc="{ item }">
-                <v-progress-linear dark height="20" background-opacity="0.5" :value="Number(item.seniority_days_perc)">{{item.seniority_days}}</v-progress-linear>
+                <v-progress-linear
+                  dark
+                  height="20"
+                  background-opacity="0.5"
+                  :value="Number(item.seniority_days_perc)"
+                >{{item.seniority_days}}</v-progress-linear>
               </template>
               <template v-slot:item.total_seniority_days_perc="{ item }">
-                <v-progress-linear dark height="20" background-opacity="0.5" :value="Number(item.total_seniority_days_perc)">{{item.total_seniority_days}}</v-progress-linear>
+                <v-progress-linear
+                  dark
+                  height="20"
+                  background-opacity="0.5"
+                  :value="Number(item.total_seniority_days_perc)"
+                >{{item.total_seniority_days}}</v-progress-linear>
               </template>
             </v-data-table>
           </v-tab-item>
           <v-tab-item key="TADD gerechtigd">
-            <v-data-table :items="thisYearTADD" :headers="headersVoldoende" :sort-by="sortby" :search="search" :items-per-page="10000" hide-default-footer>
+            <v-data-table
+              :items="thisYearTADD"
+              :headers="headersVoldoende"
+              :sort-by="sortby"
+              :search="search"
+              :items-per-page="10000"
+              hide-default-footer
+            >
               <template v-slot:item.seniority_days_perc="{ item }">
                 <!-- <v-progress-linear :value="item.seniority_days"></v-progress-linear> -->
                 {{item.seniority_days}}
@@ -39,17 +54,38 @@
                 {{item.total_seniority_days}}
               </template>
               <template v-if="!ro" v-slot:item.werkpunt="{ item }">
-
-                <v-icon :title="'Verwijder werkpunten van '+item.werkpunt" color="red" v-if="!!item.werkpunt && (item.oudsysteem==0)" @click="zetWerkpunten(item,false)">thumb_down</v-icon>
-                <v-icon title="Geef werkpunten" color="green" v-if="!item.werkpunt && (item.oudsysteem==0)" @click="zetWerkpunten(item,true)">thumb_up</v-icon>
+                <v-icon
+                  :title="'Verwijder werkpunten van '+item.werkpunt"
+                  color="red"
+                  v-if="!!item.werkpunt && (item.oudsysteem==0)"
+                  @click="zetWerkpunten(item,false)"
+                >thumb_down</v-icon>
+                <v-icon
+                  title="Geef werkpunten"
+                  color="green"
+                  v-if="!item.werkpunt && (item.oudsysteem==0)"
+                  @click="zetWerkpunten(item,true)"
+                >thumb_up</v-icon>
               </template>
               <template v-if="!ro" v-slot:item.istadd="{ item }">
-                <v-icon title="maakTADD" color="gray" v-if="!item.werkpunt" @click="zetTADD(item,true)">star</v-icon>
+                <v-icon
+                  title="maak TADD"
+                  color="gray"
+                  v-if="!item.werkpunt"
+                  @click="zetTADD(item,true)"
+                >star</v-icon>
               </template>
             </v-data-table>
           </v-tab-item>
           <v-tab-item key="TADD">
-            <v-data-table :items="alreadyTADD" :headers="headersTADD" :sort-by="sortby" :search="search" :items-per-page="10000" hide-default-footer>
+            <v-data-table
+              :items="alreadyTADD"
+              :headers="headersTADD"
+              :sort-by="sortby"
+              :search="search"
+              :items-per-page="10000"
+              hide-default-footer
+            >
               <template v-slot:item.seniority_days="{ item }">
                 <v-progress-linear :value="item.seniority_days_perc"></v-progress-linear>
               </template>
@@ -57,17 +93,21 @@
                 <v-progress-linear :value="item.total_seniority_days_perc"></v-progress-linear>
               </template>
               <template v-if="!ro" v-slot:item.istadd="{ item }">
-                <v-icon title="verwijder TADD status" color="yellow" @click="zetTADD(item,false)">star</v-icon>
+                <v-icon
+                  title="verwijder TADD status"
+                  color="yellow"
+                  @click="zetTADD(item,false)"
+                >star</v-icon>
               </template>
               <template v-if="!ro" v-slot:item.benoemd="{ item }">
-                <v-icon title="maakBenoemd" color="gray" @click="zetBenoemd(item,true)">star</v-icon>
+                <v-icon title="benoemd of weg" color="gray" @click="zetBenoemd(item,true)">star</v-icon>
               </template>
             </v-data-table>
           </v-tab-item>
         </v-tabs-items>
       </v-container>
     </v-card>
-    
+
     <v-snackbar v-model="snackbar" bottom :color="snack_color" :timeout="snack_timeout">
       {{ snack_text }}
       <v-btn dark text @click="snackbar = false">Close</v-btn>
@@ -101,7 +141,7 @@ export default {
 
       search : null,
 
-      sortby : ['lastname','firstname']
+      sortby : ['fullname']
     };
   },
 
@@ -170,7 +210,7 @@ export default {
           });
       else
         axios
-          .delete("api/v1/educationalFunctionData/"+item.id+"/werkpunt")
+          .delete("api/v1/educationalFunctionData/"+item.id+"/tadd")
           .then(function(resp) {
             item.istadd = false;
             app.successSnack("TADD verwijderd");
@@ -182,6 +222,39 @@ export default {
             console.log(resp);
             app.failSnack("TADD verwijderen mislukt");
           });
+    },
+    zetBenoemd(item,state) {
+      var app = this;
+      var id = item.id;
+      if (state)
+        axios
+          .post("api/v1/educationalFunctionData/"+item.id+"/benoemd")
+          .then(function(resp) {
+            item.isbenoemd = true;
+            app.successSnack("Benoeming toegevoegd");
+            //app.alreadyTADD.push(item);
+            let index = app.alreadyTADD.findIndex(a => a.id == item.id);
+            app.alreadyTADD.splice(index,1);
+          })
+          .catch(function(resp) {
+            console.log(resp);
+            app.failSnack("Benoeming toevoegen mislukt");
+          });
+      else
+        axios
+          .delete("api/v1/educationalFunctionData/"+item.id+"/benoemd")
+          .then(function(resp) {
+            item.istadd = false;
+            app.successSnack("Benoeming verwijderd");
+            app.thisYearTADD.push(item);
+            let index = app.alreadyTADD.findIndex(a => a.id == item.id);
+            app.alreadyTADD.splice(index,1);
+          })
+          .catch(function(resp) {
+            console.log(resp);
+            app.failSnack("Benoeming verwijderen mislukt");
+          });
+      
     },
     grens(name){
       let result = -100;
@@ -324,12 +397,13 @@ export default {
     this.headers = [
       { o: 1, v:1,t:1,b:1, text: "Voornaam", align: "left", value: "firstname"                               },
       { o: 1, v:1,t:1,b:1, text: "Naam", align: "left", value: "lastname"                                    },
+      // { o: 1, v:1,t:1,b:1, text: "Naam2", align: "left", value: "fullname"                                    },
       { o: 1, v:1,t:1,b:1, text: "Ambt", align: "left", value: "ambt"                                        },
       { o: 1, v:1,t:0,b:0, text: "TOT", align: "center", value: "total_seniority_days_perc", width: "200px"   },
       { o: 1, v:1,t:0,b:0, text: "EFF", align: "center", value: "seniority_days_perc", width: "200px"         },
       { o: 0, v:1,t:0,b:0, text: "werkpunt", align: "center", value: "werkpunt", width: "16px"               },
       { o: 0, v:1,t:1,b:0, text: "TADD", align: "center", value: "istadd", width: "16px"                     },
-      { o: 0, v:0,t:1,b:1, text: "benoemd", align: "center", value: "benoemd", width: "16px"                 }
+      { o: 0, v:0,t:1,b:1, text: "benoemd of weg", align: "center", value: "benoemd", width: "16px"                 }
       //{ text: "Benoemd", align: "center", value: "nocount", width: "16px" }
     ];
     this.editedItem = Object.assign({}, this.defaultItem);

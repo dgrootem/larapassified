@@ -29,6 +29,8 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::delete('educationalFunctionData/{id}/werkpunt','EduFunctionDataController@verwijderWerkpunt')->name('educationalFunctionData.verwijderWerkpunt');
     Route::post('educationalFunctionData/{id}/tadd','EduFunctionDataController@addTADD')->name('educationalFunctionData.addTADD');
     Route::delete('educationalFunctionData/{id}/tadd','EduFunctionDataController@verwijderTADD')->name('educationalFunctionData.verwijderTADD');
+    Route::post('educationalFunctionData/{id}/benoemd','EduFunctionDataController@addBenoemd')->name('educationalFunctionData.addBenoemd');
+    Route::delete('educationalFunctionData/{id}/benoemd','EduFunctionDataController@verwijderBenoemd')->name('educationalFunctionData.verwijderBenoemd');
     Route::get('settingsByContext/{context}','SettingsController@indexByContext')->name('settings.byContext');
     Route::patch('taddCalculator/updateSeniorityDays/{functionData_id}','TaddCalculationController@updateSeniorityDays')->name('taddCalculator.updateSeniorityDays');
     Route::patch('taddCalculator/updateAllSeniorityDays/{employee_id}','TaddCalculationController@updateAllSeniorityDays')->name('taddCalculator.updateAllSeniorityDays');

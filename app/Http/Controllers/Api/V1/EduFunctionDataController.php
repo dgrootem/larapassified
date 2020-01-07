@@ -65,6 +65,7 @@ class EduFunctionDataController extends Controller
             ->select(
                 'employees.firstname',
                 'employees.lastname',
+                \DB::raw("CONCAT(employees.lastname,' ',employees.firstname) AS fullname"),
                 'edu_function_data.id',
                 'educational_functions.name as ambt',
                 'edu_function_data.seniority_days',
@@ -74,7 +75,8 @@ class EduFunctionDataController extends Controller
                 'edu_function_data.datum_verbetering_nodig_gezet as werkpunt',
                 'edu_function_data.istadd',
                 \DB::raw($oudsysteem . ' as oudsysteem')
-            );
+            )
+            ->where('edu_function_data.isbenoemd', '=', 0);
     }
 
     public function nextYearTADD()
@@ -288,7 +290,7 @@ class EduFunctionDataController extends Controller
         return $efd;
     }
 
-    public function zetBenoemd($id)
+    public function addBenoemd($id)
     {
         $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);

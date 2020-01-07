@@ -47,17 +47,17 @@
           </v-card-title>
           <v-container fluid>
             <v-tabs v-model="functiondatatab">
-              <v-tab :id="generateRef(fdata)" v-for="fdata in functiondata" v-bind:key="generateRef(fdata)" :ref="generateRef(fdata)">
+              <v-tab v-for="fdata in functiondata" :key="generateRef(fdata)">
                 {{ fdata.educational_function.name }} 
                 <!-- <v-icon v-if="fdata.isTadd == 1" color="golden">star</v-icon> -->
                 <span v-if="fdata.isTadd == 1" style="font-variant: small-caps; font-size: 10px; color: #ebc034;" class="mx-4">TADD</span>
                 <v-progress-circular v-if="fdata.isTadd == 0" title="Dagen totaal" class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days_perc)" :value="fdata.total_seniority_days_perc">TO</v-progress-circular>
-                <v-progress-circular v-if="fdata.isTadd == 0 "title="Dagen effectief" class="mx-4" size="30" :color="progressColor(fdata.seniority_days_perc)" :value="fdata.seniority_days_perc">EF</v-progress-circular>
+                <v-progress-circular v-if="fdata.isTadd == 0" title="Dagen effectief" class="mx-4" size="30" :color="progressColor(fdata.seniority_days_perc)" :value="fdata.seniority_days_perc">EF</v-progress-circular>
                 <!-- [ {{ fdata.seniority_days }} dagen ] -->
                 <!-- <v-icon small class="mx-4" @click="editFunctionData(fdata)" >edit</v-icon> -->
               </v-tab>
               <v-tabs-items v-model="functiondatatab">
-              <v-tab-item v-for="fdata in functiondata" v-bind:key="generateRef(fdata)">
+              <v-tab-item v-for="fdata in functiondata" :key="generateRef(fdata)">
                 <functiondatacomp
                   :functiondata="fdata"
                   :scholen="scholen"
@@ -554,7 +554,8 @@ export default {
       axios
         .get("api/v1/employee/functiondata/" + employee_id)
         .then(function(resp) {
-          //console.log("loaded function data for employee "+ employee_id);
+          console.log("loaded function data for employee "+ employee_id);
+          console.log("app.functiondatatab="+app.functiondatatab);
           //console.log(JSON.stringify(resp.data));
           app.functiondata = resp.data;
           //app.functiondatatab = 0;
@@ -563,8 +564,11 @@ export default {
           //  let r = app.generateRef(app.functiondata[0]);
           //  this.$refs[r].click();
           //}
-          if ((setFirstTab) && (app.functiondata.length>0)) 
+          
+          //if ((setFirstTab) && 
+          if (app.functiondata.length>0) 
             app.functiondatatab = app.generateRef(app.functiondata[0]);
+          console.log("app.functiondatatab="+app.functiondatatab);
         })
         .then(app.setAvailableFunctions(employee_id))
         .catch(function(resp) {
