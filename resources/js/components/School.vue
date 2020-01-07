@@ -210,10 +210,25 @@ export default {
           //app.$router.push({ path: "/employees" });
           Object.assign(app.scholen[app.editedIndex], resp.data);
           app.successSnack("Wijzigingen opgeslagen");
+
         })
         .catch(function(resp) {
           console.log(resp);
           app.failSnack("Fout bij opslaan wijzigingen");
+        });
+    },
+    triggerRecalculateForSchool(item){
+      axios
+        .post("api/v1/taddCalculator/school/" + item)
+        .then(function(resp) {
+          //app.$router.push({ path: "/employees" });
+          Object.assign(app.scholen[app.editedIndex], resp.data);
+          app.successSnack("Dagen herberekend");
+
+        })
+        .catch(function(resp) {
+          console.log(resp);
+          app.failSnack("Fout bij herberekenen van de dagen");
         });
     },
     save() {
