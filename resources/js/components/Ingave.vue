@@ -47,6 +47,9 @@
           </v-card-title>
           <v-container fluid>
             <v-tabs v-model="functiondatatab">
+              <v-tab v-if="functiondata.length == 0" key="nodata">
+                --
+                </v-tab>
               <v-tab v-for="fdata in functiondata" :key="generateRef(fdata)">
                 {{ fdata.educational_function.name }} 
                 <!-- <v-icon v-if="fdata.isTadd == 1" color="golden">star</v-icon> -->
@@ -57,6 +60,10 @@
                 <!-- <v-icon small class="mx-4" @click="editFunctionData(fdata)" >edit</v-icon> -->
               </v-tab>
               <v-tabs-items v-model="functiondatatab">
+                <v-tab-item v-if="functiondata.length == 0" key="nodata">
+                  <v-card><v-card-text>Geen gegevens gevonden</v-card-text></v-card>
+                </v-tab-item>
+                  
               <v-tab-item v-for="fdata in functiondata" :key="generateRef(fdata)">
                 <functiondatacomp
                   :functiondata="fdata"
@@ -558,27 +565,19 @@ export default {
       axios
         .get("api/v1/employee/functiondata/" + employee_id)
         .then(function(resp) {
-          console.log("loaded function data for employee "+ employee_id);
-          console.log("app.functiondatatab="+app.functiondatatab);
-          //console.log(JSON.stringify(resp.data));
+          // console.log("loaded function data for employee "+ employee_id);
+          // console.log("app.functiondatatab="+app.functiondatatab);
           app.functiondata = resp.data;
-          //app.functiondatatab = 0;
-          //debugger;
-          //if ((setFirstTab) && (app.functiondata.length>0)){
-          //  let r = app.generateRef(app.functiondata[0]);
-          //  this.$refs[r].click();
-          //}
-          
-          //if ((setFirstTab) && 
-          if (app.functiondata.length>0) 
-            app.functiondatatab = app.generateRef(app.functiondata[0]);
-          console.log("app.functiondatatab="+app.functiondatatab);
+
         })
-        .then(app.setAvailableFunctions(employee_id))
+        .then(function(){
+          app.functiondatatab = app.generateRef(app.functiondata[0]);
+          app.setAvailableFunctions(employee_id);
+          // console.log("app.functiondatatab="+app.functiondatatab);
+        })
         .catch(function(resp) {
-          //console.log(resp);
+          console.log(resp);
           alert("Could not load functiondata");
-          //app.functiondatatab = 0;
         });
       axios
         .get("api/v1/employee/interruptions/" + employee_id)
