@@ -104,11 +104,11 @@
                 <v-checkbox v-model="editedItem.isActive" label="Zichtbaar"></v-checkbox>
               </v-col>
             </v-row>
-            <v-row dense>
+            <!-- <v-row dense>
               <v-col sm="12" md="12">
                 <v-checkbox v-model="editedItem.oudsysteem" label="Tellen volgens oud systeem"></v-checkbox>
               </v-col>
-            </v-row>
+            </v-row> -->
           </v-container>
         </v-card-text>
 
@@ -148,9 +148,9 @@ export default {
         registrationNumber: "",
         birthDate: null,
         isActive: true,
-        startwaardeDA: 0,
+        // startwaardeDA: 0,
         startwaardeINT : 0,
-        oudsysteem : false
+        // oudsysteem : false
       },
       editedIndex: -1,
       snackbar: false,
@@ -355,7 +355,7 @@ export default {
       { text: "Voornaam", align: "left", value: "firstName" },
       { text: "Stamboeknummer", align: "left", value: "registrationNumber" },
       { text: "Geboortedatum", align: "left", value: "birthDate" },
-      { text: "Startwaarde DA", align: "right", value: "startwaardeDA" },
+      // { text: "Startwaarde DA", align: "right", value: "startwaardeDA" },
       { text: "Startwaarde OND ", align: "right", value: "startwaardeINT" },
       { text: "", align: "center", value: "action" }
     ];
