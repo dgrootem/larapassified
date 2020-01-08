@@ -145,22 +145,23 @@ class EmployeeController extends Controller
 
     public function archiveOldOrTADDEmployees(/*Request $request*/)
     {
-        if (!Auth::user()->isadmin) throw new Exception('not authorized'); 
-        //if (Auth::user()->isadmin && Auth::user()->isactive) {
-            Log::info("archiving...");
-            //TODO: nagaan of de user een admin is
-            $query = "update employees set isActive = 0 where id in ".
-                "(select r1.id from ".
-                    "(select e.id, max(ifNull(endDate, curdate())) as laatstedatum ".
-                        "from employees e ".
-                        "inner join edu_function_data edf on e.id = edf.employee_id ".
-                        "inner join employments emp on emp.edu_function_data_id = edf.id ".
-                        "group by e.id) r1 ".
-                    "where r1.laatstedatum < DATE_SUB(curdate(), INTERVAL 5 YEAR) ) ;";
-            \DB::statement($query);
-            $query2 = "update employees set isActive = 0 where id not in (select edf.employee_id from edu_function_data edf where edf.isTadd = 0);";
-            \DB::statement($query2);
-            Log::info("done!");
+        if (!Auth::user()->isadmin && Auth::user()->isactive) throw new Exception('not authorized'); 
+        Log::info("archiving old employees...");
+        $query = "update employees set isActive = 0 where id in ".
+            "(select r1.id from ".
+                "(select e.id, max(ifNull(endDate, curdate())) as laatstedatum ".
+                    "from employees e ".
+                    "inner join edu_function_data edf on e.id = edf.employee_id ".
+                    "inner join employments emp on emp.edu_function_data_id = edf.id ".
+                    "group by e.id) r1 ".
+                "where r1.laatstedatum < DATE_SUB(curdate(), INTERVAL 5 YEAR) ) ;";
+        \DB::statement($query);
+        Log::info('archiving employees that are already TADD...');
+        $query2 = "update employees set isActive = 0 where isactive = 1 and id not in (select edf.employee_id from edu_function_data edf where edf.isTadd = 0);";
+        \DB::statement($query2);
+        
+        
+        Log::info("done!");
         //}
     }
 

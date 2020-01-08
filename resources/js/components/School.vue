@@ -3,12 +3,22 @@
     <v-card width="100%">
       <v-container fluid>
         <v-card-title>
-          Scholen overzicht
+          Scholen overzicht<v-icon class="ml-6" @click="help = !help">help</v-icon>
           <v-btn fab right absolute @click="dialog = !dialog">
             <v-icon>add</v-icon>
           </v-btn>
         </v-card-title>
         <v-card-text>
+          <v-row v-if="help">
+          <v-col lg="6" md="8" sm="12" >
+          <p><i>Wanneer je een school </i>onzichtbaar<i> <v-icon>visibility_off</v-icon> zet kan je ze niet meer kiezen in het ingavescherm.</i></p>
+          <p><i>Wanneer je een school op </i>niet meenemen in berekening<i> <v-icon color="red">exposure_zero</v-icon> 
+          zet zullen de dagen herberekend worden voor alle personeelsleden die ooit in die school gewerkt hebben en nog niet TADD zijn. 
+          Alle personeelsleden die <b>enkel</b> in deze school gewerkt hebben zullen worden onzichtbaar gezet.</i></p>
+          <p>OPM: Als je de archivering gebruikt moet je deze best opnieuw laten lopen nadat je een school opnieuw laat meetellen omdat er mogelijk 
+          teveel personeelsleden zijn geheractiveerd</p>
+          </v-col>
+          </v-row>
           <v-data-table :items="scholen" :headers="headers">
             <template v-slot:item.logo="{ item }">
               <img
@@ -108,6 +118,10 @@
       {{ snack_text }}
       <v-btn dark text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
+    <v-overlay :value="overlay">
+      Bezig met herberekenen...
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
   </div>
 </template>
 
@@ -137,7 +151,9 @@ export default {
       snackbar: false,
       snack_text: "",
       snack_color: "",
-      snack_timeout: 2000
+      snack_timeout: 2000,
+      overlay : false,
+      help : false
     };
   },
 
@@ -210,7 +226,7 @@ export default {
           //app.$router.push({ path: "/employees" });
           Object.assign(app.scholen[app.editedIndex], resp.data);
           app.successSnack("Wijzigingen opgeslagen");
-
+          app.triggerRecalculateForSchool(item);
         })
         .catch(function(resp) {
           console.log(resp);
@@ -218,15 +234,16 @@ export default {
         });
     },
     triggerRecalculateForSchool(item){
+      let app = this;
+      app.overlay = true;
       axios
-        .post("api/v1/taddCalculator/school/" + item)
+        .patch("api/v1/taddCalculator/school/" + item.id,item)
         .then(function(resp) {
-          //app.$router.push({ path: "/employees" });
-          Object.assign(app.scholen[app.editedIndex], resp.data);
+          app.overlay = false;
           app.successSnack("Dagen herberekend");
-
         })
         .catch(function(resp) {
+          app.overlay = false;
           console.log(resp);
           app.failSnack("Fout bij herberekenen van de dagen");
         });

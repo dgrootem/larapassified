@@ -35,43 +35,57 @@ class TaddCalculationController extends Controller
             ->select('employees.id')
             ->get();
         foreach ($empids as $empid) {
-            Log::debug($empid->id);
+            //Log::debug($empid->id);
             $employee = Employee::with('educationalFunctionData.employments.school')->where('id', $empid->id)->get()[0];
             $this->updateAllSeniorityDays($employee);
-            Log::debug($empid);
+            //Log::debug($empid);
         }
+        $school = School::find($id);
+        Log::debug('useForCalculations='.$school->useForCalculations);
+        if ($school->useForCalculations == 0){
+            Log::info('archiving employees that only work in schools that don\'t count...');
+            $query3 = "update employees set isActive = 0 where isactive = 1 and id not in (select distinct edf.employee_id from edu_function_data edf inner join employments eo on edf.id = eo.edu_function_data_id and eo.school_id <> ".$school->id.")";
+            \DB::statement($query3);
+        }
+        else
+        {
+            Log::info('heractiveer alle personeelsleden die in deze school werkten');
+            $query3 = "update employees set isActive = 1 where isactive = 0 and id not in (select distinct edf.employee_id from edu_function_data edf inner join employments eo on edf.id = eo.edu_function_data_id and eo.school_id <> ".$school->id.")";
+            \DB::statement($query3);
+        }
+
     }
 
     function updateSeniorityDays($functionData_id)
     {
         $this->authorizeRO();
         $functionData = EduFunctionData::findOrFail($functionData_id);
-        Log::debug('updateSeniorityDays for '.$functionData_id);
-        Log::debug($functionData);
+        //Log::debug('updateSeniorityDays for '.$functionData_id);
+        // Log::debug($functionData);
         
 
         $employee = Employee::find($functionData->employee_id);
-        Log::debug("EMPLOYEE=" . $employee->id);
-        Log::debug("Calculating total days");
+        // Log::debug("EMPLOYEE=" . $employee->id);
+        // Log::debug("Calculating total days");
         $result =  $this->calculateSenDaysFD($employee, $functionData);
-        Log::debug($result);
+        // Log::debug($result);
         $functionData->total_seniority_days = $result['aantalDagen'];
         $functionData->seniority_days = $result['effectieveAantalDagen'];
         $functionData->save();
-        Log::debug($functionData);
+        // Log::debug($functionData);
         return $functionData;
     }
 
     function updateAllSeniorityDays(Employee $employee)
     {
         $this->authorizeRO();
-        Log::debug('updateAllSeniorityDays');
+        // Log::debug('updateAllSeniorityDays');
         //Log::debug($employee);
         //Log::debug($employee->educationalFunctionData);
 
         foreach ($employee->educationalFunctionData as $functionData) {
             //Log::debug('x');
-            Log::debug('updateSeniorityDays for '.$functionData->id);
+            // Log::debug('updateSeniorityDays for '.$functionData->id);
             $this->updateSeniorityDays($functionData->id);
         }
         return $employee;
@@ -204,7 +218,7 @@ class TaddCalculationController extends Controller
 
     function calculateSenDaysFD(Employee $employee, EduFunctionData $functiondata)
     {
-        Log::debug('calculateSenDaysFD');
+        // Log::debug('calculateSenDaysFD');
         //steek all data in een lijst: key = datum, value verwijst naar de overeenkomstige periode
         $triggerDates = array();
 
@@ -220,7 +234,7 @@ class TaddCalculationController extends Controller
             $triggerDates = $this->addToTriggerDates($triggerDates, $i->beginDate->format('Ymd') . 'i', $i);
             $triggerDates = $this->addToTriggerDates($triggerDates, $i->endDate->format('Ymd') . 'j', $i);
         }
-        Log::debug(compact('triggerDates'));
+        // Log::debug(compact('triggerDates'));
 
         //sorteer de lijst op datums
         ksort($triggerDates);
@@ -289,8 +303,8 @@ class TaddCalculationController extends Controller
 
             if (isset($actievePeriodes))
                 foreach ($actievePeriodes as $id => $p) $huidigeAantalUren += $p->hours;
-             Log::debug('uren='.$huidigeAantalUren);
-             Log::debug('=======================================================');
+            //  Log::debug('uren='.$huidigeAantalUren);
+            //  Log::debug('=======================================================');
             if ($huidigeAantalUren == 0) $factor = 0;
             else if ($huidigeAantalUren >= $functiondata->educationalFunction->denominator / 2)
                 $factor = 1.0;

@@ -76,6 +76,7 @@ class EduFunctionDataController extends Controller
                 'edu_function_data.istadd',
                 \DB::raw($oudsysteem . ' as oudsysteem')
             )
+            ->where('employees.isActive',1)
             ->where('edu_function_data.isbenoemd', '=', 0);
     }
 
