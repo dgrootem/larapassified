@@ -86,6 +86,7 @@
                   label="Uren"
                   type="number"
                   :suffix="hourSuffix"
+                  :disabled="!editedItem.formattedEnd"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -122,7 +123,7 @@ export default {
         formattedBegin: "", //this.defaultEmployment.beginDate.format('MM-DD-YYYY'),
         endDate: new Date(),
         formattedEnd: "", //this.defaultEmployment.endDate.format('MM-DD-YYYY'),
-        hours: 0,
+        hours: '',
         school_id: -1,
         edu_function_data_id: this.functiondata.id
       },
