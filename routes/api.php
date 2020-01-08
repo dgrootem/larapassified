@@ -24,6 +24,7 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::get('educationalFunctionData/tadd/nextyear','EduFunctionDataController@nextYearTADD')->name('educationalFunctionData.nextyear');
     Route::get('educationalFunctionData/tadd/thisyear','EduFunctionDataController@thisYearTADD')->name('educationalFunctionData.thisyear');
     Route::get('educationalFunctionData/tadd/alreadytadd','EduFunctionDataController@alreadyTADD')->name('educationalFunctionData.alreadytadd');
+    Route::patch('educationalFunctionData/{id}/setstartwaarde','EduFunctionDataController@setstartwaarde')->name('educationalFunctionData.setstartwaarde');
 
     Route::post('educationalFunctionData/{id}/werkpunt','EduFunctionDataController@addWerkpunt')->name('educationalFunctionData.addWerkpunt');
     Route::delete('educationalFunctionData/{id}/werkpunt','EduFunctionDataController@verwijderWerkpunt')->name('educationalFunctionData.verwijderWerkpunt');
@@ -35,6 +36,7 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::patch('taddCalculator/updateSeniorityDays/{functionData_id}','TaddCalculationController@updateSeniorityDays')->name('taddCalculator.updateSeniorityDays');
     Route::patch('taddCalculator/updateAllSeniorityDays/{id}','TaddCalculationController@updateAllSeniorityDays')->name('taddCalculator.updateAllSeniorityDays');
     Route::patch('taddCalculator/school/{id}','TaddCalculationController@recalculateForSchool')->name('taddCalculator.recalculateForSchool');
+
 
     Route::get('employee/pdf/{id}','PDFController@createPDF')->name('employee.createpdf');
 });

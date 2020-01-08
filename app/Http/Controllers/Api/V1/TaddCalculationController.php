@@ -18,7 +18,6 @@ class TaddCalculationController extends Controller
 {
     public function authorizeRO()
     {
-        return true;
         if (Auth::user()->readonly) throw new Exception('not authorized');
     }
 
@@ -77,6 +76,7 @@ class TaddCalculationController extends Controller
     }
 
     public function updateAllSeniorityDays(Request $request,$id){
+        $this->authorizeRO();
         // Log::debug($request);
         $employee = Employee::find($id);
         $this->updateAllSeniorityDaysInternal($employee);
@@ -84,7 +84,7 @@ class TaddCalculationController extends Controller
 
     function updateAllSeniorityDaysInternal(Employee $employee)
     {
-        $this->authorizeRO();
+        
         // Log::debug('updateAllSeniorityDays');
         // Log::debug($employee);
         // Log::debug($employee->educationalFunctionData);

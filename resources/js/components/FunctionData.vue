@@ -7,10 +7,11 @@
         <v-label>Reeds opgebouwde dagen: {{functiondata.total_seniority_days}} TOT / {{functiondata.seniority_days}} EFF</v-label>
       </v-row>
       <v-row justify="space-between">
-        <v-col cols="4" xs="8" sm="5" md="4">
+        <v-col cols="4" xs="9" sm="9" md="6">
           <v-btn v-if="!ro" color="primary" @click="addEmployment">Aanstelling toevoegen</v-btn>
+          <v-btn v-if="!ro" color="secondary" @click="setStartwaarde">Startwaarde invullen</v-btn>
         </v-col>
-        <v-col v-if="!ro" cols="4" xs="8" sm="5" md="4">
+        <v-col v-if="!ro" cols="4" xs="3" sm="3" md="3">
           <v-btn color="red" @click="deleteFunctionData" width="100%">
             Ambt verwijderen
             <v-icon>delete</v-icon>
@@ -42,6 +43,32 @@
     </v-data-table>
     <!-- </v-layout>
     </v-container>-->
+    <v-dialog v-if="!ro" v-model="startWaardeDialog" max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Startwaarde invullen</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field
+                  v-model="functiondata.startwaarde_tot"
+                  label="Startwaarde totaal aantal dagen in dit ambt"
+                  type="number"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <div class="flex-grow-1"></div>
+          <v-btn color="blue darken-1" text @click="closeStartwaarde">Annuleren</v-btn>
+          <v-btn color="blue darken-1" text @click="saveStartWaarde">Opslaan</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-dialog v-if="!ro" v-model="employmentDialog" max-width="500px">
       <v-card>
         <v-card-title>
@@ -106,7 +133,6 @@
 <script>
 //import moment from "moment";
 
-
 import { compareAsc } from "date-fns";
 import * as DateUtil from "../DateUtil";
 
@@ -123,7 +149,7 @@ export default {
         formattedBegin: "", //this.defaultEmployment.beginDate.format('MM-DD-YYYY'),
         endDate: new Date(),
         formattedEnd: "", //this.defaultEmployment.endDate.format('MM-DD-YYYY'),
-        hours: '',
+        hours: "",
         school_id: -1,
         edu_function_data_id: this.functiondata.id
       },
@@ -132,8 +158,10 @@ export default {
       editedIndex: -1,
       editedItem: Object.assign({}, this.defaultEmployment),
       employmentDialog: false,
+      startWaardeDialog: false,
+      startwaarde_tot: 0,//functiondata.startwaarde_tot,
 
-      mask : '##-##-####',
+      mask: "##-##-####",
 
       headers: [
         { text: "Begin", align: "left", value: "beginDate" },
@@ -155,7 +183,8 @@ export default {
         return "/" + this.functiondata.educational_function.denominator;
       else return "";
     },
-    ro() { //shorthand for "read only"
+    ro() {
+      //shorthand for "read only"
       return window.u53r.readonly;
     }
   },
@@ -210,6 +239,27 @@ export default {
     emitSuccess(msg) {
       this.$emit("success", msg);
     },
+    setStartwaarde() {
+      this.startWaardeDialog = true;
+    },
+    closeStartwaarde() {
+      this.startWaardeDialog = false;
+    },
+    saveStartWaarde() {
+      let app = this;
+      axios
+        .patch("api/v1/educationalFunctionData/"+this.functiondata.id+"/setstartwaarde", {'startwaarde_tot' : this.functiondata.startwaarde_tot})
+        .then(function(resp) {
+          //app.$router.push({ path: "/employees" });
+
+          app.updateSeniorityDays("Startwaarde bewaard");
+          app.closeStartwaarde();
+        })
+        .catch(function(resp) {
+          console.log(resp);
+          app.emitFail("Fout bij opslaan startwaarde");
+        });
+    },
 
     editItem(item) {
       this.editedIndex = this.employments.indexOf(item);
@@ -243,8 +293,11 @@ export default {
         this.emitFail("Verkeerd datumformaat... kan niet opslaan!");
         return false;
       }
-      let compasc = compareAsc(DateUtil.parseDate(this.editedItem.formattedBegin),DateUtil.parseDate(this.editedItem.formattedEnd));
-      if(compasc==1) {
+      let compasc = compareAsc(
+        DateUtil.parseDate(this.editedItem.formattedBegin),
+        DateUtil.parseDate(this.editedItem.formattedEnd)
+      );
+      if (compasc == 1) {
         this.emitFail("Einddatum mag niet voor begindatum vallen!");
         return false;
       }
@@ -276,24 +329,22 @@ export default {
     saveEmployment() {
       var app = this;
       if (this.validateFunctionData())
-        if (this.editedIndex == -1){
-          console.log('adding employment');
+        if (this.editedIndex == -1) {
+          console.log("adding employment");
           axios //we should retrieve the whole object set again from the server... trust only server data! :) TODO
             .post("api/v1/employment", this.editedItem)
             .then(function(resp) {
               //app.$router.push({ path: "/employees" });
               app.employments.push(resp.data);
-              app.updateSeniorityDays('Aanstelling toegevoegd');
+              app.updateSeniorityDays("Aanstelling toegevoegd");
               app.closeEmployment();
-              
             })
             .catch(function(resp) {
               console.log(resp);
               app.emitFail("Fout bij aanmaken aanstelling");
             });
-        }
-        else {
-          console.log("editing employment "+this.editedItem.id);
+        } else {
+          console.log("editing employment " + this.editedItem.id);
           delete this.editedItem.school; //remove this property before sending it to the server to prevent mixups
           axios
             .patch("api/v1/employment/" + this.editedItem.id, this.editedItem)
@@ -306,7 +357,7 @@ export default {
                 Object.assign({}, resp.data)
               );
               app.updateSeniorityDays("Wijzigingen opgeslagen");
-              
+
               app.closeEmployment();
             })
             .catch(function(resp) {
@@ -317,14 +368,13 @@ export default {
     },
     updateSeniorityDays(successmsg) {
       var app = this;
-      
+
       axios
         .patch(
-          "api/v1/taddCalculator/updateSeniorityDays/" +
-            this.functiondata.id
+          "api/v1/taddCalculator/updateSeniorityDays/" + this.functiondata.id
         )
         .then(function(resp) {
-          app.$emit('reloademployeedata',resp.data.employee_id);
+          app.$emit("reloademployeedata", resp.data.employee_id);
           /*
           Vue.set(
             app.employments,

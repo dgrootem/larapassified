@@ -89,8 +89,8 @@ class EduFunctionDataController extends Controller
         Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
         return $this->baseQuery($neededTotal, $neededEffective1,'false')
             ->where('edu_function_data.istadd', '=', 0)
-            ->whereBetween('edu_function_data.total_seniority_days', array(277, $neededTotal))
-            ->whereBetween('edu_function_data.seniority_days', array(200, $neededEffective1))
+            ->whereBetween('edu_function_data.total_seniority_days', array(277, $neededTotal)) //TODO: helft van $neededTotal nemen? afchecken inhoudelijk!!
+            ->whereBetween('edu_function_data.seniority_days', array(200, $neededEffective1)) //TODO: helft van $neededEffective1 nemen? afchecken inhoudelijk!!
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc')
             ->get();
@@ -305,6 +305,16 @@ class EduFunctionDataController extends Controller
         $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);
         $efd->isBenoemd = false;
+        $efd->save();
+        return $efd;
+    }
+
+    public function setStartWaarde(Request $request,$id){
+        $this->authorizeRO();
+        $efd = EduFunctionData::find($id);
+        Log::debug($efd);
+        $start = $request['startwaarde_tot'];
+        $efd->startwaarde_tot = $start;
         $efd->save();
         return $efd;
     }
