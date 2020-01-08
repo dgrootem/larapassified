@@ -479,6 +479,7 @@ export default {
             .then(function(resp) {
               //app.$router.push({ path: "/employees" });
               app.interruptions.push(resp.data);
+              app.updateAllSeniorityDays(resp.data.employee_id);
               app.successSnack("Onderbreking toegevoegd");
               app.closeInterruption();
             })
@@ -500,6 +501,7 @@ export default {
                 app.editedIndex,
                 Object.assign({}, resp.data)
               );
+              app.updateAllSeniorityDays(resp.data.employee_id);
               app.successSnack("Wijzigingen opgeslagen");
               app.closeInterruption();
             })
@@ -509,12 +511,13 @@ export default {
             });
         }
     },
-    updateAllSeniorityDays() {
+    updateAllSeniorityDays(employee_id) {
       var app = this;
+      console.log('Recalculating all seniority days');
       axios
         .patch(
-          "api/v1/taddCalculator/updateAllSeniorityDays/" +
-            app.editedItem.employee_id
+          "api/v1/taddCalculator/updateAllSeniorityDays/" + employee_id
+            
         )
         .then(function(resp) {
           app.reloadEmployeeData(app.editedItem.employee_id);
@@ -536,6 +539,7 @@ export default {
           .delete("api/v1/employmentInterruption/" + item.id)
           .then(function(resp) {
             app.interruptions.splice(index, 1);
+            app.updateAllSeniorityDays(item.employee_id);
             app.successSnack("Onderbreking verwijderd");
           })
           .catch(function(resp) {

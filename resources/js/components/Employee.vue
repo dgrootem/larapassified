@@ -80,7 +80,7 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col sm="12" md="6">
+              <!-- <v-col sm="12" md="6">
                 <v-text-field
                   v-model="editedItem.startwaardeDA"
                   label="Startwaarde DA"
@@ -88,14 +88,13 @@
                   min="0"
                   suffix="dagen"
                 ></v-text-field>
-              </v-col>
+              </v-col> -->
               <v-col sm="12" md="6">
                 <v-text-field
                   v-model="editedItem.startwaardeINT"
-                  label="Onderbrekingen"
+                  label="Aantal dagen onderbrekingen dat niet meetelt"
                   type="number"
                   min="0"
-                  :max="editedItem.startwaardeDA"
                   suffix="dagen"
                 ></v-text-field>
               </v-col>
@@ -124,6 +123,10 @@
       {{ snack_text }}
       <v-btn dark text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
+    <v-overlay :value="overlay">
+      Bezig met herberekenen...
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
   </div>
 </template>
 
@@ -154,7 +157,8 @@ export default {
       snack_text: "",
       snack_color: "",
       snack_timeout: 2000,
-      search: ""
+      search: "",
+      overlay : false
       // registrationNumberProxy : null
     };
   },
@@ -260,6 +264,22 @@ export default {
           app.failSnack("Fout bij opslaan wijzigingen");
         });
     },
+    recalculateDays(employee){
+      let app = this;
+      app.overlay = true;
+      axios
+          .patch("api/v1/taddCalculator/updateAllSeniorityDays/" + employee.id, employee)
+          .then(function(resp) {
+            app.successSnack("Dagen (her)berekend");
+            app.overlay = false;
+            app.close();
+            if (app.naarIngaveNaUpdate) app.navigateTo(resp.data,false);
+          })
+          .catch(function(resp) {
+            console.log(resp);
+            app.failSnack("Fout bij opslaan wijzigingen");
+          });
+    },
     save() {
       var app = this;
 
@@ -269,8 +289,7 @@ export default {
           .then(function(resp) {
             Object.assign(app.employees[app.editedIndex], resp.data);
             app.successSnack("Wijzigingen opgeslagen");
-            app.close();
-            if (app.naarIngaveNaUpdate) app.navigateTo(resp.data,false);
+            app.recalculateDays(app.employees[app.editedIndex]);
           })
           .catch(function(resp) {
             console.log(resp);

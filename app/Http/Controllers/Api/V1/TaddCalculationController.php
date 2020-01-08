@@ -37,11 +37,11 @@ class TaddCalculationController extends Controller
         foreach ($empids as $empid) {
             //Log::debug($empid->id);
             $employee = Employee::with('educationalFunctionData.employments.school')->where('id', $empid->id)->get()[0];
-            $this->updateAllSeniorityDays($employee);
+            $this->updateAllSeniorityDaysInternal($employee);
             //Log::debug($empid);
         }
         $school = School::find($id);
-        Log::debug('useForCalculations='.$school->useForCalculations);
+        // Log::debug('useForCalculations='.$school->useForCalculations);
         if ($school->useForCalculations == 0){
             Log::info('archiving employees that only work in schools that don\'t count...');
             $query3 = "update employees set isActive = 0 where isactive = 1 and id not in (select distinct edf.employee_id from edu_function_data edf inner join employments eo on edf.id = eo.edu_function_data_id and eo.school_id <> ".$school->id.")";
@@ -76,128 +76,26 @@ class TaddCalculationController extends Controller
         return $functionData;
     }
 
-    function updateAllSeniorityDays(Employee $employee)
+    public function updateAllSeniorityDays(Request $request,$id){
+        // Log::debug($request);
+        $employee = Employee::find($id);
+        $this->updateAllSeniorityDaysInternal($employee);
+    }
+
+    function updateAllSeniorityDaysInternal(Employee $employee)
     {
         $this->authorizeRO();
         // Log::debug('updateAllSeniorityDays');
-        //Log::debug($employee);
-        //Log::debug($employee->educationalFunctionData);
+        // Log::debug($employee);
+        // Log::debug($employee->educationalFunctionData);
 
         foreach ($employee->educationalFunctionData as $functionData) {
-            //Log::debug('x');
+            // Log::debug('x');
             // Log::debug('updateSeniorityDays for '.$functionData->id);
             $this->updateSeniorityDays($functionData->id);
         }
         return $employee;
     }
-
-    //
-    // function getTotalSeniorityDays(/*Employee $employee,*/ EduFunctionData $functionData){
-    //     $employments = $functionData->employments;
-    //     $firstDate = Carbon::maxValue();
-    //     $lastDate = Carbon::minValue();
-    //     foreach ($employments as $employment) {
-    //         if($employment->beginDate->isBefore($firstDate)) {
-    //             $firstDate = $employment->beginDate;
-    //         }
-    //         if($employment->endDate->isAfter($lastDate)) {
-    //             $lastDate = $employment->endDate;
-    //         }
-    //     }
-    //     //echo 'Mindate=' . $firstDate;
-    //     //echo 'Maxdate=' . $lastDate;
-    //     return $this->calculateTotalSeniorityDays(/*$employee,*/ $functionData,$firstDate, $lastDate);
-    // }
-
-    // function hoursOnDate($functionData,$date){
-    //     $hours = 0;
-    //     foreach ($functionData->employments as $employment) {
-    //         Log::debug("date=".$date);
-    //         Log::debug("begindate=".$employment->beginDate);
-    //         Log::debug("enddate=".$employment->endDate);        
-    //         if ($date->isAfter($employment->beginDate->subDay()) && $date->isBefore($employment->endDate->addDay())) {
-    //             $hours += $employment->hours;
-    //         }
-    //     }
-    //     Log::debug("=====================");
-    //     return $hours;
-    // }
-
-
-
-    // function calculateTotalSeniorityDays(/*Employee $employee, */EduFunctionData $functionData, Carbon $beginDate, Carbon $endDate) {
-    //     $days = 0;
-    //     $period = CarbonPeriod::create($beginDate, $endDate);
-    //     foreach($period as $date) {
-    //         $hours = $this->hoursOnDate($functionData,$date);
-    //         if ($hours >= $functionData->educationalFunction->denominator / 2)
-    //             $days++;
-    //         else if ($hours > 0)
-    //             $days += 0.5;
-    //     }
-
-    //     return $days;
-    // }
-
-    // function getSeniorityDays(Employee $employee, EduFunctionData $functionData){
-    //     $employments = $functionData->employments;
-    //     $firstDate = Carbon::maxValue();
-    //     $lastDate = Carbon::minValue();
-    //     foreach ($employments as $employment) {
-    //         if($employment->beginDate->isBefore($firstDate)) {
-    //             $firstDate = $employment->beginDate;
-    //         }
-    //         if($employment->endDate->isAfter($lastDate)) {
-    //             $lastDate = $employment->endDate;
-    //         }
-    //     }
-    //     //echo 'Mindate=' . $firstDate;
-    //     //echo 'Maxdate=' . $lastDate;
-    //     return $this->calculateSeniorityDays($employee, $functionData,$firstDate, $lastDate);
-    // }
-
-    // function calculateSeniorityDays(Employee $employee, EduFunctionData $functionData, Carbon $beginDate, Carbon $endDate) {
-    //     $days = 0;
-    //     $interruptionDays = 0;
-    //     $interrupted;
-    //     $period = CarbonPeriod::create($beginDate, $endDate);
-    //     foreach($period as $date)
-    //     {
-    //         $interrupted = false;
-    //         $hours = $this->hoursOnDate($functionData,$date);
-    //         foreach ($employee->employmentInterruptions as $interruption) {
-    //             if ($date->isAfter($interruption->beginDate->subDay()) && $date->isBefore($interruption->endDate->addDay())){
-    //                 if(!$interruption->interruption_type->telt_mee) $hours = 0;
-    //                 else{
-    //                     $interrupted = true;
-    //                     if($interruptionDays>=210){
-    //                         $hours = 0;
-    //                     }
-    //                 }
-    //             }
-    //             /*if(((date.isAfter(e.getBeginDate().minusDays(1)) && date.isBefore(e.getEndDate().plusDays(1)))) && e.isCounts()){
-    //                 interrupted = true;
-    //                 if(interruptionDays>=210){
-    //                     hours = 0;
-    //                 }
-    //             }*/
-    //         }
-    //         if($interrupted){
-    //             if($hours >= $functionData->educationalFunction->denominator /2){
-    //                 $interruptionDays += 1;
-    //             }
-    //             else{
-    //                 $interruptionDays += 0.5;
-    //             }
-    //         }
-    //         if ($hours >= $functionData->educationalFunction->denominator/2)
-    //             $days++;
-    //         else if ($hours > 0)
-    //             $days += 0.5;
-    //     }
-
-    //     return $days;
-    // }
 
     function calculateSenDaysEmp(Employee $employee)
     {
@@ -241,7 +139,7 @@ class TaddCalculationController extends Controller
 
         
         $huidigeAantalUren = 0;
-        $aantalDagen = 0;
+        $aantalDagen = $functiondata->startwaarde_tot;
         $actievePeriodes = array();
         $onderbreking = null;
         $aantalDagenOnderbreking = 0;
@@ -319,10 +217,10 @@ class TaddCalculationController extends Controller
         //beperk het aantal dagen dat kan meetellen
         $aantalDagenOnderbrekingDatTelt = min($aantalDagenOnderbrekingDatTelt, 220);
         //bereken het aantal dagen dat niet mag meetellen: totaal aantal dagen onderbreking MINUS het aantal dat mag meetellen
-        $aantalDagenDatNietTelt = $aantalDagenOnderbreking - $aantalDagenOnderbrekingDatTelt;
+        $aantalDagenDatNietTelt = $aantalDagenOnderbreking - $aantalDagenOnderbrekingDatTelt + $employee->startwaardeINT;
         // het aantal dagen dat telt als effectief gepresteerd = totaal aantal dagen MINUS het aantal dat niet mag meetellen
 
-        $effectieveAantalDagen = $aantalDagen - $aantalDagenDatNietTelt;
+        $effectieveAantalDagen = max($aantalDagen - $aantalDagenDatNietTelt,0);
 
         return compact(['aantalDagen', 'effectieveAantalDagen']);
     }

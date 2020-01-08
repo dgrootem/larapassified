@@ -15,7 +15,7 @@ class EfdAddStartwaardeIsbenoemd extends Migration
     {
         Schema::table('edu_function_data', function($table) {
             $table->integer('startwaarde_tot')->default(0);
-            $table->integer('startwaarde_int')->default(0);
+            //$table->integer('startwaarde_int')->default(0);
             $table->boolean('isBenoemd')->default(false);
         });
     }
@@ -29,7 +29,7 @@ class EfdAddStartwaardeIsbenoemd extends Migration
     {
         Schema::table('edu_function_data', function($table) {
             $table->dropColumn('startwaarde_tot');
-            $table->dropColumn('startwaarde_int');
+            //$table->dropColumn('startwaarde_int');
             $table->dropColumn('isBenoemd');
         });
     }
