@@ -130,7 +130,7 @@ class EduFunctionDataController extends Controller
                 $query->where('edu_function_data.total_seniority_days', '>=', $neededTotal_new)
                     ->where('edu_function_data.total_seniority_days', '<', $neededTotal_old)
                     ->where('edu_function_data.seniority_days', '>=', $neededEffective1_new)
-                    ->where('edu_function_data.seniority_days', '<', $neededEffective1_old);
+                    ->where('edu_function_data.seniority_days', '<',  $neededEffective1_old);
             })
             ->orWhere(function ($query) {
                 $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 0);

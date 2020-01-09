@@ -121,6 +121,8 @@ export default {
       passRules: [this.passLength],
       confirmRules: [this.comparePassFields],
       show1 : false,
+
+      mybaseurl : 'api/v1/'
     };
   },
 
@@ -158,7 +160,7 @@ export default {
         var app = this;
         var index = this.users.indexOf(item);
         axios
-          .delete("../api/v1/user/" + item.id)
+          .delete(this.mybaseurl+"user/" + item.id)
           .then(function(resp) {
             app.users.splice(index, 1);
             app.successSnack("Gebruiker verwijderd");
@@ -173,7 +175,7 @@ export default {
       if (this.editedIndex > -1) {
         
         axios
-          .patch("../api/v1/user/" + this.editedItem.id, this.editedItem)
+          .patch(this.mybaseurl+"user/" + this.editedItem.id, this.editedItem)
           .then(function(resp) {
             /*Vue.set(
                 app.users,
@@ -189,7 +191,7 @@ export default {
           });
       } else {
         axios
-          .post("../api/v1/user", this.editedItem)
+          .post(this.mybaseurl+"user", this.editedItem)
           .then(function(resp) {
             app.users.push(resp.data[0]);
             app.successSnack("Gebruiker toegevoegd");
@@ -197,7 +199,7 @@ export default {
           .catch(function(resp) {
             console.log(resp);
             app.failSnack("Fout bij aanmaken user");
-          });
+          })
       }
       this.close();
     },
@@ -221,7 +223,7 @@ export default {
   created() {
     var app = this;
     axios
-      .get("../api/v1/user")
+      .get(this.mybaseurl+"user")
       .then(function(resp) {
         app.users = resp.data;
       })

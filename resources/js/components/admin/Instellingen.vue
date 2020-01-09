@@ -76,7 +76,8 @@ export default {
         { text: 'waarde', align: 'left', value: 'value'},
         { text: 'van', align: 'left', value: 'van'},
         { text: 'tot', align: 'left', value: 'tot'}
-      ]
+      ],
+      mybaseurl : 'api/v1/'
     };
   },
   methods: {
@@ -97,7 +98,7 @@ export default {
     save() {
       var app = this;
       axios
-        .patch("../api/v1/settings/1", this.settings)
+        .patch(this.mybaseurl+"settings/1", this.settings)
         .then(function(resp) {
           try{
             app.$root.loadSettings();
@@ -117,7 +118,7 @@ export default {
   created(){
     var app = this;
       axios
-        .get("../api/v1/settingsByContext/calc", this.grenswaarden)
+        .get(this.mybaseurl+"settingsByContext/calc", this.grenswaarden)
         .then(function(resp) {
             app.grenswaarden = resp.data;
         })

@@ -95,7 +95,8 @@ export default {
                 password: "",
                 confirm: "",
                 oldpassword: ""
-            }
+            },
+            mybaseurl : 'api/v1/'
         };
     },
     methods: {
@@ -125,7 +126,7 @@ export default {
         save() {
             let app = this;
             axios
-                .patch("../api/v1/user/" + this.user.id, this.passchanges)
+                .patch(this.mybaseurl+"user/" + this.user.id, this.passchanges)
                 .then(function(resp) {
                     app.successSnack("Wijzigingen opgeslagen");
                 })
@@ -142,7 +143,7 @@ export default {
             else console.log("no user parameter found...");
             let app = vm;
             axios
-                .get("../api/v1/user/attributes/" + app.user.id)
+                .get(this.mybaseurl+"api/v1/user/attributes/" + app.user.id)
                 .then(function(resp) {
                     app.user = resp.data;
                     console.log;

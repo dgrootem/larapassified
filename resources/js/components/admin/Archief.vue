@@ -21,7 +21,7 @@
                     >
                 </v-card-actions>
             </v-card>
-            <v-card>
+            <!-- <v-card>
                 <v-card-title>Onderhoud</v-card-title>
                 <v-card-text>
                     Elk schooljaar moet je minstens 1 maal 
@@ -33,7 +33,7 @@
                 <v-card-actions>
                     <v-btn @click="startberekening">Start berekening</v-btn>
                 </v-card-actions>
-            </v-card>
+            </v-card> -->
         </v-col>
     </v-row>
 </template>
@@ -43,15 +43,15 @@ export default {
     methods: {
         archiveer: function() {
             console.log("archive old or already full-TADD employees");
-            axios.post("../api/v1/employee/archive/1");
+            axios.post(this.mybaseurl+"employee/archive/1");
         },
         allvisible: function() {
             console.log("toggle visibility for all employees : set to true");
-            axios.post("../api/v1/employee/toggleAllVisible/true");
+            axios.post(this.mybaseurl+"employee/toggleAllVisible/true");
         },
         startberekening : function(){
             console.log('trigger uitvoeren van berekening');
-            axios.post("../api/v1/employee/startcalculation/update");
+            axios.post(this.mybaseurl+"employee/startcalculation/update");
         }
     }
 };
