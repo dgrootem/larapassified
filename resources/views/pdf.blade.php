@@ -40,6 +40,9 @@
         p:last-child {
             page-break-after: never;
         }
+        .teltnietmee {
+            text-decoration: line-through;
+        }
     </style>
 </head>
 
@@ -75,7 +78,8 @@
                         <th>tot</th>
                     </tr>
                     @foreach($aanstellingen[$ambt->id][0]->employments as $aanstelling)
-                    <tr>
+                    
+                    <tr class="{{ ($aanstelling->school->useForCalculations == 0) ? 'teltnietmee' : ''}}">
                         <td>{{$aanstelling->school->name}}</td>
                         <td>{{$aanstelling->beginDateAsDate}}</td>
                         <td>{{$aanstelling->endDateAsDate}}</td>
