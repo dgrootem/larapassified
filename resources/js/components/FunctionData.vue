@@ -23,8 +23,16 @@
     <!-- </v-layout>
     <v-layout row>-->
     <v-data-table :items="employments" :headers="headers" v-if="employments.length > 0">
-      <template v-slot:item.beginDate="{ item }">{{ formatDateFromDB(item.beginDate)}}</template>
-      <template v-slot:item.endDate="{ item }">{{ formatDateFromDB(item.endDate)}}</template>
+      <template v-slot:item.beginDate="{ item }">
+        <span
+          :style="!item.school.useForCalculations ? 'text-decoration: line-through !important;':''"
+        >{{ formatDateFromDB(item.beginDate)}}</span>
+      </template>
+      <template v-slot:item.endDate="{ item }">
+        <span
+          :style="!item.school.useForCalculations ? 'text-decoration: line-through !important;':''"
+        >{{ formatDateFromDB(item.endDate)}}</span>
+      </template>
       <template v-slot:item.school_id="{ item }">
         <img
           v-if="(item.school.logo_filename != 'nologo')"
@@ -33,8 +41,11 @@
           width="25px"
         />
         <!-- <v-label> -->
-        {{item.school.name}} [{{item.school.abbreviation}}]
+        <span :style="!item.school.useForCalculations ? 'text-decoration: line-through !important;':''">{{item.school.name}} [{{item.school.abbreviation}}]</span>
         <!-- </v-label> -->
+      </template>
+      <template v-slot:item.hours="{ item }">
+        <span :style="!item.school.useForCalculations ? 'text-decoration: line-through !important;':''">{{item.hours}}</span>
       </template>
       <template v-if="!ro" v-slot:item.action="{ item }">
         <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
@@ -159,7 +170,7 @@ export default {
       editedItem: Object.assign({}, this.defaultEmployment),
       employmentDialog: false,
       startWaardeDialog: false,
-      startwaarde_tot: 0,//functiondata.startwaarde_tot,
+      startwaarde_tot: 0, //functiondata.startwaarde_tot,
 
       mask: "##-##-####",
 
@@ -248,7 +259,12 @@ export default {
     saveStartWaarde() {
       let app = this;
       axios
-        .patch("api/v1/educationalFunctionData/"+this.functiondata.id+"/setstartwaarde", {'startwaarde_tot' : this.functiondata.startwaarde_tot})
+        .patch(
+          "api/v1/educationalFunctionData/" +
+            this.functiondata.id +
+            "/setstartwaarde",
+          { startwaarde_tot: this.functiondata.startwaarde_tot }
+        )
         .then(function(resp) {
           //app.$router.push({ path: "/employees" });
 
