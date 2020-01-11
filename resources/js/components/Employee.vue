@@ -31,7 +31,7 @@
               </span>
             </template>
             <template v-slot:item.action="{ item }">
-              <v-icon small class="mr-2" @click="showPDF(item)">download</v-icon>
+              
               <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
               <v-icon small class="mr-2" @click="deleteItem(item)">delete</v-icon>
               <v-icon
@@ -39,6 +39,7 @@
                 class="mr-2"
                 @click="toggleVisibility(item)"
               >{{ item.isActive ? 'visibility' : 'visibility_off' }}</v-icon>
+              <img src="http://www.skbl.be/pdf.png" width="24" height="24"  class="mr-2" @click="showPDF(item)">
             </template>
           </v-data-table>
         </v-card-text>
@@ -124,7 +125,7 @@
       <v-btn dark text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
     <v-overlay :value="overlay">
-      Bezig met herberekenen...
+      {{ overlay_message }}
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
   </div>
@@ -158,7 +159,8 @@ export default {
       snack_color: "",
       snack_timeout: 2000,
       search: "",
-      overlay : false
+      overlay : false,
+      overlay_message: ''
       // registrationNumberProxy : null
     };
   },
@@ -168,8 +170,24 @@ export default {
       this.$router.push({ name: 'ingave', params: { selectedEmployee: selectedItem, newEmployee: newEmployee }});
     },
     showPDF(selectedItem){
-      debugger;
-      window.open('api/v1/employee/pdf/'+selectedItem.id,'_blank');
+      let app = this;
+      //debugger;
+      app.overlay = true;
+      app.overlay_message = 'Bezig met samenstellen PDF document...';
+      axios({
+        url: 'api/v1/employee/pdf/'+selectedItem.id,
+        responseType: 'blob', // important
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', selectedItem.id+'.pdf'); //or any other extension
+        document.body.appendChild(link);
+        app.overlay = false;
+        link.click();
+        
+      });
+      //window.open('api/v1/employee/pdf/'+selectedItem.id,'_blank');
     },
     calcBdate: function() {
       if (this.editedItem.registrationNumber.length == 11) {
@@ -267,6 +285,7 @@ export default {
     recalculateDays(employee){
       let app = this;
       app.overlay = true;
+      app.overlay_message = 'Bezig met herberekenen...';
       axios
           .patch("api/v1/taddCalculator/updateAllSeniorityDays/" + employee.id, employee)
           .then(function(resp) {

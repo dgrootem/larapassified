@@ -17,4 +17,11 @@ class Employment extends Model
     public function school(){
         return $this->belongsTo(School::class);
     }
+
+    public function getBeginDateAsDateAttribute(){
+        return $this->beginDate->format('d-m-Y');
+    }
+    public function getEndDateAsDateAttribute(){
+        return $this->endDate->format('d-m-Y');
+    }
 }
