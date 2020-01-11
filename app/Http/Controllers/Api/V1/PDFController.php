@@ -31,8 +31,8 @@ class PDFController extends Controller
 
         //return compact(['ambten','aanstellingen','interruptions','employee','gendate']);
 
-        $pdf = PDF::loadView('pdf',compact(['ambten','aanstellingen','interruptions','employee','gendate']));
-        return $pdf->download($id.'.pdf');
+        //$pdf = PDF::loadView('pdf',compact(['ambten','aanstellingen','interruptions','employee','gendate']));
+        //return $pdf->download($id.'.pdf');
 
         return view('pdf',compact(['ambten','aanstellingen','interruptions','employee','gendate']));
     }

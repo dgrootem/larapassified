@@ -76,13 +76,16 @@
                         <th>School</th>
                         <th>van</th>
                         <th>tot</th>
+                        
                     </tr>
                     @foreach($aanstellingen[$ambt->id][0]->employments as $aanstelling)
                     
                     <tr class="{{ ($aanstelling->school->useForCalculations == 0) ? 'teltnietmee' : ''}}">
+                        
                         <td>{{$aanstelling->school->name}}</td>
                         <td>{{$aanstelling->beginDateAsDate}}</td>
                         <td>{{$aanstelling->endDateAsDate}}</td>
+                        
                     </tr>
                     @endforeach
                 </table>
