@@ -122,9 +122,9 @@ class EmployeeController extends Controller
         $employee->firstName = $request['firstName'];
         $employee->lastName = $request['lastName'];
         $employee->isActive = $request['isActive'];
-        $employee->startwaardeDA = $request['startwaardeDA'];
-        $employee->startwaardeINT = $request['startwaardeINT'];
-        $employee->oudsysteem = $request['oudsysteem'];
+        //$employee->startwaardeDA = $request['startwaardeDA'];
+        //$employee->startwaardeINT = $request['startwaardeINT'];
+        //$employee->oudsysteem = false; //$request['oudsysteem'];
         $employee->save();
         return $employee;
     }
