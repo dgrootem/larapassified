@@ -43,6 +43,10 @@
         .teltnietmee {
             text-decoration: line-through;
         }
+
+        .datecol {
+            width: 100px;
+        }
     </style>
 </head>
 
@@ -74,8 +78,8 @@
                 <table class="table">
                     <tr>
                         <th>School</th>
-                        <th>van</th>
-                        <th>tot</th>
+                        <th class="datecol">Van</th>
+                        <th class="datecol">Tot</th>
                         
                     </tr>
                     @foreach($aanstellingen[$ambt->id][0]->employments as $aanstelling)
@@ -83,8 +87,8 @@
                     <tr class="{{ ($aanstelling->school->useForCalculations == 0) ? 'teltnietmee' : ''}}">
                         
                         <td>{{$aanstelling->school->name}}</td>
-                        <td>{{$aanstelling->beginDateAsDate}}</td>
-                        <td>{{$aanstelling->endDateAsDate}}</td>
+                        <td class="datecol">{{$aanstelling->beginDateAsDate}}</td>
+                        <td class="datecol">{{$aanstelling->endDateAsDate}}</td>
                         
                     </tr>
                     @endforeach
@@ -104,14 +108,14 @@
                 @if(count($interruptions) > 0)
                 <table class="table">
                     <tr>
-                        <th>Van</th>
-                        <th>Tot</th>
+                        <th class="datecol">Van</th>
+                        <th class="datecol">Tot</th>
                         <th></th>
                     </tr>
                     @foreach($interruptions as $interruption)
                     <tr>
-                        <td>{{$interruption->beginDateAsDate}}</td>
-                        <td>{{$interruption->endDateAsDate}}</td>
+                        <td class="datecol">{{$interruption->beginDateAsDate}}</td>
+                        <td class="datecol">{{$interruption->endDateAsDate}}</td>
                         <td>Deze periode telt {{($interruption->interruption_type_id == 1)? 'WEL' : 'NIET'}} mee voor effectief</td>
                     </tr>
                     @endforeach
