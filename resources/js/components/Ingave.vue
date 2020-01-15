@@ -569,7 +569,8 @@ export default {
         })
         .then(function(){
           if (setFirstTab) // zou moeten probleem oplossen van eerste tab altijd te selecteren ook bij toevoegen van nieuwe tab
-            app.functiondatatab = app.generateRef(app.functiondata[0]);
+            if (app.functiondata && (app.functiondata.length >0))
+              app.functiondatatab = app.generateRef(app.functiondata[0]);
           app.setAvailableFunctions(employee_id);
           // console.log("app.functiondatatab="+app.functiondatatab);
         })

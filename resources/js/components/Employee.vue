@@ -90,14 +90,14 @@
                   suffix="dagen"
                 ></v-text-field>
               </v-col> -->
-              <v-col sm="12" md="6">
+              <!-- <v-col sm="12" md="6">
                 <v-text-field
                   v-model="editedItem.startwaardeINT"
                   label="Aantal dagen onderbrekingen dat niet meetelt"
                   type="number"
                   min="0"
                   suffix="dagen"
-                ></v-text-field>
+                ></v-text-field> -->
               </v-col>
             </v-row>
             <v-row dense>

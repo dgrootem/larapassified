@@ -62,11 +62,18 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" sm="6" md="6">
+              <v-col cols="12" sm="12" md="12">
                 <v-text-field
                   v-model="functiondata.startwaarde_tot"
                   label="Startwaarde totaal aantal dagen in dit ambt"
                   type="number"
+                  
+                ></v-text-field>
+                <v-text-field
+                  v-model="functiondata.startwaarde_int"
+                  label="Startwaarde dagen onderbreking in dit ambt"
+                  type="number"
+                  
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -263,7 +270,7 @@ export default {
           "api/v1/educationalFunctionData/" +
             this.functiondata.id +
             "/setstartwaarde",
-          { startwaarde_tot: this.functiondata.startwaarde_tot }
+          { startwaarde_tot: this.functiondata.startwaarde_tot, startwaarde_int: this.functiondata.startwaarde_int}
         )
         .then(function(resp) {
           //app.$router.push({ path: "/employees" });

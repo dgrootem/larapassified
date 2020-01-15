@@ -314,7 +314,9 @@ class EduFunctionDataController extends Controller
         $efd = EduFunctionData::find($id);
         Log::debug($efd);
         $start = $request['startwaarde_tot'];
+        $start2 = $request['startwaarde_int'];
         $efd->startwaarde_tot = $start;
+        $efd->startwaarde_int = $start2;
         $efd->save();
         return $efd;
     }
