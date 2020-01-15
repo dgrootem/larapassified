@@ -116,7 +116,7 @@
                     <tr>
                         <td class="datecol">{{$interruption->beginDateAsDate}}</td>
                         <td class="datecol">{{$interruption->endDateAsDate}}</td>
-                        <td>Deze periode telt {{($interruption->interruption_type_id == 1)? 'WEL' : 'NIET'}} mee voor effectief</td>
+                        <td>Deze periode telt {{($interruption->interruption_type->telt_mee == 1) ? 'WEL' : 'NIET'}} mee voor effectief</td>
                     </tr>
                     @endforeach
                 </table>

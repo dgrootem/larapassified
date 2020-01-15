@@ -37,6 +37,7 @@ class EmploymentInterruptionController extends Controller
         $employmentInterruption->interruption_type_id = $request['interruption_type_id'];
         
         $employmentInterruption->save();
+        $it = $employmentInterruption->interruption_type;
     }
 
     public function update(Request $request, $id)
@@ -44,6 +45,7 @@ class EmploymentInterruptionController extends Controller
         $this->authorizeRO();
         $employmentInterruption = EmploymentInterruption::findOrFail($id);
         $this->saveInterruption($request,$employmentInterruption);
+        
 
         return $employmentInterruption;
     }
@@ -65,6 +67,6 @@ class EmploymentInterruptionController extends Controller
     }
 
     public function interruptionsForEmployee($employee_id){
-        return EmploymentInterruption::where('employee_id',$employee_id)->get();
+        return EmploymentInterruption::with('interruption_type')->where('employee_id',$employee_id)->get();
     }
 }

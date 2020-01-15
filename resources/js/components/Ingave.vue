@@ -89,10 +89,10 @@
             <v-data-table :items="interruptions" :headers="interruptionheaders">
               <template v-slot:item.beginDate="{ item }">{{ formatDateFromDB(item.beginDate)}}</template>
               <template v-slot:item.endDate="{ item }">{{ formatDateFromDB(item.endDate)}}</template>
-              <template v-slot:item.interruption_type_id="{ item }">
+              <template v-slot:item.interruption_type="{ item }">
                 <v-icon
-                  :color="item.interruption_type_id==1?'green':'red'"
-                >{{item.interruption_type_id==1?'check':'not_interested'}}</v-icon>
+                  :color="item.interruption_type.telt_mee?'green':'red'"
+                >{{item.interruption_type.telt_mee?'check':'not_interested'}}</v-icon>
               </template>
               <template v-if="!ro" v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editInterruption(item)" title="Aanstelling aanpassen">edit</v-icon>
@@ -167,11 +167,7 @@
               <v-col cols="12" sm="12" md="12">
                 <!-- {{ editedItem.interruption_type_id }} -->
                 <v-radio-group v-model="editedItem.interruption_type_id">
-                  <v-radio :value="1"
-                    label="Telt wel mee als effectief gepresteerd: zwangerschapsverlof, moederschapsbescherming, bedreigde beroepsziekte.">
-                  </v-radio>
-                  <v-radio :value="2"
-                    label="Telt niet mee voor rechtenopbouw">
+                  <v-radio v-for="it in interruption_types" :key="it.id" :value="it.id" :label="it.omschrijving">
                   </v-radio>
                 </v-radio-group>
                 <!-- <v-switch
@@ -215,6 +211,7 @@ export default {
       functiondata: [],
       interruptions: [],
       ambten: [],
+      interruption_types : [],
       //selection and editing
       editedItem: {},
       defaultFunctionData: {
@@ -265,7 +262,7 @@ export default {
       interruptionheaders: [
         { text: "Begin", align: "left", value: "beginDate" },
         { text: "Einde", align: "left", value: "endDate" },
-        { text: "Tellen mee", align: "left", value: "interruption_type_id" , width: "60px"},
+        { text: "Tellen mee", align: "left", value: "interruption_type" , width: "60px"},
         { text: "", align: "center", value: "action" }
       ],
       descriptionLimit: 45
@@ -527,7 +524,7 @@ export default {
             
         )
         .then(function(resp) {
-          app.reloadEmployeeData(app.editedItem.employee_id);
+          app.reloadEmployeeData(app.editedItem.employee_id,false);
         })
         .catch(function(resp) {
           //console.log(resp);
@@ -571,7 +568,8 @@ export default {
 
         })
         .then(function(){
-          app.functiondatatab = app.generateRef(app.functiondata[0]);
+          if (setFirstTab) // zou moeten probleem oplossen van eerste tab altijd te selecteren ook bij toevoegen van nieuwe tab
+            app.functiondatatab = app.generateRef(app.functiondata[0]);
           app.setAvailableFunctions(employee_id);
           // console.log("app.functiondatatab="+app.functiondatatab);
         })
@@ -644,7 +642,17 @@ export default {
   created() {
     //load school and ambt data on creation
     var app = this;
-    
+    axios
+      .get("api/v1/interruptiontype")
+      .then(function(resp) {
+        app.interruption_types = resp.data;
+      })
+      .catch(function(resp) {
+        console.log(resp);
+        alert("Could not load interuption types");
+      });
+
+
     axios
       .get("api/v1/ambt")
       .then(function(resp) {

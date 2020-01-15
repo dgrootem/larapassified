@@ -1,6 +1,10 @@
 <?php
 
+
+
 namespace App\Http\Controllers\Api\V1;
+
+ini_set('max_execution_time', 180);
 
 use App\EduFunctionData;
 use Illuminate\Http\Request;
@@ -26,7 +30,7 @@ class PDFController extends Controller
                                                     ->where('employee_id',$employee->id)
                                                     ->where('educational_function_id',$ambt->id)
                                                     ->get();
-        $interruptions = EmploymentInterruption::where('employee_id',$employee->id)->get();
+        $interruptions = EmploymentInterruption::with('interruption_type')->where('employee_id',$employee->id)->get();
         $gendate = Carbon::now()->format('d-m-Y H:i:s');
 
         //return compact(['ambten','aanstellingen','interruptions','employee','gendate']);

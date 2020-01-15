@@ -217,7 +217,7 @@ class TaddCalculationController extends Controller
         //beperk het aantal dagen dat kan meetellen
         $aantalDagenOnderbrekingDatTelt = min($aantalDagenOnderbrekingDatTelt, 220);
         //bereken het aantal dagen dat niet mag meetellen: totaal aantal dagen onderbreking MINUS het aantal dat mag meetellen
-        $aantalDagenDatNietTelt = $aantalDagenOnderbreking - $aantalDagenOnderbrekingDatTelt + $employee->startwaardeINT;
+        $aantalDagenDatNietTelt = $aantalDagenOnderbreking - $aantalDagenOnderbrekingDatTelt + $functiondata->startwaarde_int;
         // het aantal dagen dat telt als effectief gepresteerd = totaal aantal dagen MINUS het aantal dat niet mag meetellen
 
         $effectieveAantalDagen = max($aantalDagen - $aantalDagenDatNietTelt,0);

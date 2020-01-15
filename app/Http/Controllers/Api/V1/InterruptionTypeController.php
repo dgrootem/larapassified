@@ -15,7 +15,7 @@ class InterruptionTypeController extends Controller
      */
     public function index()
     {
-        //
+        return  InterruptionType::all();
     }
 
     
