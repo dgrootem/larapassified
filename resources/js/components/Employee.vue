@@ -32,9 +32,9 @@
             </template>
             <template v-slot:item.action="{ item }">
               
-              <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
-              <v-icon small class="mr-2" @click="deleteItem(item)">delete</v-icon>
-              <v-icon
+              <v-icon v-if="!ro" small class="mr-2" @click="editItem(item)">edit</v-icon>
+              <v-icon v-if="!ro" small class="mr-2" @click="deleteItem(item)">delete</v-icon>
+              <v-icon v-if="!ro"
                 small
                 class="mr-2"
                 @click="toggleVisibility(item)"
@@ -353,7 +353,10 @@ export default {
     },
     showAddForNewEmployee: function(){
       return this.$root.settings.showAddForNewEmployee.value;
-    }
+    },
+    ro() { //shorthand for "read only"
+      return window.u53r.readonly;
+    },
   },
 
   created() {
@@ -375,7 +378,7 @@ export default {
       { text: "Stamboeknummer", align: "left", value: "registrationNumber" },
       { text: "Geboortedatum", align: "left", value: "birthDate" },
       // { text: "Startwaarde DA", align: "right", value: "startwaardeDA" },
-      { text: "Startwaarde OND ", align: "right", value: "startwaardeINT" },
+      // { text: "Startwaarde OND ", align: "right", value: "startwaardeINT" },
       { text: "", align: "center", value: "action" }
     ];
     this.editedItem = Object.assign({}, this.defaultItem);

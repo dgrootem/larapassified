@@ -18,89 +18,81 @@
 <body>
     <v-app id="app">
         @auth
-	@if(Auth::user()->isactive == 1)
+        @if(Auth::user()->isactive == 1)
         <v-navigation-drawer v-model="drawer" app>
             <v-list dense>
-            <v-list-group
-                    prepend-icon="account_balance"
-                    value="true"
-                >
+                <v-list-group prepend-icon="account_balance" value="true">
                     <template v-slot:activator>
-                    <v-list-item-title>TADD</v-list-item-title>
+                        <v-list-item-title>TADD</v-list-item-title>
                     </template>
-                <v-list-item to="/">
-                    <v-list-item-action>
-                        <v-icon>dashboard</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                        <v-list-item-title>Dashboard</v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
-                <v-list-item to="/ingave">
-                    <v-list-item-action>
-                    @if(Auth::user()->readonly)
-                        <v-icon>visibility</v-icon>
-                    @else
-                        <v-icon>edit</v-icon>
-                    @endif
-                    </v-list-item-action>
-                    <v-list-item-content>
-                    @if(Auth::user()->readonly)
-                        <v-list-item-title>Details personeel</v-list-item-title>
-                    @else
-                        <v-list-item-title>Ingave details personeel</v-list-item-title>
-                    @endif
-                    </v-list-item-content>
-                </v-list-item>
+                    <v-list-item to="/">
+                        <v-list-item-action>
+                            <v-icon>dashboard</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Dashboard</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item to="/ingave">
+                        <v-list-item-action>
+                            @if(Auth::user()->readonly)
+                            <v-icon>visibility</v-icon>
+                            @else
+                            <v-icon>edit</v-icon>
+                            @endif
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            @if(Auth::user()->readonly)
+                            <v-list-item-title>Details personeel</v-list-item-title>
+                            @else
+                            <v-list-item-title>Ingave details personeel</v-list-item-title>
+                            @endif
+                        </v-list-item-content>
+                    </v-list-item>
                 </v-list-group>
                 <v-list-item>
-                
-                <v-divider></v-divider>
-                
+
+                    <v-divider></v-divider>
+
                 </v-list-item>
-                @if(!(Auth::user()->readonly))
-                <v-list-group
-                    prepend-icon="list"
-                    
-                >
+
+                <v-list-group prepend-icon="list">
                     <template v-slot:activator>
-                    <v-list-item-title>Lijsten</v-list-item-title>
+                        <v-list-item-title>Lijsten</v-list-item-title>
                     </template>
-                <v-list-item to="/function">
-                    <v-list-item-action>
-                        <v-icon>contact_mail</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                        <v-list-item-title>Ambten</v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
-                <v-list-item to="/school">
-                    <v-list-item-action>
-                        <v-icon>school</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                        <v-list-item-title>Scholen</v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
-                <v-list-item to="/employee">
-                    <v-list-item-action>
-                        <v-icon>contacts</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                        <v-list-item-title>Personeel</v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
+                    @if(!(Auth::user()->readonly))
+                    <v-list-item to="/function">
+                        <v-list-item-action>
+                            <v-icon>contact_mail</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Ambten</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item to="/school">
+                        <v-list-item-action>
+                            <v-icon>school</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Scholen</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    @endif
+                    <v-list-item to="/employee">
+                        <v-list-item-action>
+                            <v-icon>contacts</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Personeel</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
                 </v-list-group>
                 <v-list-item>
-            
-                <v-divider></v-divider>
+
+                    <v-divider></v-divider>
                 </v-list-item>
                 @if (Auth::check() && Auth::user()->isadmin)
-                <v-list-group
-                    prepend-icon="settings"
-                    
-                    color="purple"
-                >
+                <v-list-group prepend-icon="settings" color="purple">
                     <template v-slot:activator>
                         <v-list-item-title>Beheer</v-list-item-title>
                     </template>
@@ -112,7 +104,7 @@
                             <v-list-item-title>Gebruikers</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
-                    
+
                     <v-list-item to="/admin/settings">
                         <v-list-item-action>
                             <v-icon>build</v-icon>
@@ -129,13 +121,13 @@
                             <v-list-item-title>Archivering</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
-                    
+
                     <v-list-item>
                         <v-divider></v-divider>
                     </v-list-item>
                 </v-list-group>
                 @endif
-                @endif
+                
                 <v-list-item :to="{name : 'myprofile', params: {user : {{Auth::user()->id}} } }">
                     <v-list-item-action>
                         <v-icon>account_circle</v-icon>
@@ -144,25 +136,25 @@
                         <v-list-item-title>Mijn profiel</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
-            
+
                 <form id="logout-form" action="{{ route('logout') }}" method="POST">
-                <v-list-item>
-                    <v-list-item-action>
-                    
-                {{ csrf_field() }}
-                    <v-icon>exit_to_app</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                        <v-list-item-title>
-                        <button type="submit" class="logoutbutton">Logout</button>
-                                            
-                        </v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
+                    <v-list-item>
+                        <v-list-item-action>
+
+                            {{ csrf_field() }}
+                            <v-icon>exit_to_app</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>
+                                <button type="submit" class="logoutbutton">Logout</button>
+
+                            </v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
                 </form>
             </v-list>
         </v-navigation-drawer>
-	@endif
+        @endif
         @endauth
 
         <v-app-bar app color="indigo" dark>
@@ -170,14 +162,14 @@
             <v-toolbar-title>TADD Calc</v-toolbar-title>
         </v-app-bar>
         <v-content>
-	    @if(Auth::check() && (Auth::user()->isactive == 1))
+            @if(Auth::check() && (Auth::user()->isactive == 1))
             <router-view></router-view>
             @else
             <v-container fluid>
                 <v-row>
                     <v-col cols="12">
                         <v-row style="height: 300px;" justify="center" align="center">
-                            <v-card class="ma-3 pa-6" >
+                            <v-card class="ma-3 pa-6">
                                 <a href="{{ route('login') }}">
                                     <v-btn>Login</v-btn>
                                 </a>
@@ -191,7 +183,7 @@
                     </v-col>
                 </v-row>
             </v-container>
-    	    @endif
+            @endif
 
             @yield('content')
         </v-content>
@@ -203,10 +195,10 @@
     @if(Auth::user()->isactive == 1)
     <script>
         window.u53r = {
-            id : {{ Auth::user()->id }}, 
-            isadmin :  {{ Auth::user()->isadmin }},
-            isactive :  {{ Auth::user()->isactive }},
-            readonly :  {{ Auth::user()->readonly }},
+            id: {{ Auth::user()->id }},
+            isadmin: {{ Auth::user()->isadmin}},
+            isactive: {{Auth::user()->isactive}},
+            readonly: {{Auth::user()->readonly}},
         };
     </script>
     @endif
