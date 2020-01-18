@@ -53,16 +53,18 @@
                 <!-- <v-progress-linear :value="item.total_seniority_days"></v-progress-linear> -->
                 {{item.total_seniority_days}}
               </template>
-              <template v-if="!ro" v-slot:item.werkpunt="{ item }">
+              <template  v-slot:item.werkpunt="{ item }">
                 <v-icon
-                  :title="'Verwijder werkpunten van '+item.werkpunt"
+                  :title="ro?'Heeft werkpunten':'Verwijder werkpunten van '+item.werkpunt"
                   color="red"
                   v-if="!!item.werkpunt && (item.oudsysteem==0)"
+                  :class="ro?'nopointer':''"
                   @click="zetWerkpunten(item,false)"
                 >thumb_down</v-icon>
                 <v-icon
-                  title="Geef werkpunten"
+                  :title="ro?'Heeft geen werkpunten':'Geef werkpunten'"
                   color="green"
+                  :class="ro?'nopointer':''"
                   v-if="!item.werkpunt && (item.oudsysteem==0)"
                   @click="zetWerkpunten(item,true)"
                 >thumb_up</v-icon>
@@ -168,6 +170,7 @@ export default {
       this.dialog = true;
     },
     zetWerkpunten(item,state) {
+      if (this.ro) return;
       var app = this;
       var id = item.id;
       if (state)
@@ -178,7 +181,7 @@ export default {
             app.successSnack("Werkpunt toegevoegd");
           })
           .catch(function(resp) {
-            app.failSnack("Verwijderen mislukt");
+            app.failSnack("Werkpunt toevoegen mislukt");
           });
       else
       axios
@@ -188,10 +191,11 @@ export default {
             app.successSnack("Werkpunt verwijderd");
           })
           .catch(function(resp) {
-            app.failSnack("Verwijderen mislukt");
+            app.failSnack("Werkpunt verwijderen mislukt");
           });
     },
     zetTADD(item,state) {
+      if (this.ro) return;
       var app = this;
       var id = item.id;
       if (state)
@@ -224,6 +228,7 @@ export default {
           });
     },
     zetBenoemd(item,state) {
+      if (this.ro) return;
       var app = this;
       var id = item.id;
       if (state)
@@ -402,8 +407,8 @@ export default {
       { o: 1, v:1,t:0,b:0, text: "TOT", align: "center", value: "total_seniority_days_perc", width: "200px"   },
       { o: 1, v:1,t:0,b:0, text: "EFF", align: "center", value: "seniority_days_perc", width: "200px"         },
       { o: 0, v:1,t:0,b:0, text: "werkpunt", align: "center", value: "werkpunt", width: "16px"               },
-      { o: 0, v:1,t:1,b:0, text: "TADD", align: "center", value: "istadd", width: "16px"                     },
-      { o: 0, v:0,t:1,b:1, text: "benoemd of weg", align: "center", value: "benoemd", width: "16px"                 }
+      { o: 0, v: this.ro?0:1,t:this.ro?0:1,b:0, text: "TADD", align: "center", value: "istadd", width: "16px"                     },
+      { o: 0, v:0,t:this.ro?0:1,b:this.ro?0:1, text: "benoemd of weg", align: "center", value: "benoemd", width: "16px"                 }
       //{ text: "Benoemd", align: "center", value: "nocount", width: "16px" }
     ];
     this.editedItem = Object.assign({}, this.defaultItem);

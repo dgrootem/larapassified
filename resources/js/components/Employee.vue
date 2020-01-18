@@ -13,12 +13,12 @@
             hide-details
           ></v-text-field>
           <div class="flex-grow-1"></div>
-          <v-btn fab right absolute @click="dialog = !dialog">
+          <v-btn v-if="!ro" fab right absolute @click="dialog = !dialog">
             <v-icon>add</v-icon>
           </v-btn>
         </v-card-title>
         <v-card-text>
-          <v-data-table :items="employees" :headers="headers" :search="search" multi-sort>
+          <v-data-table :items="employees" :headers="headers" :search="search" multi-sort :items-per-page="aantalRijenPerPagina">
             <template v-slot:item.ingave="{item}"><v-icon small class="mr-2" @click="navigateTo(item, false)">link</v-icon></template>
             <template v-slot:item.birthDate="{ item }">{{ formatDateFromDB(item.birthDate) }}</template>
             <template v-slot:item.registrationNumber="{ item }">
@@ -97,8 +97,8 @@
                   type="number"
                   min="0"
                   suffix="dagen"
-                ></v-text-field> -->
-              </v-col>
+                ></v-text-field> 
+              </v-col>-->
             </v-row>
             <v-row dense>
               <v-col sm="12" md="12">
@@ -353,6 +353,9 @@ export default {
     },
     showAddForNewEmployee: function(){
       return this.$root.settings.showAddForNewEmployee.value;
+    },
+    aantalRijenPerPagina: function(){
+      return this.$root.settings.aantalRijenPerLijst.value;
     },
     ro() { //shorthand for "read only"
       return window.u53r.readonly;

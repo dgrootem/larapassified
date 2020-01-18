@@ -7,15 +7,8 @@
 
       <v-card-text>
         <v-container>
-          <v-row>
-            <v-card>
-              <v-card-title>Grenswaarden</v-card-title>
-              <v-card-text>
-                <v-data-table :items="grenswaarden" :headers="grensheaders" group-by="categorie"></v-data-table>
-              </v-card-text>
-            </v-card>
-          </v-row>
-          <v-row>
+         
+          <v-row class="mb-4">
             <v-card>
               <v-card-title>Gedrag</v-card-title>
               <v-card-text>
@@ -43,6 +36,23 @@
                     ></v-checkbox>
                   </v-col>
                 </v-row>
+                <v-row dense>
+                  <v-col sm="12" md="12">
+                    <v-text-field
+                    type="number"
+                      v-model="appsettings.aantalRijenPerLijst.value"
+                      :label="labelFor(appsettings.aantalRijenPerLijst)"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-row>
+           <v-row>
+            <v-card>
+              <v-card-title>Grenswaarden</v-card-title>
+              <v-card-text>
+                <v-data-table :items="grenswaarden" :headers="grensheaders" group-by="categorie"></v-data-table>
               </v-card-text>
             </v-card>
           </v-row>
@@ -98,7 +108,7 @@ export default {
     save() {
       var app = this;
       axios
-        .patch(this.mybaseurl+"settings/1", this.settings)
+        .patch(this.mybaseurl+"settings/1", this.appsettings)
         .then(function(resp) {
           try{
             app.$root.loadSettings();
