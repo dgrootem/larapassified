@@ -19,7 +19,7 @@
           teveel personeelsleden zijn geheractiveerd</p>
           </v-col>
           </v-row>
-          <v-data-table :items="scholen" :headers="headers">
+          <v-data-table :items="scholen" :headers="headers" :items-per-page="aantalRijenPerPagina">
             <template v-slot:item.logo="{ item }">
               <img
                 v-if="(item.logo_filename != 'nologo')"
@@ -289,7 +289,10 @@ export default {
       return this.editedIndex === -1
         ? "Nieuwe school toevoegen"
         : "Bewerk schoolgegevens";
-    }
+    },
+    aantalRijenPerPagina: function(){
+      return this.$root.settings.aantalRijenPerLijst.value;
+    },
   },
 
   created() {

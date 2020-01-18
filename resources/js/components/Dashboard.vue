@@ -15,7 +15,7 @@
               :headers="headersVolgendJaarTADD"
               :sort-by="sortby"
               :search="search"
-              :items-per-page="10000"
+              :items-per-page="aantalRijenPerPagina"
               hide-default-footer
             >
               <template v-slot:item.seniority_days_perc="{ item }">
@@ -42,7 +42,7 @@
               :headers="headersVoldoende"
               :sort-by="sortby"
               :search="search"
-              :items-per-page="10000"
+              :items-per-page="aantalRijenPerPagina"
               hide-default-footer
             >
               <template v-slot:item.seniority_days_perc="{ item }">
@@ -85,7 +85,7 @@
               :headers="headersTADD"
               :sort-by="sortby"
               :search="search"
-              :items-per-page="10000"
+              :items-per-page="aantalRijenPerPagina"
               hide-default-footer
             >
               <template v-slot:item.seniority_days="{ item }">
@@ -349,7 +349,11 @@ export default {
     },
     grensTot(){
       return this.grens('taddNeededTotal');
-    }
+    },
+    aantalRijenPerPagina: function(){
+      return 10000;
+      //return this.$root.settings.aantalRijenPerLijst.value;
+    },
     
 
   },

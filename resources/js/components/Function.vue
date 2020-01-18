@@ -9,7 +9,7 @@
           </v-btn>
         </v-card-title>
         <v-card-text>
-          <v-data-table :items="ambten" :headers="headers">
+          <v-data-table :items="ambten" :headers="headers" :items-per-page="aantalRijenPerPagina">
             <template v-slot:item.action="{ item }">
               <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
               <v-icon small @click="deleteItem(item)">delete</v-icon>
@@ -173,7 +173,10 @@ export default {
       return this.editedIndex === -1
         ? "Nieuw ambt toevoegen"
         : "Bewerk ambt";
-    }
+    },
+    aantalRijenPerPagina: function(){
+      return this.$root.settings.aantalRijenPerLijst.value;
+    },
   },
 
   created() {

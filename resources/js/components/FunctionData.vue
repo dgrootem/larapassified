@@ -22,7 +22,7 @@
     <!-- {{employments}} -->
     <!-- </v-layout>
     <v-layout row>-->
-    <v-data-table :items="employments" :headers="headers" v-if="employments.length > 0">
+    <v-data-table :items="employments" :headers="headers" v-if="employments.length > 0" :items-per-page="aantalRijenPerPagina">
       <template v-slot:item.beginDate="{ item }">
         <span
           :style="!item.school.useForCalculations ? 'text-decoration: line-through !important;':''"
@@ -204,7 +204,10 @@ export default {
     ro() {
       //shorthand for "read only"
       return window.u53r.readonly;
-    }
+    },
+    aantalRijenPerPagina: function(){
+      return this.$root.settings.aantalRijenPerLijst.value;
+    },
   },
   methods: {
     korteVervanging1Dag() {

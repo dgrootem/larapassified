@@ -9,7 +9,7 @@
           </v-btn>
         </v-card-title>
         <v-card-text>
-          <v-data-table :items="users" :headers="headers">
+          <v-data-table :items="users" :headers="headers" :items-per-page="aantalRijenPerPagina">
             <template v-slot:item.action="{ item }">
               <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
               <v-icon small @click="deleteItem(item)">delete</v-icon>
@@ -217,7 +217,10 @@ export default {
       return this.editedIndex === -1
         ? "Nieuwe gebruiker toevoegen"
         : "Bewerk gebruiker";
-    }
+    },
+    aantalRijenPerPagina: function(){
+      return this.$root.settings.aantalRijenPerLijst.value;
+    },
   },
 
   created() {

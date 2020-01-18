@@ -86,7 +86,7 @@
           </v-card-title>
           <v-container fluid>
             <v-label><i>Tellen mee = Dagen tellen mee als effectief gepresteerd.</i></v-label>
-            <v-data-table :items="interruptions" :headers="interruptionheaders">
+            <v-data-table :items="interruptions" :headers="interruptionheaders" :items-per-page="aantalRijenPerPagina">
               <template v-slot:item.beginDate="{ item }">{{ formatDateFromDB(item.beginDate)}}</template>
               <template v-slot:item.endDate="{ item }">{{ formatDateFromDB(item.endDate)}}</template>
               <template v-slot:item.interruption_type="{ item }">
@@ -279,6 +279,9 @@ export default {
     },
     ro() { //shorthand for "read only"
       return window.u53r.readonly;
+    },
+    aantalRijenPerPagina: function(){
+      return this.$root.settings.aantalRijenPerLijst.value;
     },
     items() {
       return this.entries.map(entry => {
