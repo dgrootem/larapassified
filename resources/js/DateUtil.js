@@ -19,7 +19,7 @@ export function parseDate(val) {
   export function formatDateFromDB(datestring) {
     if (datestring && datestring.length >= 10) {
       let d = datestring.substring(0, 10);
-      console.log(d);
+      //console.log(d);
       return format(parse(d, "yyyy-MM-dd", new Date()), "dd-MM-yyyy");
     } else return null;
   }

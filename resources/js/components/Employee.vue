@@ -39,7 +39,7 @@
                 class="mr-2"
                 @click="toggleVisibility(item)"
               >{{ item.isActive ? 'visibility' : 'visibility_off' }}</v-icon>
-              <img src="http://www.skbl.be/pdf.png" width="24" height="24"  class="mr-2" @click="showPDF(item)">
+              <img src="https://www.skbl.be/pdf2.png" width="24" height="24" style="margin-bottom : -8px !important" class="mr-2" @click="showPDF(item)">
             </template>
           </v-data-table>
         </v-card-text>
@@ -185,7 +185,11 @@ export default {
         document.body.appendChild(link);
         app.overlay = false;
         link.click();
-        
+      }).catch((reponse) => {
+        app.overlay_message = 'Oops! Er ging iets mis bij het genereren van het PDF document...';
+        setTimeout(function(){
+          app.overlay = false;
+        },2000);
       });
       //window.open('api/v1/employee/pdf/'+selectedItem.id,'_blank');
     },
@@ -221,7 +225,7 @@ export default {
     formatDateFromDB(date) {
       if (date && date.length >= 10) {
         let d = date.substring(0, 10);
-        console.log(d);
+        //console.log(d);
         return format(parse(d, "yyyy-MM-dd", new Date()), "dd-MM-yyyy");
         //let f = format(parse(date.substring(0,10), "yyyy-MM-dd", new Date()), "dd-MM-yyyy"); //   moment(date, "YYYY-MM-DD hh:mi:ss").format("DD-MM-YYYY");
         //return f;

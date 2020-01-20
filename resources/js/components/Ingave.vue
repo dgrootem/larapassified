@@ -20,6 +20,9 @@
         </v-col>
         <!-- <v-col xs="12" sm="4" md="4"> -->
       </v-row>
+      <v-btn fab right absolute v-if="selectedEmployee" style="right : 90px !important; margin-top: -90px !important">
+            <img align="center" src="https://www.skbl.be/pdf2.png" width="48" height="48"  @click="showPDF(selectedEmployee)">
+          </v-btn>
       <v-speed-dial v-if="(!ro) && selectedEmployee" v-model="fab" absolute top right direction="bottom" >
         <template v-slot:activator>
           <v-btn v-model="fab" color="blue darken-2" dark fab>
@@ -43,7 +46,11 @@
           <v-card-title>
             <v-toolbar
               color="#c5f77e"
-            >Ambten voor {{ selectedEmployee.firstName + " " + selectedEmployee.lastName}}</v-toolbar>
+            >
+            <v-toolbar-title>Ambten voor {{ selectedEmployee.firstName + " " + selectedEmployee.lastName}}</v-toolbar-title>
+            <!-- <v-spacer></v-spacer> -->
+            <!-- <img src="http://www.skbl.be/pdf.png" width="32" height="32"  class="mr-2" @click="showPDF(selectedEmployee)"> -->
+            </v-toolbar>
           </v-card-title>
           <v-container fluid>
             <v-tabs v-model="functiondatatab">
@@ -192,6 +199,10 @@
       {{ snack_text }}
       <v-btn dark text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
+    <v-overlay :value="overlay">
+      {{ overlay_message }}
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
   </div>
 </template>
 
@@ -265,7 +276,10 @@ export default {
         { text: "Tellen mee", align: "left", value: "interruption_type" , width: "60px"},
         { text: "", align: "center", value: "action" }
       ],
-      descriptionLimit: 45
+      descriptionLimit: 45,
+
+      overlay : false,
+      overlay_message : ''
     };
   },
   computed: {
@@ -296,6 +310,30 @@ export default {
     }
   },
   methods: {
+    showPDF(selectedItem){
+      let app = this;
+      //debugger;
+      app.overlay = true;
+      app.overlay_message = 'Bezig met samenstellen PDF document...';
+      axios({
+        url: 'api/v1/employee/pdf/'+selectedItem.id,
+        responseType: 'blob', // important
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', selectedItem.id+'.pdf'); //or any other extension
+        document.body.appendChild(link);
+        app.overlay = false;
+        link.click();
+      }).catch((reponse) => {
+        app.overlay_message = 'Oops! Er ging iets mis bij het genereren van het PDF document...';
+        setTimeout(function(){
+          app.overlay = false;
+        },2000);
+      });
+      //window.open('api/v1/employee/pdf/'+selectedItem.id,'_blank');
+    },
     progressColor(percentage){
       if (percentage < 33) return 'red';
       else if (percentage < 66) return 'orange';
@@ -385,7 +423,17 @@ export default {
           .then(function(resp) {
             //app.$router.push({ path: "/employees" });
             app.functiondata.push(resp.data);
+            // app.newlyAddedFunctiondataRef = app.generateRef(resp.data); //so we can use it to select the new tab
+            // console.log('set app.newlyAddedFunctiondataRef to '+app.newlyAddedFunctiondataRef);
+            
             app.successSnack("Aanstelling toegevoegd");
+            return true;
+          })
+          .then(function(){
+            // dit in een aparte promise gezet in de hoop dat het dan betrouwbaarder werkt
+            app.functiondatatab = app.functiondata.length-1;
+            // console.log('set app.functiondatatab to '+app.newlyAddedFunctiondataRef);
+            return true;
           })
           .catch(function(resp) {
             console.log(resp);
@@ -571,11 +619,11 @@ export default {
 
         })
         .then(function(){
-          if (setFirstTab) // zou moeten probleem oplossen van eerste tab altijd te selecteren ook bij toevoegen van nieuwe tab
+          if (setFirstTab){ // zou moeten probleem oplossen van eerste tab altijd te selecteren ook bij toevoegen van nieuwe tab
             if (app.functiondata && (app.functiondata.length >0))
               app.functiondatatab = app.generateRef(app.functiondata[0]);
+          }
           app.setAvailableFunctions(employee_id);
-          // console.log("app.functiondatatab="+app.functiondatatab);
         })
         .catch(function(resp) {
           console.log(resp);

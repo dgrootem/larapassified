@@ -68,9 +68,10 @@ new Vue({
     data: () => ({
         drawer: null,
         settings: {
-            naarIngaveNaAanmaak: { name: null, value: true, omschrijving: "" },
-            naarIngaveNaUpdate: { name: null, value: false, omschrijving: "" },
-            showAddForNewEmployee: { name: null, value: true, omschrijving: "" }
+            naarIngaveNaAanmaak: { name: null, value: true, omschrijving: "naarIngaveNaAanmaak" },
+            naarIngaveNaUpdate: { name: null, value: false, omschrijving: "naarIngaveNaUpdate" },
+            showAddForNewEmployee: { name: null, value: true, omschrijving: "showAddForNewEmployee" },
+            aantalRijenPerLijst : { name: null, value: 50, omschrijving: 'aantalRijenPerLijst' },
           },
         
       }),
