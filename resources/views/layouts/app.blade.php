@@ -42,11 +42,9 @@
                             @endif
                         </v-list-item-action>
                         <v-list-item-content>
-                            @if(Auth::user()->readonly)
-                            <v-list-item-title>Details personeel</v-list-item-title>
-                            @else
-                            <v-list-item-title>Ingave details personeel</v-list-item-title>
-                            @endif
+                            
+                            <v-list-item-title>Opzoeken personeelsfiche</v-list-item-title>
+                            
                         </v-list-item-content>
                     </v-list-item>
                 </v-list-group>
