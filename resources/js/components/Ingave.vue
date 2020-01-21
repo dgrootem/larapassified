@@ -18,7 +18,9 @@
             return-object
           ></v-autocomplete>
         </v-col>
-        <!-- <v-col xs="12" sm="4" md="4"> -->
+        <v-col xs="12" sm="4" md="4">
+          <v-checkbox v-model="showFullList" label="Toon volledige lijst"></v-checkbox>
+        </v-col>
       </v-row>
       <v-btn fab right absolute v-if="selectedEmployee" style="right : 90px !important; margin-top: -90px !important">
             <img align="center" src="https://www.skbl.be/pdf2.png" width="48" height="48"  @click="showPDF(selectedEmployee)">
@@ -279,7 +281,9 @@ export default {
       descriptionLimit: 45,
 
       overlay : false,
-      overlay_message : ''
+      overlay_message : '',
+
+      showFullList : false
     };
   },
   computed: {
@@ -643,6 +647,11 @@ export default {
     }
   },
   watch: {
+    showFullList(val){
+      console.log('changed showfulllist');
+      if (this.entries && this.entries.length > 0)
+        this.entries = [] //reset the list when changing between all or filtered list
+    },
     search(val) {
       // Items have already been loaded
       if (this.items.length > 0) return;
@@ -655,7 +664,7 @@ export default {
 
       // Lazily load input items
       axios
-        .get("api/v1/employee/activeOnly/1")
+        .get("api/v1/employee"+(this.showFullList?"":"/activeOnly/1"))
         .then(function(resp) {
           app.entries = resp.data;
         })
