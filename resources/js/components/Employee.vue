@@ -201,10 +201,12 @@ export default {
           var year = bd.substring(0, 2);
           if (parseInt(year) > 40) year = "19" + year;
           else year = "20" + year;
-          this.editedItem.birthDate = parse(
-            bd.substring(4, 6) + "-" + bd.substring(2, 4) + "-" + year,
-            "dd-MM-YYYY"
-          );
+          this.editedItem.birthDate = 
+          new Date(year, parseInt(bd.substring(2, 4))-1,bd.substring(4, 6));
+          // parse(
+          //   bd.substring(4, 6) + "-" + bd.substring(2, 4) + "-" + year,
+          //   "dd-MM-YYYY"
+          // );
         }
       }
     },
@@ -328,8 +330,8 @@ export default {
             if (app.naarIngaveNaAanmaak) app.navigateTo(resp.data,app.showAddForNewEmployee);
           })
           .catch(function(resp) {
-            console.log(resp);
-            app.failSnack("Fout bij aanmaken personeelslid");
+            
+            app.failSnack("Fout bij aanmaken personeelslid"+(resp.response.data.msg?' : '+resp.response.data.msg:''));
           });
       }
       

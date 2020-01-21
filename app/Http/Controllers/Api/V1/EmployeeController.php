@@ -114,9 +114,21 @@ class EmployeeController extends Controller
         else return null;
     }
 
+    private function createError($msg){
+        return response()->json([
+            'status' => 'error',
+            'msg'    => $msg,
+            'errors' => $msg,
+        ], 500);
+    }
+
     private function saveEmployee(Employee $employee, Request $request)
     {
         $this->authorizeRO();
+
+        $test = Employee::where('registrationNumber', $request['registrationNumber'])->count();
+        if ($test > 0) return $this->createError('Stamboeknummer bestaat al!');
+
         $employee->birthDate = $this->getBirthDate($request);
         $employee->registrationNumber = $request['registrationNumber'];
         $employee->firstName = $request['firstName'];
