@@ -43,23 +43,17 @@ class EduFunctionDataController extends Controller
 
     private function getCurrentSetting($name, $index)
     {
-        Log::debug(compact('index'));
+        //Log::debug(compact('index'));
         $now = new Carbon();
         //neem de eerste die stopt
         $results = Setting::where('name', $name)->where('van', '<', $now)->where('tot', '>', $now)->orderBy('tot', 'asc')->pluck('value');
         if (count($results) < $index + 1) return null;
-        Log::debug($results);
+        //Log::debug($results);
         return $results[$index];
     }
 
     public function baseQuery($neededTotal, $neededEffective1,$oudsysteem)
     {
-
-
-        /*$neededTotal = $this->getCurrentSetting('taddNeededTotal');
-        $neededEffective1 = $this->getCurrentSetting('taddNeededEffective');
-        $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2');
-*/
         return EduFunctionData::join('employees', 'employees.id', '=', 'employee_id')
             ->join('educational_functions', 'educational_function_id', '=', 'educational_functions.id')
             ->select(
@@ -86,7 +80,7 @@ class EduFunctionDataController extends Controller
         $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 1);
         $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 1);
         Log::debug('==================== nextYearTADD  ====================');
-        Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
+        //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
         return $this->baseQuery($neededTotal, $neededEffective1,'false')
             ->where('edu_function_data.istadd', '=', 0)
             ->whereBetween('edu_function_data.total_seniority_days', array(277, $neededTotal)) //TODO: helft van $neededTotal nemen? afchecken inhoudelijk!!
@@ -102,7 +96,7 @@ class EduFunctionDataController extends Controller
         $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 0);
         $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 0);
         Log::debug('==================== thisYearTADD oud ====================');
-        Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
+        //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
         $volgensoudsysteem = $this->baseQuery($neededTotal, $neededEffective1,'true')
             ->where('edu_function_data.istadd', '=', 0)
             ->where(function ($query) {
@@ -119,7 +113,7 @@ class EduFunctionDataController extends Controller
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc');
         Log::debug('==================== thisYearTADD nieuw ====================');
-        Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
+        //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
         $volgensnieuwsysteem = $this->baseQuery($neededTotal, $neededEffective1,'false')
             ->where('edu_function_data.istadd', '=', 0)
             ->where(function ($query) {
@@ -171,7 +165,7 @@ class EduFunctionDataController extends Controller
     {
         $this->authorizeRO();
         $eduFunctionData = EduFunctionData::findOrFail($id);
-        Log::debug($request->all());
+        //Log::debug($request->all());
         $eduFunctionData->educational_function_id = $request['educational_function_id'];
         return $this->saveAndReturn($eduFunctionData);
     }

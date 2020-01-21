@@ -36,6 +36,7 @@ class TaddCalculationController extends Controller
         foreach ($empids as $empid) {
             //Log::debug($empid->id);
             $employee = Employee::with('educationalFunctionData.employments.school')->where('id', $empid->id)->get()[0];
+            Log::debug('update data for '.$employee->fullName);
             $this->updateAllSeniorityDaysInternal($employee);
             //Log::debug($empid);
         }
