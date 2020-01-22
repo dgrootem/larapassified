@@ -34,8 +34,8 @@ class PDFController extends Controller
         $gendate = Carbon::now()->format('d-m-Y H:i:s');
 
         //return compact(['ambten','aanstellingen','interruptions','employee','gendate']);
-
-        $pdf = PDF::loadView('pdf.persoonlijk',compact(['ambten','aanstellingen','interruptions','employee','gendate']));
+        $usebootstrap = 1;
+        $pdf = PDF::loadView('pdf.persoonlijk',compact(['ambten','aanstellingen','interruptions','employee','gendate','usebootstrap']));
         return $pdf->download($id.'.pdf');
 
         return view('pdf.persoonlijk',compact(['ambten','aanstellingen','interruptions','employee','gendate']));

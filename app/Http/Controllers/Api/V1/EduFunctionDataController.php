@@ -60,7 +60,8 @@ class EduFunctionDataController extends Controller
         $thisyear = $this->thisYearTADD($request,$fullList);
         $tadd = $this->alreadyTADD($request,$fullList);
         $gendate = Carbon::now();
-        $pdf = PDF::loadView('pdf.dashboard',compact(['nextyear','thisyear','tadd']));
+        $usebootstrap = 0;
+        $pdf = PDF::loadView('pdf.dashboard',compact(['nextyear','thisyear','tadd','gendate','usebootstrap']));
         return $pdf->download('volgendjaar.pdf');
         //return view('pdf.dashboard',compact(['nextyear','thisyear','tadd','gendate']));
         
