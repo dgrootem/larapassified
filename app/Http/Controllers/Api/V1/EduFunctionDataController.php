@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+ini_set('max_execution_time', 180);
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\EduFunctionData;
@@ -11,6 +13,7 @@ use Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use PDF;
 
 class EduFunctionDataController extends Controller
 {
@@ -35,7 +38,7 @@ class EduFunctionDataController extends Controller
     {
         //Log::debug("trying to find some data");
         //return EduFunctionData::with(['educationalFunction','employee'])->get();
-        return $this->baseQuery(1,1)
+        return $this->baseQuery(1,1,1,1)
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc')
             ->get();
@@ -52,9 +55,20 @@ class EduFunctionDataController extends Controller
         return $results[$index];
     }
 
-    public function baseQuery($neededTotal, $neededEffective1,$oudsysteem)
+    public function dashboardPDF(Request $request,$fullList){
+        $nextyear = $this->nextYearTADD($request,$fullList);
+        $thisyear = $this->thisYearTADD($request,$fullList);
+        $tadd = $this->alreadyTADD($request,$fullList);
+        $gendate = Carbon::now();
+        //    $pdf = PDF::loadView('pdf.dashboard',compact(['nextyear','thisyear','tadd']));
+          //  return $pdf->download('volgendjaar.pdf');
+        return view('pdf.dashboard',compact(['nextyear','thisyear','tadd','gendate']));
+        
+    }
+
+    public function baseQuery($neededTotal, $neededEffective1,$oudsysteem,$fullList)
     {
-        return EduFunctionData::join('employees', 'employees.id', '=', 'employee_id')
+        $result= EduFunctionData::join('employees', 'employees.id', '=', 'employee_id')
             ->join('educational_functions', 'educational_function_id', '=', 'educational_functions.id')
             ->select(
                 'employees.firstname',
@@ -69,35 +83,37 @@ class EduFunctionDataController extends Controller
                 'edu_function_data.datum_verbetering_nodig_gezet as werkpunt',
                 'edu_function_data.istadd',
                 \DB::raw($oudsysteem . ' as oudsysteem')
-            )
-            ->where('employees.isActive',1)
-            ->where('edu_function_data.isbenoemd', '=', 0);
+            );
+        if ($fullList == 0) $result = $result->where('employees.isActive',1);
+        return $result->where('edu_function_data.isbenoemd', '=', 0);
     }
 
-    public function nextYearTADD()
+    public function nextYearTADD(Request $request,$fullList)
     {
         $neededTotal = $this->getCurrentSetting('taddNeededTotal', 1);
         $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 1);
         $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 1);
         Log::debug('==================== nextYearTADD  ====================');
         //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
-        return $this->baseQuery($neededTotal, $neededEffective1,'false')
+        $results = $this->baseQuery($neededTotal, $neededEffective1,'false',$fullList)
             ->where('edu_function_data.istadd', '=', 0)
             ->whereBetween('edu_function_data.total_seniority_days', array(277, $neededTotal)) //TODO: helft van $neededTotal nemen? afchecken inhoudelijk!!
             ->whereBetween('edu_function_data.seniority_days', array(200, $neededEffective1)) //TODO: helft van $neededEffective1 nemen? afchecken inhoudelijk!!
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc')
             ->get();
+        
+        return $results;
     }
 
-    public function thisYearTADD()
+    public function thisYearTADD(Request $request,$fullList)
     {
         $neededTotal = $this->getCurrentSetting('taddNeededTotal', 0);
         $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 0);
         $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 0);
         Log::debug('==================== thisYearTADD oud ====================');
         //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
-        $volgensoudsysteem = $this->baseQuery($neededTotal, $neededEffective1,'true')
+        $volgensoudsysteem = $this->baseQuery($neededTotal, $neededEffective1,'true',$fullList)
             ->where('edu_function_data.istadd', '=', 0)
             ->where(function ($query) {
                 $neededTotal = $this->getCurrentSetting('taddNeededTotal', 0);
@@ -114,7 +130,7 @@ class EduFunctionDataController extends Controller
             ->orderBy('educational_functions.name', 'asc');
         Log::debug('==================== thisYearTADD nieuw ====================');
         //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
-        $volgensnieuwsysteem = $this->baseQuery($neededTotal, $neededEffective1,'false')
+        $volgensnieuwsysteem = $this->baseQuery($neededTotal, $neededEffective1,'false',$fullList)
             ->where('edu_function_data.istadd', '=', 0)
             ->where(function ($query) {
                 $neededTotal_old = $this->getCurrentSetting('taddNeededTotal', 0);
@@ -137,9 +153,9 @@ class EduFunctionDataController extends Controller
         return $volgensnieuwsysteem;
     }
 
-    public function alreadyTADD()
+    public function alreadyTADD(Request $request,$fullList)
     {
-        return $this->baseQuery(1, 1,true)->where('edu_function_data.istadd', '=', 1)
+        return $this->baseQuery(1, 1,true,$fullList)->where('edu_function_data.istadd', '=', 1)
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc')
             ->get();

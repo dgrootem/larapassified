@@ -23,8 +23,8 @@
         </v-col>
       </v-row>
       <v-btn fab right absolute v-if="selectedEmployee" style="right : 90px !important; margin-top: -90px !important">
-            <img align="center" src="https://www.skbl.be/pdf2.png" width="48" height="48"  @click="showPDF(selectedEmployee)">
-          </v-btn>
+        <img align="center" src="https://www.skbl.be/pdf2.png" width="48" height="48"  @click="showPDF(selectedEmployee)">
+      </v-btn>
       <v-speed-dial v-if="(!ro) && selectedEmployee" v-model="fab" absolute top right direction="bottom" >
         <template v-slot:activator>
           <v-btn v-model="fab" color="blue darken-2" dark fab>

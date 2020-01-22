@@ -15,6 +15,11 @@ class Employee extends Model
         return "{$this->firstName} {$this->lastName}";
     }
 
+    public function getReverseFullnameAttribute()
+    {
+        return "{$this->lastName} {$this->firstName}";
+    }
+
     public function getFullnameExtendedAttribute()
     {
         return "{$this->firstName} {$this->lastName} [{$this->registrationNumber}]";

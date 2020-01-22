@@ -18,7 +18,7 @@
           </v-btn>
         </v-card-title>
         <v-card-text>
-          <v-data-table :items="employees" :headers="headers" :search="search" multi-sort :items-per-page="aantalRijenPerPagina">
+          <v-data-table :items="employees" :headers="headers" :search="search" multi-sort :sort-by.sync="sortby" :items-per-page="aantalRijenPerPagina">
             <template v-slot:item.ingave="{item}"><v-icon small class="mr-2" @click="navigateTo(item, false)">link</v-icon></template>
             <template v-slot:item.birthDate="{ item }">{{ formatDateFromDB(item.birthDate) }}</template>
             <template v-slot:item.registrationNumber="{ item }">
@@ -160,7 +160,8 @@ export default {
       snack_timeout: 2000,
       search: "",
       overlay : false,
-      overlay_message: ''
+      overlay_message: '',
+      sortby : ['lastName','firstName']
       // registrationNumberProxy : null
     };
   },
