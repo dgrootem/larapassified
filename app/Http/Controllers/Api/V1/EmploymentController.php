@@ -11,6 +11,7 @@ use Exception;
 
 class EmploymentController extends Controller
 {
+    use AccessLogTrait;
 
     public function authorizeRO(){
         if (Auth::user()->readonly) throw new Exception('not authorized'); 
@@ -23,11 +24,13 @@ class EmploymentController extends Controller
      */
     public function index()
     {
+        $this->writeLog('Employments','index','all','');
         return Employment::all();
     }
 
     public function show($id)
     {
+        $this->writeLog('Employments','show','id='.$id,'');
         return Employment::findOrFail($id);
     }
 
@@ -44,6 +47,7 @@ class EmploymentController extends Controller
     {
         $this->authorizeRO();
         $employment = Employment::findOrFail($id);
+        $this->writeLog('Employments','update','id='.$id,'');
         $this->saveEmployment($request,$employment);
         //$employment->update($request->all());
         $employment->school; //refresh link with school
@@ -54,6 +58,7 @@ class EmploymentController extends Controller
     {
         $this->authorizeRO();
         $employment = new Employment();
+        $this->writeLog('Employments','create','id='.$employment->id,'');
         //Log::debug(substr($request['beginDate'],0,10));
         // Carbon::createFromFormat('DD-MM-YYYY',$request['beginDate']);
         $this->saveEmployment($request,$employment);
@@ -67,6 +72,7 @@ class EmploymentController extends Controller
     {
         $this->authorizeRO();
         $employment = Employment::findOrFail($id);
+        $this->writeLog('Employments','delete','id='.$employment->id,'');
         $employment->delete();
         return '';
     }

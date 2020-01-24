@@ -16,6 +16,8 @@ use Carbon\Carbon;
 
 class PDFController extends Controller
 {
+
+    use AccessLogTrait;
     //
     public function createPDF(Request $request,$id){
         $employee = Employee::findOrFail($id);
@@ -32,6 +34,8 @@ class PDFController extends Controller
                                                     ->get();
         $interruptions = EmploymentInterruption::with('interruption_type')->where('employee_id',$employee->id)->get();
         $gendate = Carbon::now()->format('d-m-Y H:i:s');
+
+        $this->writeLog('PDF','persoonelijke pdf','employee id='.$id,'');
 
         //return compact(['ambten','aanstellingen','interruptions','employee','gendate']);
         $usebootstrap = 1;

@@ -15,6 +15,8 @@ use Exception;
 class EmployeeController extends Controller
 {
 
+    use AccessLogTrait;
+
     public function authorizeRO(){
         if (Auth::user()->readonly) throw new Exception('not authorized'); 
     }
@@ -27,6 +29,7 @@ class EmployeeController extends Controller
     public function index()
     {
         Log::debug("returning all employees");
+        $this->writeLog('Employees','index','all','full list');
         return $this->buildIndexQuery(false);
     }
 
@@ -40,16 +43,21 @@ class EmployeeController extends Controller
     public function indexActive()
     {
         Log::debug("returning active employees only");
+        $this->writeLog('Employees','index','all','filtered list');
         return $this->buildIndexQuery(true);
     }
 
     public function filterByName(String $value)
     {
-        return Employee::where('lastName', 'like', '%' . $value . '%')->orWhere('firstName', 'like', '%' . $value . '%')->selectRaw('*, CONCAT(lastName," ",firstName," [",registrationNumber,"]") as fullname')->get();
+        
+        $employee = Employee::where('lastName', 'like', '%' . $value . '%')->orWhere('firstName', 'like', '%' . $value . '%')->selectRaw('*, CONCAT(lastName," ",firstName," [",registrationNumber,"]") as fullname')->get();
+        $this->writeLog('Employees','fitlerByName','(first/last)name like '.$value,'found: '.($employee!=null?$employee->fullName:''));
+        return $employee;
     }
 
     public function visible()
     {
+        $this->writeLog('Employees','index','visible','');
         return Employee::where('isActive', true)->get();
     }
 
@@ -68,6 +76,7 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $this->authorizeRO();
+        $this->writeLog('Employees','create',$request['name'],'');
         $employee = new Employee();
         return $this->saveEmployee($employee, $request);
     }
@@ -80,7 +89,9 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
-        return Employee::findOrFail($id);
+        $employee =  Employee::findOrFail($id);
+        $this->writeLog('Employees','show',$employee->fullName,'');
+        return $employee;
     }
 
 
@@ -96,6 +107,7 @@ class EmployeeController extends Controller
     {
         $this->authorizeRO();
         $employee = Employee::findOrFail($id);
+        $this->writeLog('Employees','update',$employee->fullName,'');
         return $this->saveEmployee($employee, $request);
     }
 
@@ -126,8 +138,11 @@ class EmployeeController extends Controller
     {
         $this->authorizeRO();
 
-        $test = Employee::where('registrationNumber', $request['registrationNumber'])->count();
-        if ($test > 0) return $this->createError('Stamboeknummer bestaat al!');
+        $testemployee = Employee::where('registrationNumber', $request['registrationNumber'])->get();
+        if ($testemployee->count() > 1) return $this->createError('ERROR : meerdere personeelsleden gevonden met dit nummer!!');
+        else if (($testemployee->count() == 1) && ($testemployee[0]->id != $employee->id)) {
+            return $this->createError('Stamboeknummer bestaat al!');
+        }
 
         $employee->birthDate = $this->getBirthDate($request);
         $employee->registrationNumber = $request['registrationNumber'];
@@ -151,13 +166,15 @@ class EmployeeController extends Controller
     {
         $this->authorizeRO();
         $employee = Employee::findOrFail($id);
+        $this->writeLog('Employees','delete',$employee->fullName,'');
         $employee->delete();
         return '';
     }
 
     public function archiveOldOrTADDEmployees(/*Request $request*/)
     {
-        if (!Auth::user()->isadmin && Auth::user()->isactive) throw new Exception('not authorized'); 
+        if (!Auth::user()->isadmin && Auth::user()->isactive) throw new Exception('not authorized');
+        $this->writeLog('Employees','archive','OldOrTADDEmployees','');
         Log::info("archiving old employees...");
         $query = "update employees set isActive = 0 where id in ".
             "(select r1.id from ".
@@ -174,12 +191,12 @@ class EmployeeController extends Controller
         
         
         Log::info("done!");
-        //}
     }
 
     public function toggleEmployeesVisibility($visiblity)
     {
-        if (!Auth::user()->isadmin) throw new Exception('not authorized'); 
+        if (!Auth::user()->isadmin) throw new Exception('not authorized');
+        $this->writeLog('Employees','toggle visibility','',$visiblity);
         $v = ($visiblity == true ? "1" : "0");
         Employee::where('isActive',0)->update(["isActive" => 1]);
         //\DB::raw("update employees set isActive = " . $v . ";");

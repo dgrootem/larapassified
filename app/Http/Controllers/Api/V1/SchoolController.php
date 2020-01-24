@@ -8,8 +8,11 @@ use \App\School;
 use \App\SchoolType;
 use Illuminate\Support\Facades\Auth;
 
+
 class SchoolController extends Controller
 {
+    use AccessLogTrait;
+
 
     public function authorizeRO(){
         if (Auth::user()->readonly) throw new Exception('not authorized'); 
@@ -22,7 +25,7 @@ class SchoolController extends Controller
      */
     public function index()
     {
-        //
+        //$this->writeLog('Schools','all','index','');
         $scholen = School::all();
         foreach($scholen as $s) $s->cbd = $s->canBeDeleted();
         $schooltypes = SchoolType::all();
@@ -37,7 +40,9 @@ class SchoolController extends Controller
      */
     public function store(Request $request)
     {
+        
         $this->authorizeRO();
+        $this->writeLog('Schools','create',$request['name'],'');
         $school = new School();
         $this->saveSchool($school,$request);
         return $school;
@@ -82,6 +87,7 @@ class SchoolController extends Controller
     public function update(Request $request, $id)
     {
         $this->authorizeRO();
+        $this->writeLog('Schools','update',$request['name'],'');
         $school = School::findOrFail($id);
         $this->saveSchool($school,$request);
         //$school->update($request->all());
@@ -98,6 +104,7 @@ class SchoolController extends Controller
     {
         $this->authorizeRO();
         $school = School::findOrFail($id);
+        $this->writeLog('Schools','delete',$school->name,'');
         $school->delete();
         return '';
     

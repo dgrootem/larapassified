@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use AccessLogTrait as GlobalAccessLogTrait;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Http\Controllers\Api\V1\AccessLogTrait;
+use \Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -19,6 +22,7 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
+    use AccessLogTrait;
 
     /**
      * Where to redirect users after login.
@@ -35,5 +39,10 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    function authenticated(Request $request, $user)
+    {
+        $this->writeLog('Authentication','login','','success');
     }
 }

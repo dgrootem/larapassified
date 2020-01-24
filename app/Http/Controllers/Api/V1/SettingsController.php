@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Setting;
 use Log;
+use App\Http\Controllers\Api\V1\AccessLogTrait;
 
 class SettingsController extends Controller
 {
+
+    use AccessLogTrait;
     /**
      * Display a listing of the resource.
      *
@@ -24,50 +27,8 @@ class SettingsController extends Controller
         return null;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
     
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+    
 
     /**
      * Update the specified resource in storage.
@@ -79,10 +40,12 @@ class SettingsController extends Controller
     public function update(Request $request, $id)
     {
         Log::debug($request->all());
+        
         foreach($request->all() as $settingsData){
             Log::debug($settingsData);
             Log::debug($settingsData['id']);
             $s = Setting::findOrFail($settingsData['id']);
+            $this->writeLog('Settings','update',$s->name,'');
             unset($settingsData['id']);
             $s->update($settingsData);
         }

@@ -11,6 +11,8 @@ use Exception;
 
 class EmploymentInterruptionController extends Controller
 {
+
+    use AccessLogTrait;
     /**
      * Display a listing of the resource.
      *
@@ -18,6 +20,7 @@ class EmploymentInterruptionController extends Controller
      */
     public function index()
     {
+        $this->writeLog('Interruptions','index','all','');
         return EmploymentInterruption::all();
     }
 
@@ -27,6 +30,7 @@ class EmploymentInterruptionController extends Controller
 
     public function show($id)
     {
+        $this->writeLog('Interruptions','show','id='.$id,'');
         return EmploymentInterruption::findOrFail($id);
     }
 
@@ -44,6 +48,7 @@ class EmploymentInterruptionController extends Controller
     {
         $this->authorizeRO();
         $employmentInterruption = EmploymentInterruption::findOrFail($id);
+        $this->writeLog('Interruptions','update','id='.$id,'');
         $this->saveInterruption($request,$employmentInterruption);
         
 
@@ -54,6 +59,7 @@ class EmploymentInterruptionController extends Controller
     {
         $this->authorizeRO();
         $employmentInterruption = new EmploymentInterruption();
+        $this->writeLog('Interruptions','create','id='.$employmentInterruption->id,'');
         $this->saveInterruption($request,$employmentInterruption);
         return $employmentInterruption;
     }
@@ -62,11 +68,13 @@ class EmploymentInterruptionController extends Controller
     {
         $this->authorizeRO();
         $employmentInterruption = EmploymentInterruption::findOrFail($id);
+        $this->writeLog('Interruptions','create','id='.$employmentInterruption->id,'');
         $employmentInterruption->delete();
         return '';
     }
 
     public function interruptionsForEmployee($employee_id){
+        $this->writeLog('Interruptions','interruptionsForEmployee','employee_id='.$employee_id,'');
         return EmploymentInterruption::with('interruption_type')->where('employee_id',$employee_id)->get();
     }
 }

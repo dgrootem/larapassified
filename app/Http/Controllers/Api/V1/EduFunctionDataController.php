@@ -17,6 +17,8 @@ use PDF;
 
 class EduFunctionDataController extends Controller
 {
+    use AccessLogTrait;
+
     /**
      * Display a listing of the resource.
      *
@@ -24,6 +26,7 @@ class EduFunctionDataController extends Controller
      */
     public function index()
     {
+        $this->writeLog('Educational Function Data','index','all','full list');
         return EduFunctionData::with(['educationalFunction', 'employee'])->get();
     }
 
@@ -36,6 +39,7 @@ class EduFunctionDataController extends Controller
     // zie https://laravel.com/docs/5.5/pagination
     public function fullIndex()
     {
+        $this->writeLog('Educational Function Data','fullIndex','all','full list');
         //Log::debug("trying to find some data");
         //return EduFunctionData::with(['educationalFunction','employee'])->get();
         return $this->baseQuery(1,1,1,1)
@@ -56,6 +60,7 @@ class EduFunctionDataController extends Controller
     }
 
     public function dashboardPDF(Request $request,$fullList){
+        $this->writeLog('Educational Function Data','PDF','dashboard','');
         $nextyear = $this->nextYearTADD($request,$fullList);
         $thisyear = $this->thisYearTADD($request,$fullList);
         $tadd = $this->alreadyTADD($request,$fullList);
@@ -91,6 +96,7 @@ class EduFunctionDataController extends Controller
 
     public function nextYearTADD(Request $request,$fullList)
     {
+        $this->writeLog('dashboard','nextYearTADD','full list='.$fullList,'');
         $neededTotal = $this->getCurrentSetting('taddNeededTotal', 1);
         $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 1);
         $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 1);
@@ -109,6 +115,7 @@ class EduFunctionDataController extends Controller
 
     public function thisYearTADD(Request $request,$fullList)
     {
+        $this->writeLog('dashboard','thisYearTADD','full list='.$fullList,'');
         $neededTotal = $this->getCurrentSetting('taddNeededTotal', 0);
         $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 0);
         $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 0);
@@ -156,6 +163,7 @@ class EduFunctionDataController extends Controller
 
     public function alreadyTADD(Request $request,$fullList)
     {
+        $this->writeLog('dashboard','alreadyTADD','full list='.$fullList,'');
         return $this->baseQuery(1, 1,true,$fullList)->where('edu_function_data.istadd', '=', 1)
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc')
@@ -164,6 +172,7 @@ class EduFunctionDataController extends Controller
 
     public function show($id)
     {
+        $this->writeLog('Educational Function Data','show','id='.$id,'');
         return EduFunctionData::findOrFail($id);
     }
 
@@ -182,6 +191,7 @@ class EduFunctionDataController extends Controller
     {
         $this->authorizeRO();
         $eduFunctionData = EduFunctionData::findOrFail($id);
+        $this->writeLog('Educational Function Data','update','id='.$id,'');
         //Log::debug($request->all());
         $eduFunctionData->educational_function_id = $request['educational_function_id'];
         return $this->saveAndReturn($eduFunctionData);
@@ -193,6 +203,7 @@ class EduFunctionDataController extends Controller
         $this->authorizeRO();
         $eduFunctionData = EduFunctionData::findOrFail($id);
         $employment = Employment::findOrFail($request['employment_id']);
+        $this->writeLog('Educational Function Data','add employment','id='.$id,$employment->beginDateAsDate.'->'.$employment->endDateAsDate);
         $eduFunctionData->employments()->associate($employment);
         return $this->saveAndReturn($eduFunctionData);
     }
@@ -202,6 +213,7 @@ class EduFunctionDataController extends Controller
     {
         $this->authorizeRO();
         $eduFunctionData = EduFunctionData::findOrFail($id);
+        $this->writeLog('Educational Function Data','add employment','id='.$id,'removed id='.$employment_id);
         $eduFunctionData->employments()->detach($employment_id);
         return $this->saveAndReturn($eduFunctionData);
     }
@@ -210,7 +222,8 @@ class EduFunctionDataController extends Controller
     public function store(Request $request)
     {
         $this->authorizeRO();
-        Log::debug($request->all());
+        //Log::debug($request->all());
+        
         //link with employee and educational function 
         $eduFunctionData = new EduFunctionData();
         //employment linking will come later
@@ -219,6 +232,7 @@ class EduFunctionDataController extends Controller
         $eduFunctionData->employee_id = $request['employee_id'];
 
         $eduFunctionData->save();
+        
         $id = $eduFunctionData->id;
         $eduFunctionData = EduFunctionData::findOrFail($id);
 
@@ -227,6 +241,7 @@ class EduFunctionDataController extends Controller
 
         $eduFunctionData->employments;
         $eduFunctionData->educationalFunction;
+        $this->writeLog('Educational Function Data','create','id='.$id,'function='.$eduFunctionData->educationalFunction->name);
 
         return $eduFunctionData;
     }
@@ -235,6 +250,7 @@ class EduFunctionDataController extends Controller
     {
         $this->authorizeRO();
         $eduFunctionData = EduFunctionData::findOrFail($id);
+        $this->writeLog('Educational Function Data','delete','id='.$id,'');
         $eduFunctionData->delete();
         return '';
     }
@@ -262,6 +278,7 @@ class EduFunctionDataController extends Controller
                 $result->seniority_days_perc = $result->seniority_days / $neededEffective1_old * 100.0;
             }
         }
+        $this->writeLog('Educational Function Data','functionDataForEmployee','employee id='.$id,'nb results='.$results->count());
 
         return $results;
     }
@@ -271,6 +288,7 @@ class EduFunctionDataController extends Controller
         $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);
         $efd->datum_verbetering_nodig_gezet = Carbon::today();
+        $this->writeLog('Educational Function Data','add werkpunt','id='.$id,'');
         $efd->save();
         return $efd;
     }
@@ -280,6 +298,7 @@ class EduFunctionDataController extends Controller
         $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);
         $efd->datum_verbetering_nodig_gezet = null;
+        $this->writeLog('Educational Function Data','removed werkpunt','id='.$id,'');
         $efd->save();
         return $efd;
     }
@@ -289,6 +308,7 @@ class EduFunctionDataController extends Controller
         $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);
         $efd->isTadd = true;
+        $this->writeLog('Educational Function Data','add tadd','id='.$id,'');
         $efd->save();
         return $efd;
     }
@@ -298,6 +318,7 @@ class EduFunctionDataController extends Controller
         $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);
         $efd->isTadd = false;
+        $this->writeLog('Educational Function Data','removed tadd','id='.$id,'');
         $efd->save();
         return $efd;
     }
@@ -307,6 +328,7 @@ class EduFunctionDataController extends Controller
         $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);
         $efd->isBenoemd = true;
+        $this->writeLog('Educational Function Data','add benoemd','id='.$id,'');
         $efd->save();
         return $efd;
     }
@@ -316,6 +338,7 @@ class EduFunctionDataController extends Controller
         $this->authorizeRO();
         $efd = EduFunctionData::findOrFail($id);
         $efd->isBenoemd = false;
+        $this->writeLog('Educational Function Data','removed benoemd','id='.$id,'');
         $efd->save();
         return $efd;
     }
@@ -328,6 +351,7 @@ class EduFunctionDataController extends Controller
         $start2 = $request['startwaarde_int'];
         $efd->startwaarde_tot = $start;
         $efd->startwaarde_int = $start2;
+        $this->writeLog('Educational Function Data','set startwaardes','id='.$id,'tot='.$start.' ,eff='.$start2);
         $efd->save();
         return $efd;
     }
