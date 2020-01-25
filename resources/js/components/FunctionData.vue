@@ -9,7 +9,7 @@
       <v-row justify="space-between">
         <v-col cols="4" xs="9" sm="9" md="6">
           <v-btn v-if="!ro" color="primary" @click="addEmployment">Aanstelling toevoegen</v-btn>
-          <v-btn v-if="!ro" color="secondary" @click="setStartwaarde">Startwaarde invullen</v-btn>
+          <v-btn v-if="!ro" color="secondary" @click="setProperties">Eigenschappen</v-btn>
         </v-col>
         <v-col v-if="!ro" cols="4" xs="3" sm="3" md="3">
           <v-btn color="red" @click="deleteFunctionData" width="100%">
@@ -54,7 +54,7 @@
     </v-data-table>
     <!-- </v-layout>
     </v-container>-->
-    <v-dialog v-if="!ro" v-model="startWaardeDialog" max-width="500px">
+    <v-dialog v-if="!ro" v-model="propertiesDialog" max-width="500px">
       <v-card>
         <v-card-title>
           <span class="headline">Startwaarde invullen</span>
@@ -67,14 +67,16 @@
                   v-model="functiondata.startwaarde_tot"
                   label="Startwaarde totaal aantal dagen in dit ambt"
                   type="number"
-                  
                 ></v-text-field>
                 <v-text-field
                   v-model="functiondata.startwaarde_int"
                   label="Startwaarde dagen onderbreking in dit ambt"
                   type="number"
-                  
                 ></v-text-field>
+                <!-- We disablen de checkboxen zodat je via deze weg niet iemand kan forceren naar TADD of benoemd -->
+                <v-checkbox :disabled="!functiondata.isTadd" v-model="functiondata.isTadd" label="TADD"></v-checkbox>
+                <v-checkbox :disabled="!functiondata.isBenoemd" v-model="functiondata.isBenoemd" label="Benoemd"></v-checkbox>
+
               </v-col>
             </v-row>
           </v-container>
@@ -82,7 +84,7 @@
         <v-card-actions>
           <div class="flex-grow-1"></div>
           <v-btn color="blue darken-1" text @click="closeStartwaarde">Annuleren</v-btn>
-          <v-btn color="blue darken-1" text @click="saveStartWaarde">Opslaan</v-btn>
+          <v-btn color="blue darken-1" text @click="saveProperties">Opslaan</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -176,8 +178,8 @@ export default {
       editedIndex: -1,
       editedItem: Object.assign({}, this.defaultEmployment),
       employmentDialog: false,
-      startWaardeDialog: false,
-      startwaarde_tot: 0, //functiondata.startwaarde_tot,
+      propertiesDialog: false,
+      //startwaarde_tot: 0, //functiondata.startwaarde_tot,
 
       mask: "##-##-####",
 
@@ -260,25 +262,31 @@ export default {
     emitSuccess(msg) {
       this.$emit("success", msg);
     },
-    setStartwaarde() {
-      this.startWaardeDialog = true;
+    setProperties() {
+      this.propertiesDialog = true;
     },
     closeStartwaarde() {
-      this.startWaardeDialog = false;
+      this.propertiesDialog = false;
     },
-    saveStartWaarde() {
+    saveProperties() {
       let app = this;
       axios
         .patch(
           "api/v1/educationalFunctionData/" +
             this.functiondata.id +
-            "/setstartwaarde",
-          { startwaarde_tot: this.functiondata.startwaarde_tot, startwaarde_int: this.functiondata.startwaarde_int}
+            "/setproperties",
+          { 
+            startwaarde_tot: this.functiondata.startwaarde_tot, 
+            startwaarde_int: this.functiondata.startwaarde_int,
+            isTadd : this.functiondata.isTadd,
+            isBenoemd : this.functiondata.isBenoemd
+            }
         )
         .then(function(resp) {
           //app.$router.push({ path: "/employees" });
 
           app.updateSeniorityDays("Startwaarde bewaard");
+          app.emitSuccess("Eigenschappen bijgewerkt");
           app.closeStartwaarde();
         })
         .catch(function(resp) {

@@ -343,15 +343,22 @@ class EduFunctionDataController extends Controller
         return $efd;
     }
 
-    public function setStartWaarde(Request $request,$id){
+    public function setProperties(Request $request,$id){
         $this->authorizeRO();
         $efd = EduFunctionData::find($id);
         Log::debug($efd);
+        
         $start = $request['startwaarde_tot'];
         $start2 = $request['startwaarde_int'];
+        $isTadd = $request['isTadd'];
+        $isBenoemd = $request['isBenoemd'];
         $efd->startwaarde_tot = $start;
         $efd->startwaarde_int = $start2;
-        $this->writeLog('Educational Function Data','set startwaardes','id='.$id,'tot='.$start.' ,eff='.$start2);
+        $efd->isTadd = $isTadd;
+        $efd->isBenoemd = $isBenoemd;
+        Log::debug($isTadd);
+        Log::debug($isBenoemd);
+        $this->writeLog('Educational Function Data','set startwaardes','id='.$id,'tot='.$start.' ,eff='.$start2.' ,tadd='.$isTadd.' ,isBenoemd='.$isBenoemd);
         $efd->save();
         return $efd;
     }

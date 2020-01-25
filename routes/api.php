@@ -26,7 +26,7 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::get('educationalFunctionData/tadd/thisyear/{fullList}','EduFunctionDataController@thisYearTADD')->name('educationalFunctionData.thisyear');
     Route::get('educationalFunctionData/tadd/alreadytadd/{fullList}','EduFunctionDataController@alreadyTADD')->name('educationalFunctionData.alreadytadd');
     Route::get('educationalFunctionData/tadd/dashboardpdf/{fullList}','EduFunctionDataController@dashboardPDF')->name('educationalFunctionData.dashboardpdf');
-    Route::patch('educationalFunctionData/{id}/setstartwaarde','EduFunctionDataController@setstartwaarde')->name('educationalFunctionData.setstartwaarde');
+    Route::patch('educationalFunctionData/{id}/setproperties','EduFunctionDataController@setProperties')->name('educationalFunctionData.setstartwaarde');
 
     Route::post('educationalFunctionData/{id}/werkpunt','EduFunctionDataController@addWerkpunt')->name('educationalFunctionData.addWerkpunt');
     Route::delete('educationalFunctionData/{id}/werkpunt','EduFunctionDataController@verwijderWerkpunt')->name('educationalFunctionData.verwijderWerkpunt');
