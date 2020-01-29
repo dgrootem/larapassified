@@ -76,7 +76,7 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $this->authorizeRO();
-        $this->writeLog('Employees','create',$request['name'],'');
+        $this->writeLog('Employees','create',$request['lastName'].' '.$request['firstName'],'');
         $employee = new Employee();
         return $this->saveEmployee($employee, $request);
     }
