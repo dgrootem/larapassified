@@ -45,6 +45,17 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
+                <v-row dense>
+                  <v-col sm="12" md="8">
+                    <v-text-field
+                      v-model="appsettings.mainlogo.value"
+                      :label="labelFor(appsettings.mainlogo)"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col sm="12" md="4">
+                    <img :src="appsettings.mainlogo.value">
+                  </v-col>
+                </v-row>
               </v-card-text>
             </v-card>
           </v-row>

@@ -7,7 +7,7 @@
         <div class="row">
             <table>
                 <tr>
-                    <td width="120px"><img height="100px" src="https://www.skbl.be/joomla/images/logo/logo.png" alt="skbl logo"></td>
+                    <td width="120px"><img height="100px" src="{{mainlogo}}" alt="skbl logo"></td>
                     <td width="30px"></td>
                     <td>
                         <h1 class="bd-title">{{$employee->fullname}}</h1>

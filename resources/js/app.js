@@ -72,6 +72,7 @@ new Vue({
             naarIngaveNaUpdate: { name: null, value: false, omschrijving: "naarIngaveNaUpdate" },
             showAddForNewEmployee: { name: null, value: true, omschrijving: "showAddForNewEmployee" },
             aantalRijenPerLijst : { name: null, value: 50, omschrijving: 'aantalRijenPerLijst' },
+            mainlogo : { name: null, value: 'logo', omschrijving: 'logo' },
           },
         
       }),
@@ -86,9 +87,11 @@ new Vue({
                 for (s in settingsFromDB) {
                     let n = settingsFromDB[s].name;
                     app.settings[n] = settingsFromDB[s];
-                    try {
+                    if (!isNaN(app.settings[n].value))
                         app.settings[n].value = parseInt(app.settings[n].value);
-                    } catch (e) {}
+                    // else
+                        // console.log('cannot convert to number value for '+n+' ('+app.settings[n]+')');
+                    
                 }
                 return true;
             })

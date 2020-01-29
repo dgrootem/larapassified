@@ -48,8 +48,8 @@
         <span :style="!item.school.useForCalculations ? 'text-decoration: line-through !important;':''">{{item.hours}}</span>
       </template>
       <template v-if="!ro" v-slot:item.action="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
-        <v-icon small @click="deleteItem(item)">delete</v-icon>
+        <v-icon small class="mr-2" title="Aanstelling aanpassen" @click="editItem(item)">edit</v-icon>
+        <v-icon small title="Aanstelling verwijderen" @click="deleteItem(item)">delete</v-icon>
       </template>
     </v-data-table>
     <!-- </v-layout>

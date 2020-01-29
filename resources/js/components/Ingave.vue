@@ -104,8 +104,8 @@
                 >{{item.interruption_type.telt_mee?'check':'not_interested'}}</v-icon>
               </template>
               <template v-if="!ro" v-slot:item.action="{ item }">
-                <v-icon small class="mr-2" @click="editInterruption(item)" title="Aanstelling aanpassen">edit</v-icon>
-                <v-icon small class="mr-2" @click="deleteInterruption(item)" title="Aanstelling verwijderen">delete</v-icon>
+                <v-icon small class="mr-2" @click="editInterruption(item)" title="Onderbreking aanpassen">edit</v-icon>
+                <v-icon small class="mr-2" @click="deleteInterruption(item)" title="Onderbreking verwijderen">delete</v-icon>
               </template>
             </v-data-table>
           </v-container>
@@ -293,7 +293,7 @@ export default {
     formTitleInterruption() {
       return this.editedIndex === -1
         ? "Nieuwe onderbreking"
-        : "Bewerk onderbrekeing";
+        : "Bewerk onderbreking";
     },
     ro() { //shorthand for "read only"
       return window.u53r.readonly;
