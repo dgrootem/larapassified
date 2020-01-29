@@ -7,7 +7,7 @@
         <div class="row">
             <table>
                 <tr>
-                    <td width="120px"><img height="100px" src="{{mainlogo}}" alt="skbl logo"></td>
+                    <td width="120px"><img height="100px" src="{{$mainlogo->value}}" alt="skbl logo"></td>
                     <td width="30px"></td>
                     <td>
                         <h1 class="bd-title">{{$employee->fullname}}</h1>
@@ -28,6 +28,7 @@
                 <table class="table">
                     <tr>
                         <th>School</th>
+                        <th>Uren</th>
                         <th class="datecol">Van</th>
                         <th class="datecol">Tot</th>
                         
@@ -37,6 +38,7 @@
                     <tr class="{{ ($aanstelling->school->useForCalculations == 0) ? 'teltnietmee' : ''}}">
                         
                         <td>{{$aanstelling->school->name}}</td>
+                        <td>{{$aanstelling->hours}}</td>
                         <td class="datecol">{{$aanstelling->beginDateAsDate}}</td>
                         <td class="datecol">{{$aanstelling->endDateAsDate}}</td>
                         

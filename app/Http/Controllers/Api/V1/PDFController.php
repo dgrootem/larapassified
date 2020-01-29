@@ -13,6 +13,7 @@ use App\Employee;
 use App\EmploymentInterruption;
 use PDF;
 use Carbon\Carbon;
+use App\Setting;
 
 class PDFController extends Controller
 {
@@ -35,14 +36,18 @@ class PDFController extends Controller
         $interruptions = EmploymentInterruption::with('interruption_type')->where('employee_id',$employee->id)->get();
         $gendate = Carbon::now()->format('d-m-Y H:i:s');
 
+        $mainlogo = Setting::where('name','mainlogo')->where('van','<=',Carbon::today())->where('tot','>=',Carbon::today())->get();
+        if ($mainlogo->count() >0) $mainlogo = $mainlogo[0];
+        else $mainlogo = '';
+
         $this->writeLog('PDF','persoonelijke pdf','employee id='.$id,'');
 
         //return compact(['ambten','aanstellingen','interruptions','employee','gendate']);
         $usebootstrap = 1;
-        $pdf = PDF::loadView('pdf.persoonlijk',compact(['ambten','aanstellingen','interruptions','employee','gendate','usebootstrap']));
-        return $pdf->download($id.'.pdf');
+        //$pdf = PDF::loadView('pdf.persoonlijk',compact(['ambten','aanstellingen','interruptions','employee','gendate','usebootstrap','mainlogo']));
+        //return $pdf->download($id.'.pdf');
 
-        return view('pdf.persoonlijk',compact(['ambten','aanstellingen','interruptions','employee','gendate']));
+        return view('pdf.persoonlijk',compact(['ambten','aanstellingen','interruptions','employee','gendate','usebootstrap','mainlogo']));
     }
 
     
