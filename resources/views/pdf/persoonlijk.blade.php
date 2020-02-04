@@ -28,7 +28,7 @@
                 <table class="table">
                     <tr>
                         <th>School</th>
-                        <th>Uren</th>
+                        <th class="datecol">Uren</th>
                         <th class="datecol">Van</th>
                         <th class="datecol">Tot</th>
                         
@@ -38,7 +38,7 @@
                     <tr class="{{ ($aanstelling->school->useForCalculations == 0) ? 'teltnietmee' : ''}}">
                         
                         <td>{{$aanstelling->school->name}}</td>
-                        <td>{{$aanstelling->hours}}</td>
+                        <td class="datecol">{{$aanstelling->hours}}</td>
                         <td class="datecol">{{$aanstelling->beginDateAsDate}}</td>
                         <td class="datecol">{{$aanstelling->endDateAsDate}}</td>
                         

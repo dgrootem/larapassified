@@ -91,6 +91,7 @@ class EduFunctionDataController extends Controller
                 \DB::raw($oudsysteem . ' as oudsysteem')
             );
         if ($fullList == 0) $result = $result->where('employees.isActive',1);
+        
         return $result->where('edu_function_data.isbenoemd', '=', 0);
     }
 
@@ -100,7 +101,7 @@ class EduFunctionDataController extends Controller
         $neededTotal = $this->getCurrentSetting('taddNeededTotal', 1);
         $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 1);
         $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 1);
-        Log::debug('==================== nextYearTADD  ====================');
+        // Log::debug('==================== nextYearTADD  ====================');
         //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
         $results = $this->baseQuery($neededTotal, $neededEffective1,'false',$fullList)
             ->where('edu_function_data.istadd', '=', 0)
@@ -108,9 +109,10 @@ class EduFunctionDataController extends Controller
             ->whereBetween('edu_function_data.seniority_days', array(200, $neededEffective1)) //TODO: helft van $neededEffective1 nemen? afchecken inhoudelijk!!
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc')
-            ->get();
-        
-        return $results;
+            ;
+            // Log::debug(compact(['neededTotal','neededEffective1','neededEffective2']));
+            // Log::debug('nextYearTADD='.$results->toSql());
+        return $results->get();
     }
 
     public function thisYearTADD(Request $request,$fullList)
@@ -119,8 +121,8 @@ class EduFunctionDataController extends Controller
         $neededTotal = $this->getCurrentSetting('taddNeededTotal', 0);
         $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 0);
         $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 0);
-        Log::debug('==================== thisYearTADD oud ====================');
-        //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
+        // Log::debug('==================== thisYearTADD oud ====================');
+        // Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
         $volgensoudsysteem = $this->baseQuery($neededTotal, $neededEffective1,'true',$fullList)
             ->where('edu_function_data.istadd', '=', 0)
             ->where(function ($query) {
@@ -129,6 +131,37 @@ class EduFunctionDataController extends Controller
                 $query->where('edu_function_data.total_seniority_days', '>=', $neededTotal)
                     ->where('edu_function_data.seniority_days', '>=', $neededEffective1);
             })
+            // niet nodig van dit te doen voor mensen die onder oud systeem vallen
+            /*->orWhere(function ($query) {
+                $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 0);
+                $query->whereNotNull('edu_function_data.datum_verbetering_nodig_gezet')
+                    ->where('edu_function_data.seniority_days_currentyear', '>=', $neededEffective2);
+            })*/
+            ->orderBy('employees.lastName', 'asc')
+            ->orderBy('educational_functions.name', 'asc');
+
+            
+            // Log::debug('volgensoudsysteem='.$volgensoudsysteem->toSql());
+        // Log::debug('==================== thisYearTADD nieuw ====================');
+        //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
+        $volgensnieuwsysteem = $this->baseQuery($neededTotal, $neededEffective1,'false',$fullList)
+            ->where('edu_function_data.istadd', '=', 0)
+            ->where(function ($query) {
+                $neededTotal_new = $this->getCurrentSetting('taddNeededTotal', 1);
+                $neededEffective1_new = $this->getCurrentSetting('taddNeededEffective', 1);
+                $query->where('edu_function_data.total_seniority_days', '>=', $neededTotal_new)
+                    ->where('edu_function_data.seniority_days', '>=', $neededEffective1_new)
+                    ->where(function($query){
+                        // we moeten hier een 'OR' gebruiken: 
+                        // van zodra ze voldoen aan 1 van onderstaande 
+                        // zitten ze niet meer in het oud systeem, 
+                        // waar ze al uit gevallen zijn in vorige query en we ze hier dus moeten oppikken
+                        $neededTotal_old = $this->getCurrentSetting('taddNeededTotal', 0);
+                        $neededEffective1_old = $this->getCurrentSetting('taddNeededEffective', 0);
+                        $query  ->where('edu_function_data.seniority_days', '<',  $neededEffective1_old)
+                                ->orWhere('edu_function_data.total_seniority_days', '<', $neededTotal_old);
+                    });
+            })
             ->orWhere(function ($query) {
                 $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 0);
                 $query->whereNotNull('edu_function_data.datum_verbetering_nodig_gezet')
@@ -136,29 +169,11 @@ class EduFunctionDataController extends Controller
             })
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc');
-        Log::debug('==================== thisYearTADD nieuw ====================');
-        //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
-        $volgensnieuwsysteem = $this->baseQuery($neededTotal, $neededEffective1,'false',$fullList)
-            ->where('edu_function_data.istadd', '=', 0)
-            ->where(function ($query) {
-                $neededTotal_old = $this->getCurrentSetting('taddNeededTotal', 0);
-                $neededEffective1_old = $this->getCurrentSetting('taddNeededEffective', 0);
-                $neededTotal_new = $this->getCurrentSetting('taddNeededTotal', 1);
-                $neededEffective1_new = $this->getCurrentSetting('taddNeededEffective', 1);
-                $query->where('edu_function_data.total_seniority_days', '>=', $neededTotal_new)
-                    ->where('edu_function_data.total_seniority_days', '<', $neededTotal_old)
-                    ->where('edu_function_data.seniority_days', '>=', $neededEffective1_new)
-                    ->where('edu_function_data.seniority_days', '<',  $neededEffective1_old);
-            })
-            ->orWhere(function ($query) {
-                $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 0);
-                $query->whereNotNull('edu_function_data.datum_verbetering_nodig_gezet')
-                    ->where('edu_function_data.seniority_days_currentyear', '>=', $neededEffective2);
-            })
-            ->orderBy('employees.lastName', 'asc')
-            ->orderBy('educational_functions.name', 'asc')
-            ->union($volgensoudsysteem)->get();
-        return $volgensnieuwsysteem;
+
+
+            // Log::debug(compact(['neededTotal','neededEffective1','neededEffective2']));
+            // Log::debug('volgensnieuwsysteem='.$volgensnieuwsysteem->toSql());
+        return $volgensnieuwsysteem->union($volgensoudsysteem)->get();
     }
 
     public function alreadyTADD(Request $request,$fullList)
