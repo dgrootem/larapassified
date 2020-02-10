@@ -137,11 +137,13 @@ class EmployeeController extends Controller
     private function saveEmployee(Employee $employee, Request $request)
     {
         $this->authorizeRO();
-
-        $testemployee = Employee::where('registrationNumber', $request['registrationNumber'])->get();
-        if ($testemployee->count() > 1) return $this->createError('ERROR : meerdere personeelsleden gevonden met dit nummer!!');
-        else if (($testemployee->count() == 1) && ($testemployee[0]->id != $employee->id)) {
-            return $this->createError('Stamboeknummer bestaat al!');
+        if ($request['registrationNumber'] !== null) //only check for existence / uniqueness if registrationnumber is available
+        {
+            $testemployee = Employee::where('registrationNumber', $request['registrationNumber'])->get();
+            if ($testemployee->count() > 1) return $this->createError('ERROR : meerdere personeelsleden gevonden met dit nummer!!');
+            else if (($testemployee->count() == 1) && ($testemployee[0]->id != $employee->id)) {
+                return $this->createError('Stamboeknummer bestaat al!');
+            }
         }
 
         $employee->birthDate = $this->getBirthDate($request);
