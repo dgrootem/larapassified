@@ -3,19 +3,31 @@
     <v-card width="100%">
       <v-container fluid>
         <v-card-title>
-          Personeelsleden
-          <div class="flex-grow-1"></div>
-          <v-text-field
-            v-model="search"
-            append-icon="search"
-            label="Zoeken"
-            single-line
-            hide-details
-          ></v-text-field>
-          <div class="flex-grow-1"></div>
-          <v-btn v-if="!ro" fab right absolute @click="dialog = !dialog">
-            <v-icon>add</v-icon>
-          </v-btn>
+          <v-container fluid>
+            <v-row>
+              <v-col>
+              Personeelsleden
+              </v-col><v-col>
+              <!-- <div class="flex-grow-1"></div> -->
+              <v-text-field
+                v-model="search"
+                append-icon="search"
+                label="Zoeken"
+                single-line
+                hide-details
+              ></v-text-field>
+              </v-col><v-col>
+              <schoolFilter @selectedSchoolChanged="selectedSchoolChanged"></schoolFilter>
+              </v-col>
+              <v-col>
+                <div class="flex-grow-1"></div>
+              </v-col><v-col>
+              <v-btn v-if="!ro" fab right absolute @click="dialog = !dialog">
+                <v-icon>add</v-icon>
+              </v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
         </v-card-title>
         <v-card-text>
           <v-data-table :items="employees" :headers="headers" :search="search" multi-sort :sort-by.sync="sortby" :items-per-page="aantalRijenPerPagina">
@@ -133,8 +145,12 @@
 
 <script>
 import { parse, format } from "date-fns";
+import SchoolFilter from "./SchoolFilter";
 
 export default {
+  components: {
+    schoolFilter: SchoolFilter
+  },
   data: function() {
     return {
       message: "Some Message",
@@ -289,6 +305,19 @@ export default {
           app.failSnack("Fout bij opslaan wijzigingen");
         });
     },
+    selectedSchoolChanged(newSelectedSchool){
+      let app = this;
+      axios
+      .get("api/v1/employee/filterBySchool/"+(newSelectedSchool?newSelectedSchool:'-1'))
+      .then(function(resp) {
+        
+        app.employees = resp.data;
+      })
+      .catch(function(resp) {
+        console.log(resp);
+        alert("Fout bij ophalen personeelsleden");
+      });
+    },
     recalculateDays(employee){
       let app = this;
       app.overlay = true;
@@ -371,15 +400,7 @@ export default {
 
   created() {
     var app = this;
-    axios
-      .get("api/v1/employee")
-      .then(function(resp) {
-        app.employees = resp.data;
-      })
-      .catch(function(resp) {
-        console.log(resp);
-        alert("Could not load personeelsleden");
-      });
+    this.selectedSchoolChanged(null);
 
     this.headers = [
       { text: "",align: "center", value: "ingave"},

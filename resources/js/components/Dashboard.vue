@@ -12,9 +12,12 @@
               hide-details
             ></v-text-field>
           </v-col>
+          <v-col>
+            <schoolFilter @selectedSchoolChanged="selectedSchoolChanged" :initialSelection="selectedSchool"></schoolFilter>
+          </v-col>
           <v-btn fab right absolute>
-        <img align="center" src="https://www.skbl.be/pdf2.png" width="48" height="48"  @click="showPDF()">
-      </v-btn>
+            <img align="center" src="https://www.skbl.be/pdf2.png" width="48" height="48"  @click="showPDF()">
+          </v-btn>
         </v-row>
         
         <v-row>
@@ -142,8 +145,12 @@
 <script>
 import { compareAsc } from "date-fns";
 import * as DateUtil from "../DateUtil";
+import SchoolFilter from "./SchoolFilter";
 
 export default {
+  components: {
+    schoolFilter: SchoolFilter
+  },
   data: function() {
     return {
       message: "Some Message",
@@ -152,6 +159,8 @@ export default {
       nextYearTADD: [],
       headers: [],
       grenswaarden: [],
+
+      selectedSchool: null,
 
       taddNeededTotal: 580,
       taddNeededEffective: 400,
@@ -348,7 +357,45 @@ export default {
 
       return result;
     },
-    laadAmbten() {}
+    laadAmbten() {},
+    reloadTabs(){
+      let app = this;
+      axios
+      .get("api/v1/educationalFunctionData/tadd/nextyear/"+app.fullList+"/bySchool/"+(this.selectedSchool?this.selectedSchool:'-1'))
+      .then(function(resp) {
+        console.log("loaded nextYearTADD");
+        app.nextYearTADD = resp.data;
+      })
+      .catch(function(resp) {
+        console.log(resp);
+        alert("Could not load data");
+      });
+      axios
+        .get("api/v1/educationalFunctionData/tadd/thisyear/"+app.fullList+"/bySchool/"+(this.selectedSchool?this.selectedSchool:'-1'))
+        .then(function(resp) {
+          app.thisYearTADD = resp.data;
+          console.log("loaded thisYearTADD");
+        })
+        .catch(function(resp) {
+          console.log(resp);
+          alert("Could not load data");
+        });
+      axios
+        .get("api/v1/educationalFunctionData/tadd/alreadytadd/"+app.fullList+"/bySchool/"+(this.selectedSchool?this.selectedSchool:'-1'))
+        .then(function(resp) {
+          app.alreadyTADD = resp.data;
+          console.log("loaded alreadyTADD");
+        })
+        .catch(function(resp) {
+          console.log(resp);
+          alert("Could not load data");
+        });
+
+    },
+    selectedSchoolChanged(newSelectedSchool){
+      this.selectedSchool = newSelectedSchool;
+      this.reloadTabs();
+    }
   },
 
   computed: {
@@ -364,29 +411,13 @@ export default {
     volgendJaarTADD() {
       var app = this;
       return this.nextYearTADD;
-      /*
-      return this.ambten.filter(a =>{
-        
-        return ((a.total_seniority_days < this.grenswaarden.) || (a.seniority_days < 100));
-      });*/
     },
     ambtenVoldoende() {
       return this
-        .thisYearTADD; /*
-      var app = this;
-      return this.ambten.filter(a =>{
-        
-        return ((a.total_seniority_days >= 100) && (a.seniority_days >= 100)
-                && (a.istadd == 0));
-      });*/
+        .thisYearTADD; 
     },
     ambtenTADD() {
       return this.alreadyTADD;
-      /*return this.ambten.filter(a =>{
-        
-        return ((a.total_seniority_days >= 100) && (a.seniority_days >= 100)
-                && (a.istadd == 1));
-      });*/
     },
 
     headersVolgendJaarTADD() {
@@ -423,37 +454,8 @@ export default {
         console.log(resp);
         alert("Could not load grenswaarden");
       });
-    axios
-      .get("api/v1/educationalFunctionData/tadd/nextyear/"+app.fullList)
-      .then(function(resp) {
-        console.log("loaded nextYearTADD");
-        app.nextYearTADD = resp.data;
-      })
-      .catch(function(resp) {
-        console.log(resp);
-        alert("Could not load data");
-      });
-    axios
-      .get("api/v1/educationalFunctionData/tadd/thisyear/"+app.fullList)
-      .then(function(resp) {
-        app.thisYearTADD = resp.data;
-        console.log("loaded thisYearTADD");
-      })
-      .catch(function(resp) {
-        console.log(resp);
-        alert("Could not load data");
-      });
-    axios
-      .get("api/v1/educationalFunctionData/tadd/alreadytadd/"+app.fullList)
-      .then(function(resp) {
-        app.alreadyTADD = resp.data;
-        console.log("loaded alreadyTADD");
-      })
-      .catch(function(resp) {
-        console.log(resp);
-        alert("Could not load data");
-      });
-
+      this.reloadTabs();
+    
     this.headers = [
       {
         o: 1,

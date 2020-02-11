@@ -28,23 +28,53 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        Log::debug("returning all employees");
-        $this->writeLog('Employees','index','all','full list');
-        return $this->buildIndexQuery(false);
+        return $this->allEmployees();
     }
 
-    private function buildIndexQuery($activeOnly)
+    private function allEmployees(){
+        Log::debug("returning all employees");
+        Log::debug(0);
+        $this->writeLog('Employees','index','all','full list');
+        $q = $this->buildIndexQuery(false);//->orderBy('firstname', 'asc');
+        Log::debug(3);
+        Log::debug($q->toSql());
+        return $q->get();
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexBySchool(Request $request,$schoolId)
     {
-        $result = Employee::selectRaw('*,concat(firstname," ",lastname," [",ifnull(registrationNumber,""),"]") as fullNameExtended');
+        Log::debug($schoolId);
+        if ($schoolId == -1 ) return $this->allEmployees();
+        Log::debug("returning all employees for school met id =".$schoolId);
+        $this->writeLog('Employees','index(filtered)','school id = '.$schoolId,'filtered list');
+        $q= $this->buildIndexQuery(false,true)
+            ->join('edu_function_data','employee_id','=','employees.id')
+            ->join('employments','edu_function_data.id','=','employments.edu_function_data_id')
+            ->where('school_id',$schoolId)
+            ->orderBy('firstname', 'asc');
+            Log::debug($q->toSql());
+            return $q->get();
+    }
+
+    private function buildIndexQuery($activeOnly,$distinct = false)
+    {
+        Log::debug(1);
+        $result = Employee::selectRaw(($distinct?'distinct ':'').'employees.*,concat(firstname," ",lastname," [",ifnull(registrationNumber,""),"]") as fullNameExtended');
         if ($activeOnly) $result = $result->where('isActive', 1);
-        return $result->orderBy('firstname', 'asc')->get();
+        Log::debug(2);
+        return $result;
     }
 
     public function indexActive()
     {
         Log::debug("returning active employees only");
         $this->writeLog('Employees','index','all','filtered list');
-        return $this->buildIndexQuery(true);
+        return $this->buildIndexQuery(true)->orderBy('firstname', 'asc')->get();
     }
 
     public function filterByName(String $value)

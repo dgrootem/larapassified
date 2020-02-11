@@ -59,11 +59,11 @@ class EduFunctionDataController extends Controller
         return $results[$index];
     }
 
-    public function dashboardPDF(Request $request,$fullList){
+    public function dashboardPDF(Request $request,$fullList,$schoolId){
         $this->writeLog('Educational Function Data','PDF','dashboard','');
-        $nextyear = $this->nextYearTADD($request,$fullList);
-        $thisyear = $this->thisYearTADD($request,$fullList);
-        $tadd = $this->alreadyTADD($request,$fullList);
+        $nextyear = $this->nextYearTADD($request,$fullList,$schoolId);
+        $thisyear = $this->thisYearTADD($request,$fullList,$schoolId);
+        $tadd = $this->alreadyTADD($request,$fullList,$schoolId);
         $gendate = Carbon::now();
         $usebootstrap = 0;
         $pdf = PDF::loadView('pdf.dashboard',compact(['nextyear','thisyear','tadd','gendate','usebootstrap']));
@@ -72,10 +72,11 @@ class EduFunctionDataController extends Controller
         
     }
 
-    public function baseQuery($neededTotal, $neededEffective1,$oudsysteem,$fullList)
+    public function baseQuery($neededTotal, $neededEffective1,$oudsysteem,$fullList,$schoolId)
     {
         $result= EduFunctionData::join('employees', 'employees.id', '=', 'employee_id')
             ->join('educational_functions', 'educational_function_id', '=', 'educational_functions.id')
+            
             ->select(
                 'employees.firstname',
                 'employees.lastname',
@@ -89,13 +90,18 @@ class EduFunctionDataController extends Controller
                 'edu_function_data.datum_verbetering_nodig_gezet as werkpunt',
                 'edu_function_data.istadd',
                 \DB::raw($oudsysteem . ' as oudsysteem')
-            );
+            )->where('edu_function_data.isbenoemd', '=', 0);
         if ($fullList == 0) $result = $result->where('employees.isActive',1);
-        
-        return $result->where('edu_function_data.isbenoemd', '=', 0);
+        if ($schoolId != -1) $result = $result->whereExists(function($query) use ($schoolId){
+                $query->select('employees.id')->from('employments')
+                        ->where('school_id',$schoolId)
+                        ->where('edu_function_data_id','edu_function_data.id');
+            });
+        //$result->dump();
+        return $result;
     }
 
-    public function nextYearTADD(Request $request,$fullList)
+    public function nextYearTADD(Request $request,$fullList,$schoolId)
     {
         $this->writeLog('dashboard','nextYearTADD','full list='.$fullList,'');
         $neededTotal = $this->getCurrentSetting('taddNeededTotal', 1);
@@ -103,7 +109,7 @@ class EduFunctionDataController extends Controller
         $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 1);
         // Log::debug('==================== nextYearTADD  ====================');
         //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
-        $results = $this->baseQuery($neededTotal, $neededEffective1,'false',$fullList)
+        $results = $this->baseQuery($neededTotal, $neededEffective1,'false',$fullList,$schoolId)
             ->where('edu_function_data.istadd', '=', 0)
             ->where(function($query){
                 //TODO: helft van $neededTotal nemen? afchecken inhoudelijk!!
@@ -122,10 +128,11 @@ class EduFunctionDataController extends Controller
             ;
             // Log::debug(compact(['neededTotal','neededEffective1','neededEffective2']));
             // Log::debug('nextYearTADD='.$results->toSql());
+            //if ($schoolId != -1) $results = $results->distinct('edu_function_data.id');
         return $results->get();
     }
 
-    public function thisYearTADD(Request $request,$fullList)
+    public function thisYearTADD(Request $request,$fullList,$schoolId)
     {
         $this->writeLog('dashboard','thisYearTADD','full list='.$fullList,'');
         $neededTotal = $this->getCurrentSetting('taddNeededTotal', 0);
@@ -133,7 +140,7 @@ class EduFunctionDataController extends Controller
         $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 0);
         // Log::debug('==================== thisYearTADD oud ====================');
         // Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
-        $volgensoudsysteem = $this->baseQuery($neededTotal, $neededEffective1,'true',$fullList)
+        $volgensoudsysteem = $this->baseQuery($neededTotal, $neededEffective1,'true',$fullList,$schoolId)
             ->where('edu_function_data.istadd', '=', 0)
             ->where(function ($query) {
                 $neededTotal = $this->getCurrentSetting('taddNeededTotal', 0);
@@ -150,11 +157,11 @@ class EduFunctionDataController extends Controller
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc');
 
-            
+        //if ($schoolId != -1) $volgensoudsysteem = $volgensoudsysteem->distinct('edu_function_data.id');   
             // Log::debug('volgensoudsysteem='.$volgensoudsysteem->toSql());
         // Log::debug('==================== thisYearTADD nieuw ====================');
         
-        $volgensnieuwsysteem = $this->baseQuery($neededTotal, $neededEffective1,'false',$fullList)
+        $volgensnieuwsysteem = $this->baseQuery($neededTotal, $neededEffective1,'false',$fullList,$schoolId)
             ->where('edu_function_data.istadd', '=', 0)
             ->where(function ($query) {
                 $neededTotal_new = $this->getCurrentSetting('taddNeededTotal', 1);
@@ -183,19 +190,21 @@ class EduFunctionDataController extends Controller
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc');
 
-
+            //if ($schoolId != -1) $volgensnieuwsysteem = $volgensnieuwsysteem->distinct();
             // Log::debug(compact(['neededTotal','neededEffective1','neededEffective2']));
             // Log::debug('volgensnieuwsysteem='.$volgensnieuwsysteem->toSql());
         return $volgensnieuwsysteem->union($volgensoudsysteem)->get();
     }
 
-    public function alreadyTADD(Request $request,$fullList)
+    public function alreadyTADD(Request $request,$fullList,$schoolId)
     {
         $this->writeLog('dashboard','alreadyTADD','full list='.$fullList,'');
-        return $this->baseQuery(1, 1,true,$fullList)->where('edu_function_data.istadd', '=', 1)
+        $results = $this->baseQuery(1, 1,true,$fullList,$schoolId)->where('edu_function_data.istadd', '=', 1)
             ->orderBy('employees.lastName', 'asc')
-            ->orderBy('educational_functions.name', 'asc')
-            ->get();
+            ->orderBy('educational_functions.name', 'asc');
+        //if ($schoolId != -1)  $results = $results->distinct('edu_function_data.id');
+        Log::debug($results->toSql());
+        return  $results->get();
     }
 
     public function show($id)

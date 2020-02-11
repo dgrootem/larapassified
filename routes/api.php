@@ -17,15 +17,16 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::post('employee/toggleAllVisible/{toggle}','EmployeeController@toggleEmployeesVisibility')->name('employee.toggleAllVisible');
     Route::get('employee/interruptions/{id}','EmploymentInterruptionController@interruptionsForEmployee')->name('employee.interruptions');
     Route::get('employee/filterByName/{value}','EmployeeController@filterByName')->name('employee.filterByName');
+    Route::get('employee/filterBySchool/{schoolId}','EmployeeController@indexBySchool')->name('employee.indexBySchool');
     Route::get('ambt/availableForEmployee/{id}','EducationalFunctionController@availableForEmployee')->name('ambt.availableForEmployee');
     Route::get('educationalFunctionData/{id}/addEmployement/{employment_id}','EduFunctionDataController@addEmployement')->name('educationalFunctionData.addEmployement');
     Route::get('educationalFunctionData/{id}/removeEmployement/{employment_id}','EduFunctionDataController@removeEmployement')->name('educationalFunctionData.removeEmployement');
     Route::get('educationalFunctionData/tadd/fullIndex','EduFunctionDataController@fullIndex')->name('educationalFunctionData.fullindex');
 
-    Route::get('educationalFunctionData/tadd/nextyear/{fullList}','EduFunctionDataController@nextYearTADD')->name('educationalFunctionData.nextyear');
-    Route::get('educationalFunctionData/tadd/thisyear/{fullList}','EduFunctionDataController@thisYearTADD')->name('educationalFunctionData.thisyear');
-    Route::get('educationalFunctionData/tadd/alreadytadd/{fullList}','EduFunctionDataController@alreadyTADD')->name('educationalFunctionData.alreadytadd');
-    Route::get('educationalFunctionData/tadd/dashboardpdf/{fullList}','EduFunctionDataController@dashboardPDF')->name('educationalFunctionData.dashboardpdf');
+    Route::get('educationalFunctionData/tadd/nextyear/{fullList}/bySchool/{schoolId}','EduFunctionDataController@nextYearTADD')->name('educationalFunctionData.nextyear');
+    Route::get('educationalFunctionData/tadd/thisyear/{fullList}/bySchool/{schoolId}','EduFunctionDataController@thisYearTADD')->name('educationalFunctionData.thisyear');
+    Route::get('educationalFunctionData/tadd/alreadytadd/{fullList}/bySchool/{schoolId}','EduFunctionDataController@alreadyTADD')->name('educationalFunctionData.alreadytadd');
+    Route::get('educationalFunctionData/tadd/dashboardpdf/{fullList}/bySchool/{schoolId}','EduFunctionDataController@dashboardPDF')->name('educationalFunctionData.dashboardpdf');
     Route::patch('educationalFunctionData/{id}/setproperties','EduFunctionDataController@setProperties')->name('educationalFunctionData.setstartwaarde');
 
     Route::post('educationalFunctionData/{id}/werkpunt','EduFunctionDataController@addWerkpunt')->name('educationalFunctionData.addWerkpunt');
