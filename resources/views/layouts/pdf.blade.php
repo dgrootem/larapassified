@@ -49,6 +49,20 @@
         .datecol {
             width: 100px;
         }
+
+        .rotated {
+            transform: rotate(-90deg);
+            margin-left: 50px;
+            text-align: left;
+            height: 100px;
+        }
+        .cbcol1{
+            text-align: center;
+            
+        }
+        .spacercol{
+            padding-left: 40px;
+        }
     </style>
 </head>
 
