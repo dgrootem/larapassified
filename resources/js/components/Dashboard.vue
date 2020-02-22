@@ -190,7 +190,7 @@ export default {
       app.overlay = true;
       app.overlay_message = 'Bezig met samenstellen PDF document...';
       axios({
-        url: 'api/v1/educationalFunctionData/tadd/dashboardpdf/1',
+        url: 'api/v1/educationalFunctionData/tadd/dashboardpdf/'+app.fullList+"/bySchool/"+(this.selectedSchool?this.selectedSchool:'-1'),
         responseType: 'blob', // important
       }).then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -393,6 +393,7 @@ export default {
 
     },
     selectedSchoolChanged(newSelectedSchool){
+      console.log('selectedSchool changed to'+newSelectedSchool);
       this.selectedSchool = newSelectedSchool;
       this.reloadTabs();
     }

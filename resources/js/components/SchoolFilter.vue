@@ -6,7 +6,8 @@
         item-value="id"
         label="Schoolfilter"
         v-model="selectedSchool"
-    ></v-select>
+    >
+    <v-icon @click="clearSelect" slot="prepend">mdi-minus</v-icon></v-select>
 </template>
 
 <script>
@@ -22,6 +23,10 @@ export default {
     },
     methods: {
         emitChange() {
+            this.$emit("selectedSchoolChanged", this.selectedSchool);
+        },
+        clearSelect(){
+            this.selectedSchool = null;
             this.$emit("selectedSchoolChanged", this.selectedSchool);
         }
     },

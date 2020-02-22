@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\EduFunctionData;
 use App\Employment;
+use App\School;
 use App\Setting;
 use Log;
 use Carbon\Carbon;
@@ -64,9 +65,10 @@ class EduFunctionDataController extends Controller
         $nextyear = $this->nextYearTADD($request,$fullList,$schoolId);
         $thisyear = $this->thisYearTADD($request,$fullList,$schoolId);
         $tadd = $this->alreadyTADD($request,$fullList,$schoolId);
+        $school = School::find($schoolId);
         $gendate = Carbon::now();
         $usebootstrap = 0;
-        $pdf = PDF::loadView('pdf.dashboard',compact(['nextyear','thisyear','tadd','gendate','usebootstrap']));
+        $pdf = PDF::loadView('pdf.dashboard',compact(['nextyear','thisyear','tadd','gendate','usebootstrap','school']));
         return $pdf->download('volgendjaar.pdf');
         //return view('pdf.dashboard',compact(['nextyear','thisyear','tadd','gendate']));
         
@@ -74,6 +76,10 @@ class EduFunctionDataController extends Controller
 
     public function baseQuery($neededTotal, $neededEffective1,$oudsysteem,$fullList,$schoolId)
     {
+        if (is_numeric($schoolId))
+            $myschoolid = $schoolId;
+        else return null; //lets cause an error :)
+
         $result= EduFunctionData::join('employees', 'employees.id', '=', 'employee_id')
             ->join('educational_functions', 'educational_function_id', '=', 'educational_functions.id')
             
@@ -92,12 +98,13 @@ class EduFunctionDataController extends Controller
                 \DB::raw($oudsysteem . ' as oudsysteem')
             )->where('edu_function_data.isbenoemd', '=', 0);
         if ($fullList == 0) $result = $result->where('employees.isActive',1);
-        if ($schoolId != -1) $result = $result->whereExists(function($query) use ($schoolId){
-                $query->select('employees.id')->from('employments')
+        if ($schoolId != -1) /*$result = $result->whereExists(function($query) use ($schoolId){
+                $query->select('x')->from('employments')
                         ->where('school_id',$schoolId)
-                        ->where('edu_function_data_id','edu_function_data.id');
-            });
-        //$result->dump();
+                        ->where('edu_function_data_id','=','edu_function_data.id');
+            });*/
+            $result = $result->whereRaw("exists (select 'x' from `employments` where `employments`.`school_id` = ".$myschoolid." and `employments`.`edu_function_data_id` = `edu_function_data`.`id`)");
+            //$result->dump();
         return $result;
     }
 
@@ -111,23 +118,26 @@ class EduFunctionDataController extends Controller
         //Log::debug(compact(['neededTotal', 'neededEffective1', 'neededEffective2']));
         $results = $this->baseQuery($neededTotal, $neededEffective1,'false',$fullList,$schoolId)
             ->where('edu_function_data.istadd', '=', 0)
-            ->where(function($query){
-                //TODO: helft van $neededTotal nemen? afchecken inhoudelijk!!
-                $neededTotal = $this->getCurrentSetting('taddNeededTotal', 1);
-                $query->whereBetween('edu_function_data.total_seniority_days', array(277, $neededTotal))
-                ->where('edu_function_data.seniority_days', '>=', 200);
+            ->where(function($query1){
+                $query1->where(function($query){
+                    //TODO: helft van $neededTotal nemen? afchecken inhoudelijk!!
+                    $neededTotal = $this->getCurrentSetting('taddNeededTotal', 1);
+                    $query->whereBetween('edu_function_data.total_seniority_days', array(277, $neededTotal))
+                    ->where('edu_function_data.seniority_days', '>=', 200);
+                })
+                ->orWhere(function($query){
+                    $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 1);
+                    $query->whereBetween('edu_function_data.seniority_days', array(200, $neededEffective1))
+                    ->where('edu_function_data.total_seniority_days','>=',277);
+                });
             })
-            ->orWhere(function($query){
-                $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 1);
-                $query->whereBetween('edu_function_data.seniority_days', array(200, $neededEffective1))
-                ->where('edu_function_data.total_seniority_days','>=',277);
-            })
+            
              //TODO: helft van $neededEffective1 nemen? afchecken inhoudelijk!!
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc')
             ;
-            // Log::debug(compact(['neededTotal','neededEffective1','neededEffective2']));
-            // Log::debug('nextYearTADD='.$results->toSql());
+            Log::debug(compact(['neededTotal','neededEffective1','neededEffective2']));
+            Log::debug('nextYearTADD='.$results->toSql());
             //if ($schoolId != -1) $results = $results->distinct('edu_function_data.id');
         return $results->get();
     }
@@ -182,6 +192,7 @@ class EduFunctionDataController extends Controller
                                 ->orWhere('edu_function_data.total_seniority_days', '<', $neededTotal_old);
                     });
             })
+            // DIT STUK VAN DE QUERY IS NOG HELEMAAL NIET JUIST!!!!! deze or moet ook ergens beter genest worden!!
             ->orWhere(function ($query) {
                 $neededEffective2 = $this->getCurrentSetting('taddNeededEffective2', 0);
                 $query->whereNotNull('edu_function_data.datum_verbetering_nodig_gezet')

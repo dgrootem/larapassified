@@ -2,7 +2,9 @@
 
 @section('content')
 
-<header>TADD calculator v2 - overzicht voor alle personeelsleden</header>
+<header>
+    TADD calculator v2 - overzicht voor alle personeelsleden @isset($school) voor {{$school->abbreviation}} @endisset
+</header>
     <footer>Gegenereerd op {{$gendate}} door {{Auth::user()->name}}</footer>
 <div class="container">
     <div class="row">
