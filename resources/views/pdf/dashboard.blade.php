@@ -28,11 +28,13 @@
             <th width="150px">Ambt</th>
             <th width="30px">TOT</th>
             <th width="30px">EFF</th>
+            @if(!(Auth::user()->readonly))
             <th class="spacercol"></th>
             <th class="rotated" width="20px">TADD</th>
             <th class="rotated" width="20px">Benoemd</th>
             <th class="rotated" width="20px">DuD</th>
             <th class="rotated" width="20px">Andere</th>
+            @endif
         </tr>
         @foreach($nextyear as $functiondatarow)
         <tr>
@@ -41,11 +43,13 @@
             <td>{{$functiondatarow->ambt}}</td>
             <td>{{$functiondatarow->total_seniority_days}}</td>
             <td>{{$functiondatarow->seniority_days}}</td>
+            @if(!(Auth::user()->readonly))
             <td class="spacercol"></td>
             <td class="cbcol1"><input type="checkbox"></td>
             <td class="cbcol1"><input type="checkbox"></td>
             <td class="cbcol1"><input type="checkbox"></td>
             <td class="cbcol1"><input type="checkbox"></td>
+            @endif
         </tr>
         @endforeach
         </table>
@@ -61,11 +65,13 @@
             <th width="150px">Ambt</th>
             <th width="30px">TOT</th>
             <th width="30px">EFF</th>
+            @if(!(Auth::user()->readonly))
             <th class="spacercol"></th>
             <th class="rotated" width="20px">TADD</th>
             <th class="rotated" width="20px">Benoemd</th>
             <th class="rotated" width="20px">DuD</th>
             <th class="rotated" width="20px">Andere</th>
+            @endif
         </tr>
         @foreach($thisyear as $functiondatarow2)
         <tr>
@@ -74,11 +80,13 @@
             <td>{{$functiondatarow2->ambt}}</td>
             <td>{{$functiondatarow2->total_seniority_days}}</td>
             <td>{{$functiondatarow2->seniority_days}}</td>
+            @if(!(Auth::user()->readonly))
             <td class="spacercol"></td>
             <td class="cbcol1"><input type="checkbox"></td>
             <td class="cbcol1"><input type="checkbox"></td>
             <td class="cbcol1"><input type="checkbox"></td>
             <td class="cbcol1"><input type="checkbox"></td>
+            @endif
         </tr>
         @endforeach
         </table>
