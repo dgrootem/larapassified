@@ -3,7 +3,7 @@
 @section('content')
 
 <header>
-    TADD calculator v2 - overzicht voor alle personeelsleden @isset($school) voor {{$school->abbreviation}} @endisset
+    TADD calculator v2 - overzicht voor @empty($school) alle personeelsleden @endempty @isset($school) {{$school->abbreviation}} @endisset
 </header>
     <footer>Gegenereerd op {{$gendate}} door {{Auth::user()->name}}</footer>
 <div class="container">
@@ -17,6 +17,7 @@
         <li>Andere : ...</li>
     </ul>
     </i>
+    @if($listType == 1)
     <div class="row">
         <h2>Volgend jaar recht op TADD</h2>
     </div>
@@ -36,7 +37,7 @@
             <th class="rotated" width="20px">Andere</th>
             @endif
         </tr>
-        @foreach($nextyear as $functiondatarow)
+        @foreach($listToShow as $functiondatarow)
         <tr>
             <td>{{$functiondatarow->lastname}}</td>
             <td>{{$functiondatarow->firstname}}</td>
@@ -54,6 +55,7 @@
         @endforeach
         </table>
     </div>
+    @elseif($listType == 2)
     <div class="row">
         <h2>Dit jaar recht op TADD</h2>
     </div>
@@ -73,7 +75,7 @@
             <th class="rotated" width="20px">Andere</th>
             @endif
         </tr>
-        @foreach($thisyear as $functiondatarow2)
+        @foreach($listToShow as $functiondatarow2)
         <tr>
             <td>{{$functiondatarow2->lastname}}</td>
             <td>{{$functiondatarow2->firstname}}</td>
@@ -91,6 +93,7 @@
         @endforeach
         </table>
     </div>
+    @else
     <div class="row">
         <h2>Reeds TADD</h2>
     </div>
@@ -101,7 +104,7 @@
             <th>Voornaam</th>
             <th>Ambt</th>
         </tr>
-        @foreach($tadd as $functiondatarow3)
+        @foreach($listToShow as $functiondatarow3)
         <tr>
             <td>{{$functiondatarow3->lastname}}</td>
             <td>{{$functiondatarow3->firstname}}</td>
@@ -110,6 +113,7 @@
         @endforeach
         </table>
     </div>
+    @endif
 </div>
 
 

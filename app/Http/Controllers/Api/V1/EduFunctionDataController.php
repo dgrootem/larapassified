@@ -43,7 +43,7 @@ class EduFunctionDataController extends Controller
         $this->writeLog('Educational Function Data','fullIndex','all','full list');
         //Log::debug("trying to find some data");
         //return EduFunctionData::with(['educationalFunction','employee'])->get();
-        return $this->baseQuery(1,1,1,1)
+        return $this->baseQuery(1,1,1,1,'html')
             ->orderBy('employees.lastName', 'asc')
             ->orderBy('educational_functions.name', 'asc')
             ->get();
@@ -60,6 +60,20 @@ class EduFunctionDataController extends Controller
         return $results[$index];
     }
 
+    private function generatePDF($listToShow,$listName,$schoolId,$listType){
+        Log::debug('Generating PDF, listToShow='.$listToShow);
+        Log::debug('Generating PDF, listName='.$listName);
+        Log::debug('Generating PDF, schoolId='.$schoolId);
+        Log::debug('Generating PDF, listType='.$listType);
+        $school = School::find($schoolId);
+        $gendate = Carbon::now();
+        $usebootstrap = 0;
+        $pdf = PDF::loadView('pdf.dashboard',compact(['listToShow','listType','gendate','usebootstrap','school']));
+        Log::debug('PDF created');
+        return $pdf->download($listName.'.pdf');
+    }
+
+/*
     public function dashboardPDF(Request $request,$fullList,$schoolId){
         $this->writeLog('Educational Function Data','PDF','dashboard','');
         $nextyear = $this->nextYearTADD($request,$fullList,$schoolId);
@@ -73,7 +87,7 @@ class EduFunctionDataController extends Controller
         //return view('pdf.dashboard',compact(['nextyear','thisyear','tadd','gendate']));
         
     }
-
+*/
     public function baseQuery($neededTotal, $neededEffective1,$oudsysteem,$fullList,$schoolId)
     {
         if (is_numeric($schoolId))
@@ -108,8 +122,12 @@ class EduFunctionDataController extends Controller
         return $result;
     }
 
-    public function nextYearTADD(Request $request,$fullList,$schoolId)
+    public function nextYearTADD(Request $request,$output,$fullList,$schoolId)
     {
+        Log::debug('==================== nextYearTADD  ====================');
+        Log::debug('output='.$output);
+        Log::debug('fullList='.$fullList);
+        Log::debug('schoolId='.$schoolId);
         $this->writeLog('dashboard','nextYearTADD','full list='.$fullList,'');
         $neededTotal = $this->getCurrentSetting('taddNeededTotal', 1);
         $neededEffective1 = $this->getCurrentSetting('taddNeededEffective', 1);
@@ -139,10 +157,16 @@ class EduFunctionDataController extends Controller
             Log::debug(compact(['neededTotal','neededEffective1','neededEffective2']));
             Log::debug('nextYearTADD='.$results->toSql());
             //if ($schoolId != -1) $results = $results->distinct('edu_function_data.id');
-        return $results->get();
+        $listToShow = $results->get();
+        if ($output == 'html')
+            return $listToShow;
+        else if ($output == 'pdf'){
+            return $this->generatePDF($listToShow,'Volgend jaar TADD',$schoolId,1);
+        }
+        else return null;
     }
 
-    public function thisYearTADD(Request $request,$fullList,$schoolId)
+    public function thisYearTADD(Request $request,$output,$fullList,$schoolId)
     {
         $this->writeLog('dashboard','thisYearTADD','full list='.$fullList,'');
         $neededTotal = $this->getCurrentSetting('taddNeededTotal', 0);
@@ -164,8 +188,7 @@ class EduFunctionDataController extends Controller
                 $query->whereNotNull('edu_function_data.datum_verbetering_nodig_gezet')
                     ->where('edu_function_data.seniority_days_currentyear', '>=', $neededEffective2);
             })*/
-            ->orderBy('employees.lastName', 'asc')
-            ->orderBy('educational_functions.name', 'asc');
+            ;
 
         //if ($schoolId != -1) $volgensoudsysteem = $volgensoudsysteem->distinct('edu_function_data.id');   
             // Log::debug('volgensoudsysteem='.$volgensoudsysteem->toSql());
@@ -198,16 +221,25 @@ class EduFunctionDataController extends Controller
                 $query->whereNotNull('edu_function_data.datum_verbetering_nodig_gezet')
                     ->where('edu_function_data.seniority_days_currentyear', '>=', $neededEffective2);
             })
-            ->orderBy('employees.lastName', 'asc')
-            ->orderBy('educational_functions.name', 'asc');
+            ;
 
             //if ($schoolId != -1) $volgensnieuwsysteem = $volgensnieuwsysteem->distinct();
             // Log::debug(compact(['neededTotal','neededEffective1','neededEffective2']));
             // Log::debug('volgensnieuwsysteem='.$volgensnieuwsysteem->toSql());
-        return $volgensnieuwsysteem->union($volgensoudsysteem)->get();
+        $listToShow = $volgensnieuwsysteem
+            ->union($volgensoudsysteem)
+            ->orderBy('fullname', 'asc')
+            ->orderBy('ambt', 'asc')
+            ->get();
+        if ($output == 'html')
+            return $listToShow;
+        else if ($output == 'pdf'){
+            return $this->generatePDF($listToShow,'Dit jaar TADD',$schoolId,2);
+        }
+        else return null;
     }
 
-    public function alreadyTADD(Request $request,$fullList,$schoolId)
+    public function alreadyTADD(Request $request,$output,$fullList,$schoolId)
     {
         $this->writeLog('dashboard','alreadyTADD','full list='.$fullList,'');
         $results = $this->baseQuery(1, 1,true,$fullList,$schoolId)->where('edu_function_data.istadd', '=', 1)
@@ -215,7 +247,13 @@ class EduFunctionDataController extends Controller
             ->orderBy('educational_functions.name', 'asc');
         //if ($schoolId != -1)  $results = $results->distinct('edu_function_data.id');
         Log::debug($results->toSql());
-        return  $results->get();
+        $listToShow = $results->get();
+        if ($output == 'html')
+            return $listToShow;
+        else if ($output == 'pdf'){
+            return $this->generatePDF($listToShow,'Reeds TADD',$schoolId,3);
+        }
+        else return null;
     }
 
     public function show($id)

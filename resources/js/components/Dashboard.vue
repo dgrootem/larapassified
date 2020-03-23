@@ -189,8 +189,15 @@ export default {
       //debugger;
       app.overlay = true;
       app.overlay_message = 'Bezig met samenstellen PDF document...';
+      let listtype;
+      switch(this.dashtab){
+        case 0 : listtype = 'nextyear'; break;
+        case 1 : listtype = 'thisyear'; break;
+        case 2 : listtype = 'alreadytadd'; break;
+        default : listtype = null;
+      }
       axios({
-        url: 'api/v1/educationalFunctionData/tadd/dashboardpdf/'+app.fullList+"/bySchool/"+(this.selectedSchool?this.selectedSchool:'-1'),
+        url: this.buildURL(listtype,'pdf',this.fullList,this.selectedSchool),
         responseType: 'blob', // important
       }).then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -361,7 +368,7 @@ export default {
     reloadTabs(){
       let app = this;
       axios
-      .get("api/v1/educationalFunctionData/tadd/nextyear/"+app.fullList+"/bySchool/"+(this.selectedSchool?this.selectedSchool:'-1'))
+      .get(this.buildURL('nextyear','html',this.fullList,this.selectedSchool))
       .then(function(resp) {
         console.log("loaded nextYearTADD");
         app.nextYearTADD = resp.data;
@@ -371,7 +378,7 @@ export default {
         alert("Could not load data");
       });
       axios
-        .get("api/v1/educationalFunctionData/tadd/thisyear/"+app.fullList+"/bySchool/"+(this.selectedSchool?this.selectedSchool:'-1'))
+        .get(this.buildURL('thisyear','html',this.fullList,this.selectedSchool))
         .then(function(resp) {
           app.thisYearTADD = resp.data;
           console.log("loaded thisYearTADD");
@@ -381,7 +388,7 @@ export default {
           alert("Could not load data");
         });
       axios
-        .get("api/v1/educationalFunctionData/tadd/alreadytadd/"+app.fullList+"/bySchool/"+(this.selectedSchool?this.selectedSchool:'-1'))
+        .get(this.buildURL('alreadytadd','html',this.fullList,this.selectedSchool))
         .then(function(resp) {
           app.alreadyTADD = resp.data;
           console.log("loaded alreadyTADD");
@@ -396,6 +403,9 @@ export default {
       console.log('selectedSchool changed to'+newSelectedSchool);
       this.selectedSchool = newSelectedSchool;
       this.reloadTabs();
+    },
+    buildURL(listtype,output,fullList,selectedSchool){
+      return "api/v1/educationalFunctionData/tadd/" + listtype +"/"+output+"/"+fullList+"/bySchool/"+(this.selectedSchool?this.selectedSchool:'-1');
     }
   },
 
@@ -420,6 +430,7 @@ export default {
     ambtenTADD() {
       return this.alreadyTADD;
     },
+    
 
     headersVolgendJaarTADD() {
       return this.headers.filter(h => h.o == 1);

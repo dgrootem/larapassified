@@ -23,10 +23,10 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::get('educationalFunctionData/{id}/removeEmployement/{employment_id}','EduFunctionDataController@removeEmployement')->name('educationalFunctionData.removeEmployement');
     Route::get('educationalFunctionData/tadd/fullIndex','EduFunctionDataController@fullIndex')->name('educationalFunctionData.fullindex');
 
-    Route::get('educationalFunctionData/tadd/nextyear/{fullList}/bySchool/{schoolId}','EduFunctionDataController@nextYearTADD')->name('educationalFunctionData.nextyear');
-    Route::get('educationalFunctionData/tadd/thisyear/{fullList}/bySchool/{schoolId}','EduFunctionDataController@thisYearTADD')->name('educationalFunctionData.thisyear');
-    Route::get('educationalFunctionData/tadd/alreadytadd/{fullList}/bySchool/{schoolId}','EduFunctionDataController@alreadyTADD')->name('educationalFunctionData.alreadytadd');
-    Route::get('educationalFunctionData/tadd/dashboardpdf/{fullList}/bySchool/{schoolId}','EduFunctionDataController@dashboardPDF')->name('educationalFunctionData.dashboardpdf');
+    Route::get('educationalFunctionData/tadd/nextyear/{output}/{fullList}/bySchool/{schoolId}','EduFunctionDataController@nextYearTADD')->name('educationalFunctionData.nextyear');
+    Route::get('educationalFunctionData/tadd/thisyear/{output}/{fullList}/bySchool/{schoolId}','EduFunctionDataController@thisYearTADD')->name('educationalFunctionData.thisyear');
+    Route::get('educationalFunctionData/tadd/alreadytadd/{output}/{fullList}/bySchool/{schoolId}','EduFunctionDataController@alreadyTADD')->name('educationalFunctionData.alreadytadd');
+    //Route::get('educationalFunctionData/tadd/dashboardpdf/{fullList}/bySchool/{schoolId}','EduFunctionDataController@dashboardPDF')->name('educationalFunctionData.dashboardpdf');
     Route::patch('educationalFunctionData/{id}/setproperties','EduFunctionDataController@setProperties')->name('educationalFunctionData.setstartwaarde');
 
     Route::post('educationalFunctionData/{id}/werkpunt','EduFunctionDataController@addWerkpunt')->name('educationalFunctionData.addWerkpunt');
