@@ -19,5 +19,14 @@ class UserSeeder extends Seeder
             'isActive' => true
 
         ]);
+        DB::table('users')->insert([
+            'name' => 'test2',
+            'email' => 'test2@test.com',
+            'password' => '$2y$10$n/Fve1z3x/qclkW5/Lt/Jem5.J/AMDDicJrI/heOxQ0rSmYFyNkC6',
+            'isadmin' => true,
+            'isActive' => true
+
+        ]);
+        
     }
 }
