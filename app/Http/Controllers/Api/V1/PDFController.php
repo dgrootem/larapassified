@@ -44,7 +44,8 @@ class PDFController extends Controller
 
         //return compact(['ambten','aanstellingen','interruptions','employee','gendate']);
         $usebootstrap = 1;
-        $pdf = PDF::loadView('pdf.persoonlijk',compact(['ambten','aanstellingen','interruptions','employee','gendate','usebootstrap','mainlogo']));
+        $orientation = 0;
+        $pdf = PDF::loadView('pdf.persoonlijk',compact(['ambten','aanstellingen','interruptions','employee','gendate','usebootstrap','mainlogo','orientation']));
         return $pdf->download($id.'.pdf');
 
         return view('pdf.persoonlijk',compact(['ambten','aanstellingen','interruptions','employee','gendate','usebootstrap','mainlogo']));

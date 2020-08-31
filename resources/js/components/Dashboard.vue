@@ -37,6 +37,9 @@
                   :items-per-page="aantalRijenPerPagina"
                   hide-default-footer
                 >
+                  <template v-slot:item.archived="{ item }">
+                    <v-icon color="lightgray" class="mx-4" small v-if="item.archived">mdi-archive</v-icon>
+                  </template>
                   <template v-slot:item.seniority_days_perc="{ item }">
                     <v-progress-linear
                       dark
@@ -488,6 +491,8 @@ export default {
         value: "lastname"
       },
       // { o: 1, v:1,t:1,b:1, text: "Naam2", align: "left", value: "fullname"                                    },
+      { o: 1, v: 1, t: 1, b: 1, text: "", align: "right", value: "hascomment", width: "10px" },
+      { o: 1, v: 1, t: 1, b: 1, text: "", align: "right", value: "archived", width: "10px" },
       { o: 1, v: 1, t: 1, b: 1, text: "Ambt", align: "left", value: "ambt" },
       {
         o: 1,

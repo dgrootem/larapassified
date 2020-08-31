@@ -10,10 +10,18 @@
     @endif
     <!-- <link rel="stylesheet" href="@url('pdf.css')"> -->
     <title>Overzicht</title>
+    @if($orientation==1)
+    <style>
+        @page {
+            margin: 100px 25px;
+            size: A4 landscape;
+        }
+    @else
     <style>
         @page {
             margin: 100px 25px;
         }
+    @endif
 
         header {
             position: fixed;
@@ -48,6 +56,10 @@
 
         .datecol {
             width: 100px;
+        }
+
+        .centercol {
+            text-align: center;
         }
 
         .rotated {

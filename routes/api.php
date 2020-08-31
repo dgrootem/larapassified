@@ -12,7 +12,7 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.', 'middl
     Route::resource('interruptiontype','InterruptionTypeController',['except' => ['create', 'edit']]);
     Route::get('user/attributes/{id}','UserController@userattribs')->name('user.attributes');
     Route::get('employee/functiondata/{id}','EduFunctionDataController@functionDataForEmployee')->name('employee.functionData');
-    Route::get('employee/activeOnly/1','EmployeeController@indexActive')->name('employee.active');
+    Route::get('employee/activeFlags/{flags}','EmployeeController@indexFlags')->name('employee.active');
     Route::post('employee/archive/1','EmployeeController@archiveOldOrTADDEmployees')->name('employee.archiveOldOrTADDEmployees');
     Route::post('employee/toggleAllVisible/{toggle}','EmployeeController@toggleEmployeesVisibility')->name('employee.toggleAllVisible');
     Route::get('employee/interruptions/{id}','EmploymentInterruptionController@interruptionsForEmployee')->name('employee.interruptions');

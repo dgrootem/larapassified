@@ -9,7 +9,10 @@
       <v-row justify="space-between">
         <v-col cols="4" xs="9" sm="9" md="6">
           <v-btn v-if="!ro" color="primary" @click="addEmployment">Aanstelling toevoegen</v-btn>
-          <v-btn v-if="!ro" color="secondary" @click="setProperties">Eigenschappen</v-btn>
+          <v-btn v-if="!ro" color="secondary" @click="setProperties">
+            Eigenschappen
+            <v-icon dark v-if="functiondata.comment && !ro" class="mx-4 small" color="grey" >message</v-icon>
+          </v-btn>
         </v-col>
         <v-col v-if="!ro" cols="4" xs="3" sm="3" md="3">
           <v-btn color="red" @click="deleteFunctionData" width="100%">
@@ -54,7 +57,7 @@
     </v-data-table>
     <!-- </v-layout>
     </v-container>-->
-    <v-dialog v-if="!ro" v-model="propertiesDialog" max-width="500px">
+    <v-dialog v-if="!ro" v-model="propertiesDialog" max-width="700px">
       <v-card>
         <v-card-title>
           <span class="headline">Startwaarde invullen</span>
@@ -62,23 +65,46 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" sm="12" md="12">
+              <v-col>
                 <v-text-field
                   v-model="functiondata.startwaarde_tot"
                   label="Startwaarde totaal aantal dagen in dit ambt"
                   type="number"
                 ></v-text-field>
+              </v-col><v-col>
                 <v-text-field
                   v-model="functiondata.startwaarde_int"
                   label="Startwaarde dagen onderbreking in dit ambt"
                   type="number"
                 ></v-text-field>
-                <!-- We disablen de checkboxen zodat je via deze weg niet iemand kan forceren naar TADD of benoemd -->
-                <v-checkbox :disabled="!functiondata.isTadd" v-model="functiondata.isTadd" label="TADD"></v-checkbox>
-                <v-checkbox :disabled="!functiondata.isBenoemd" v-model="functiondata.isBenoemd" label="Benoemd"></v-checkbox>
-
               </v-col>
             </v-row>
+            <v-row dense>
+              <v-col md="4" sm="12">
+                <h3 class="mt-4">Toestand</h3>
+                <!-- We disablen de checkboxen zodat je via deze weg niet iemand kan forceren naar TADD of benoemd -->
+                <v-checkbox :disabled="!functiondata.isTadd" v-model="functiondata.isTadd" hide-details label="TADD"></v-checkbox>
+                <v-checkbox :disabled="!functiondata.isBenoemd" v-model="functiondata.isBenoemd" hide-details label="Benoemd"></v-checkbox>
+                <h3 class="mt-4">Archivering</h3>
+                <v-checkbox :color="functiondata.archived_final?'warning':'info'" v-model="functiondata.archived_final" hide-details label="Permanent" @change="updateArchiveTemp"></v-checkbox>
+                <v-checkbox :color="functiondata.archived_temporary?'warning':'info'" v-model="functiondata.archived_temporary" hide-details label="Tijdelijk" @change="updateArchiveFinal"></v-checkbox>
+               
+                <v-checkbox :append_icon="has_auto_archive ? 'help':'' " readonly :color="functiondata.archived_auto?'warning':'info'" v-model="functiondata.archived_auto" hide-details>
+                  <template v-slot:label>
+                    Automatisch<v-icon v-if="has_auto_archive" class="ml-6" @click="auto_archive_help = !auto_archive_help">help</v-icon>
+                  </template>
+                </v-checkbox>
+                
+                
+                
+              </v-col>
+              <v-col><v-textarea vif="!ro" v-model="functiondata.comment" outlined label="Opmerking" rows="6"></v-textarea></v-col>
+            </v-row>
+            <v-row v-if="has_auto_archive && auto_archive_help">
+              <v-list dense>Automatisch gearchiveerd wegens:</v-list>
+              <v-list-item v-for="(item,i) in auto_reasons" :key="i">{{item}}</v-list-item>
+              </v-row>
+
           </v-container>
         </v-card-text>
         <v-card-actions>
@@ -179,6 +205,7 @@ export default {
       editedItem: Object.assign({}, this.defaultEmployment),
       employmentDialog: false,
       propertiesDialog: false,
+      auto_archive_help : false,
       //startwaarde_tot: 0, //functiondata.startwaarde_tot,
 
       mask: "##-##-####",
@@ -210,6 +237,17 @@ export default {
     aantalRijenPerPagina: function(){
       return this.$root.settings.aantalRijenPerLijst.value;
     },
+    auto_reasons: function(){
+      
+      if (this.functiondata){
+        console.log('Auto-reason='+this.functiondata.auto_reason);
+        return this.functiondata.auto_reason.split(',');
+      }
+      else return null;
+    },
+    has_auto_archive: function(){
+      return this.functiondata.archived_auto;// && !!this.functiondata.auto_reason;
+    }
   },
   methods: {
     korteVervanging1Dag() {
@@ -225,6 +263,12 @@ export default {
     },
     formatDate(date) {
       return DateUtil.formatDate(date);
+    },
+    updateArchiveTemp(){
+      if (this.functiondata.archived_final == true ) this.functiondata.archived_temporary = false;
+    },
+    updateArchiveFinal(){
+      if (this.functiondata.archived_temporary == true ) this.functiondata.archived_final = false;
     },
 
     setBegin() {
@@ -279,7 +323,10 @@ export default {
             startwaarde_tot: this.functiondata.startwaarde_tot, 
             startwaarde_int: this.functiondata.startwaarde_int,
             isTadd : this.functiondata.isTadd,
-            isBenoemd : this.functiondata.isBenoemd
+            isBenoemd : this.functiondata.isBenoemd,
+            comment : this.functiondata.comment,
+            archived_final : this.functiondata.archived_final,
+            archived_temporary : this.functiondata.archived_temporary
             }
         )
         .then(function(resp) {

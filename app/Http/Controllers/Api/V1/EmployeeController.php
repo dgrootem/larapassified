@@ -61,20 +61,41 @@ class EmployeeController extends Controller
             return $q->get();
     }
 
-    private function buildIndexQuery($activeOnly,$distinct = false)
+    private function buildIndexQuery($flags,$distinct = false)
     {
-        Log::debug(1);
+        //Log::debug($flags);
         $result = Employee::selectRaw(($distinct?'distinct ':'').'employees.*,concat(firstname," ",lastname," [",ifnull(registrationNumber,""),"]") as fullNameExtended');
-        if ($activeOnly) $result = $result->where('isActive', 1);
-        Log::debug(2);
+        $proc_flags = explode('a',$flags);
+        Log::debug(compact('proc_flags'));
+        if ($proc_flags[0] == 0 ){
+            Log::debug('Return enkel niet-gearchiveerde personeelsleden (PERM)');
+            $result = $result->whereExists(function($query){
+                $query->select (\DB::raw(1))->from('edu_function_data')->where('employee_id',\DB::raw('employees.id'))->where('archived_final',0);
+            });
+        }
+        if ($proc_flags[1] == 0 ){
+            Log::debug('Return enkel niet-gearchiveerde personeelsleden (TEMP)');
+            $result = $result->whereExists(function($query){
+                $query->select (\DB::raw(1))->from('edu_function_data')->where('employee_id',\DB::raw('employees.id'))->where('archived_temporary',0);
+            });
+        }
+        if ($proc_flags[2] == 0 ){
+            Log::debug('Return enkel niet-gearchiveerde personeelsleden (AUTO)');
+            $result = $result->whereExists(function($query){
+                $query->select (\DB::raw(1))->from('edu_function_data')->where('employee_id',\DB::raw('employees.id'))->where('archived_auto',0);
+            });
+        }
+        //if ($activeOnly) $result = $result->where('isActive', 1);
+        //Log::debug(2);
+        Log::debug($result->toSql());
         return $result;
     }
 
-    public function indexActive()
+    public function indexFlags(String $flags,Request $request)
     {
-        Log::debug("returning active employees only");
+        Log::debug("returning employees with specific flags only");
         $this->writeLog('Employees','index','all','filtered list');
-        return $this->buildIndexQuery(true)->orderBy('firstname', 'asc')->get();
+        return $this->buildIndexQuery($flags)->orderBy('firstname', 'asc')->get();
     }
 
     public function filterByName(String $value)

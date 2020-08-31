@@ -117,6 +117,11 @@ class TaddCalculationController extends Controller
 
     function calculateSenDaysFD(Employee $employee, EduFunctionData $functiondata)
     {
+        $C_BEGIN = 'b';
+        // we gebruiken nu 'x' ipv 'e' omdat je anders soms strings krijgt van de vorm nnnnnnnnnnnnEmm , 
+        //  waardoor PHP dit interpreteert als een scientific notatie van een getal en de sortering in de soep draait
+        $C_END = 'x';  
+
         // Log::debug('calculateSenDaysFD');
         //steek all data in een lijst: key = datum, value verwijst naar de overeenkomstige periode
         $triggerDates = array();
@@ -124,8 +129,8 @@ class TaddCalculationController extends Controller
         foreach ($functiondata->employments as $e) {
             if ($e->school->useForCalculations) {
                 $e->ptype = 1; //aanstelling
-                $triggerDates = $this->addToTriggerDates($triggerDates, $e->beginDate->format('Ymd') . 'b', $e);
-                $triggerDates = $this->addToTriggerDates($triggerDates, $e->endDate->format('Ymd') . 'e', $e);
+                $triggerDates = $this->addToTriggerDates($triggerDates, $e->beginDate->format('Ymd') . $C_BEGIN, $e);
+                $triggerDates = $this->addToTriggerDates($triggerDates, $e->endDate->format('Ymd') . $C_END, $e);
             }
         }
         foreach ($employee->employmentInterruptions as $i) {
@@ -158,7 +163,7 @@ class TaddCalculationController extends Controller
             // Log::debug('currentDate='.$currentDate);
             if ($teller > 0) {
                 $kenletter = substr($date, 8, 1);
-                if (($kenletter == 'j') || ($kenletter == 'e')) {
+                if (($kenletter == 'j') || ($kenletter == $C_END)) {
                     //toe te voegen aan aantal dagen = aantal dagen sinds vorige trigger datum * totaal aantal uren voor de huidige actieve periodes
                     $periodeLengte = abs($laatsteDatum->diffInDays($currentDate)) + 1 - $usedExtraDay;
                     $usedExtraDay = 1;

@@ -2,7 +2,7 @@
   <div>
     <v-container fluid>
       <v-row>
-        <v-col xs="12" sm="8" md="8">
+        <v-col xs="12" sm="8" md="4">
           <v-autocomplete
             v-model="selectedEmployee"
             :items="items"
@@ -18,8 +18,14 @@
             return-object
           ></v-autocomplete>
         </v-col>
-        <v-col xs="12" sm="4" md="4">
-          <v-checkbox v-model="showFullList" label="Toon volledige lijst"></v-checkbox>
+        <v-col xs="12" sm="4" md="2">
+          <v-switch hide-details v-model="showArchived_perm" label="Gearchiv. (perm)"></v-switch>
+        </v-col>
+        <v-col xs="12" sm="4" md="2">
+          <v-switch hide-details v-model="showArchived_temp" label="Gearchiv. (tijdelijk)"></v-switch>
+        </v-col>
+        <v-col xs="12" sm="4" md="2">
+          <v-switch hide-details v-model="showArchived_auto" label="Gearchiv. (auto)"></v-switch>
         </v-col>
       </v-row>
       <v-btn fab right absolute v-if="selectedEmployee" style="right : 90px !important; margin-top: -90px !important">
@@ -62,6 +68,7 @@
               <v-tab v-for="fdata in functiondata" :key="generateRef(fdata)">
                 {{ fdata.educational_function.name }} 
                 <!-- <v-icon v-if="fdata.isTadd == 1" color="golden">star</v-icon> -->
+                <!-- <v-icon v-if="fdata.comment" class="mx-4 small" color="grey" >message</v-icon> -->
                 <span v-if="fdata.isTadd == 1" style="font-variant: small-caps; font-size: 10px; color: #ebc034;" class="mx-4">TADD</span>
                 <v-progress-circular v-if="fdata.isTadd == 0" title="Dagen totaal" class="mx-4" size="30" :color="progressColor(fdata.total_seniority_days_perc)" :value="fdata.total_seniority_days_perc">TO</v-progress-circular>
                 <v-progress-circular v-if="fdata.isTadd == 0" title="Dagen effectief" class="mx-4" size="30" :color="progressColor(fdata.seniority_days_perc)" :value="fdata.seniority_days_perc">EF</v-progress-circular>
@@ -227,13 +234,19 @@ export default {
       interruption_types : [],
       //selection and editing
       editedItem: {},
+      // model voor een ambt gekoppeld aan een personeelslid in een school
       defaultFunctionData: {
+        archived_auto : false,
+        archived_final : false,
+        archived_temporary : false,
+        comment : null,
         educational_function_id: -1,
         employee_id: this.selectedEmployee,
         seniority_days : 0,
         total_seniority_days : 0,
         seniority_days_perc : 0,
-        total_seniority_days_perc : 0
+        total_seniority_days_perc : 0,
+        auto_reason : null
       },
       defaultInterruption: {
         beginDate: new Date(),
@@ -268,6 +281,7 @@ export default {
 
       functionDataDialog: false,
       interruptionDialog: false,
+      
 
       teltniet: 2,
       teltwel: 1,
@@ -283,7 +297,9 @@ export default {
       overlay : false,
       overlay_message : '',
 
-      showFullList : false
+      showArchived_perm : false,
+      showArchived_temp : false,
+      showArchived_auto : false
     };
   },
   computed: {
@@ -419,6 +435,7 @@ export default {
       this.editedItem = Object.assign({}, item);
       this.functionDataDialog = true;
     },
+    
     saveFunctionData() {
       var app = this;
       if (this.editedIndex == -1) {
@@ -647,8 +664,18 @@ export default {
     }
   },
   watch: {
-    showFullList(val){
-      console.log('changed showfulllist');
+    showArchived_perm(val){
+      console.log('changed showArchived_perm');
+      if (this.entries && this.entries.length > 0)
+        this.entries = [] //reset the list when changing between all or filtered list
+    },
+    showArchived_temp(val){
+      console.log('changed showArchived_temp');
+      if (this.entries && this.entries.length > 0)
+        this.entries = [] //reset the list when changing between all or filtered list
+    },
+    showArchived_auto(val){
+      console.log('changed showArchived_auto');
       if (this.entries && this.entries.length > 0)
         this.entries = [] //reset the list when changing between all or filtered list
     },
@@ -664,7 +691,7 @@ export default {
 
       // Lazily load input items
       axios
-        .get("api/v1/employee"+(this.showFullList?"":"/activeOnly/1"))
+        .get("api/v1/employee/activeFlags/"+(this.showArchived_perm?"1":"0")+'a'+(this.showArchived_temp?"1":"0")+'a'+(this.showArchived_auto?"1":"0"))
         .then(function(resp) {
           app.entries = resp.data;
         })

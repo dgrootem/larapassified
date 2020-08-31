@@ -5,7 +5,7 @@ import Vuetify from 'vuetify';
 Vue.use(Vuetify)
 
 export default new Vuetify({
-    icons: {
+    /*icons: {
         iconfont: 'mdi', // default - only for display purposes
-      },
+      },*/
   })

@@ -12,3 +12,5 @@ taddNeededEffective,400,effectief,2019-09-01,2099-12-31,number,calc,Te presteren
 taddNeededEffective2,200,effectief (na werkpunten),2019-09-01,2099-12-31,number,calc,Te presteren dagen
 aantalRijenPerLijst,100,Aantal rijen dat per pagina op het scherm getoond wordt voor een lijst,2019-09-01,2099-12-31,number,app,gedrag
 mainlogo,https://www.skbl.be/joomla/images/logo/logo.png,Logo van de scholengemeenschap,1970-01-01,2020-08-30,text,app,main
+5jaar_inactief,1,Meer dan vijf jaar inactief in deze scholengemeenschap,1970-01-01,2099-08-30,text,app,main
+alreadyTADD,2,Reeds TADD of benoemd,1970-01-01,2099-08-30,text,app,main
