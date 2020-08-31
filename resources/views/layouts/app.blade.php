@@ -158,7 +158,7 @@
 
         <v-app-bar app color="orange" dark>
             <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-            <v-toolbar-title>TADD Calc</v-toolbar-title>
+            <v-toolbar-title>***** TEST **** TEST ***** TEST ***** TADD Calc ***** TEST **** TEST ***** TEST *****</v-toolbar-title>
         </v-app-bar>
         <v-content>
             @if(Auth::check() && (Auth::user()->isactive == 1))
