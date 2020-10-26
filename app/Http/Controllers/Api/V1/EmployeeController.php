@@ -52,7 +52,7 @@ class EmployeeController extends Controller
         if ($schoolId == -1 ) return $this->allEmployees();
         Log::debug("returning all employees for school met id =".$schoolId);
         $this->writeLog('Employees','index(filtered)','school id = '.$schoolId,'filtered list');
-        $q= $this->buildIndexQuery(false,true)
+        $q= $this->buildIndexQuery('1a1a1',true)
             ->join('edu_function_data','employee_id','=','employees.id')
             ->join('employments','edu_function_data.id','=','employments.edu_function_data_id')
             ->where('school_id',$schoolId)
