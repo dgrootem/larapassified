@@ -60,7 +60,7 @@
     <v-dialog v-if="!ro" v-model="propertiesDialog" max-width="700px">
       <v-card>
         <v-card-title>
-          <span class="headline">Startwaarde invullen</span>
+          <span class="headline">Eigenschappen bewerken</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -338,7 +338,7 @@ export default {
         })
         .catch(function(resp) {
           console.log(resp);
-          app.emitFail("Fout bij opslaan startwaarde");
+          app.emitFail("Fout bij bijwerken van de eigenschappen");
         });
     },
 
