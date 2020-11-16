@@ -112,6 +112,7 @@ class EduFunctionDataController extends Controller
             ->select(
                 'employees.firstname',
                 'employees.lastname',
+                'employees.id as employee_id',
                 \DB::raw("CONCAT(employees.lastname,' ',employees.firstname) AS fullname"),
                 'edu_function_data.id',
                 'educational_functions.name as ambt',

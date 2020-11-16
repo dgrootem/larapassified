@@ -702,6 +702,7 @@ export default {
     },
 
     selectedEmployee(val) {
+      console.log('selectedEmployee changed to'+val);
       if (val) {
         this.reloadEmployeeData(val.id,true);
       } else {
@@ -714,15 +715,19 @@ export default {
 
   beforeRouteEnter(to, from, next) {
     next(vm => {
+      console.log('[beforeRouteEnter]to.params='+JSON.stringify(to.params));
       // access to component instance via `vm`
       if (to.params.selectedEmployee) {
+        console.log('[beforeRouteEnter] set vm.selectedEmployee');
         vm.selectedEmployee = to.params.selectedEmployee;
+        console.log('[beforeRouteEnter] vm.selectedEmployee='+vm.selectedEmployee);
         if (to.params.newEmployee) vm.addFunctionData();
       }
     });
   },
   beforeRouteUpdate(to, from, next) {
     // just use `this`
+    console.log('[beforeRouteUpdate]to.params='+JSON.stringify(to.params));
     if (to.params.selectedEmployee)
       this.selectedEmployee = to.params.selectedEmployee;
     next();

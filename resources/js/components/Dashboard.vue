@@ -37,6 +37,7 @@
                   :items-per-page="aantalRijenPerPagina"
                   hide-default-footer
                 >
+                  <template v-slot:item.ingave="{item}"><v-icon small class="mr-2" @click="navigateTo(item, false)">link</v-icon></template>
                   <template v-slot:item.archived="{ item }">
                     <v-icon color="lightgray" class="mx-4" small v-if="item.archived">mdi-archive</v-icon>
                   </template>
@@ -67,6 +68,7 @@
                   :items-per-page="aantalRijenPerPagina"
                   hide-default-footer
                 >
+                  <template v-slot:item.ingave="{item}"><v-icon small class="mr-2" @click="navigateTo(item, false)">link</v-icon></template>
                   <template v-slot:item.seniority_days_perc="{ item }">
                     <!-- <v-progress-linear :value="item.seniority_days"></v-progress-linear> -->
                     {{item.seniority_days}}
@@ -110,6 +112,7 @@
                   :items-per-page="aantalRijenPerPagina"
                   hide-default-footer
                 >
+                  <template v-slot:item.ingave="{item}"><v-icon small class="mr-2" @click="navigateTo(item, false)">link</v-icon></template>
                   <template v-slot:item.seniority_days="{ item }">
                     <v-progress-linear :value="item.seniority_days_perc"></v-progress-linear>
                   </template>
@@ -187,6 +190,17 @@ export default {
   },
 
   methods: {
+    navigateTo(item,isNewEmployee){
+      console.log('employee_id='+item.employee_id);
+      // we moeten het id wrappen in een object, anders wordt het niet goed opgepikt in de Ingave pagina
+      let emp = {
+        id : item.employee_id,
+        firstName :  item.firstname,
+        lastName : item.lastname
+      };
+      console.log(JSON.stringify(emp));
+      this.$router.push({ name: 'ingave', params: { selectedEmployee: emp, newEmployee: isNewEmployee }});
+    },
     showPDF(){
       let app = this;
       //debugger;
@@ -472,6 +486,15 @@ export default {
       this.reloadTabs();
     
     this.headers = [
+      {
+        o: 1,
+        v: 1,
+        t: 1,
+        b: 1,
+        text: "",
+        align: "left",
+        value: "ingave"
+      },
       {
         o: 1,
         v: 1,
