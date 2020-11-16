@@ -92,36 +92,6 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row>
-              <!-- <v-col sm="12" md="6">
-                <v-text-field
-                  v-model="editedItem.startwaardeDA"
-                  label="Startwaarde DA"
-                  type="number"
-                  min="0"
-                  suffix="dagen"
-                ></v-text-field>
-              </v-col> -->
-              <!-- <v-col sm="12" md="6">
-                <v-text-field
-                  v-model="editedItem.startwaardeINT"
-                  label="Aantal dagen onderbrekingen dat niet meetelt"
-                  type="number"
-                  min="0"
-                  suffix="dagen"
-                ></v-text-field> 
-              </v-col>-->
-            </v-row>
-            <v-row dense>
-              <v-col sm="12" md="12">
-                <v-checkbox v-model="editedItem.isActive" label="Zichtbaar"></v-checkbox>
-              </v-col>
-            </v-row>
-            <!-- <v-row dense>
-              <v-col sm="12" md="12">
-                <v-checkbox v-model="editedItem.oudsysteem" label="Tellen volgens oud systeem"></v-checkbox>
-              </v-col>
-            </v-row> -->
           </v-container>
         </v-card-text>
 
