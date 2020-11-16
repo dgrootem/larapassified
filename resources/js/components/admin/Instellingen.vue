@@ -8,7 +8,8 @@
       <v-card-text>
         <v-container>
          
-          <v-row class="mb-4">
+          <v-row>
+            <v-col md="6" sm="12">
             <v-card>
               <v-card-title>Gedrag</v-card-title>
               <v-card-text>
@@ -37,7 +38,7 @@
                   </v-col>
                 </v-row>
                 <v-row dense>
-                  <v-col sm="12" md="12">
+                  <v-col sm="12" md="4">
                     <v-text-field
                     type="number"
                       v-model="appsettings.aantalRijenPerLijst.value"
@@ -46,26 +47,64 @@
                   </v-col>
                 </v-row>
                 <v-row dense>
-                  <v-col sm="12" md="8">
+                  <v-col sm="12" md="12">
                     <v-text-field
                       v-model="appsettings.mainlogo.value"
                       :label="labelFor(appsettings.mainlogo)"
                     ></v-text-field>
                   </v-col>
+                  </v-row>
+                <v-row dense>
                   <v-col sm="12" md="4">
-                    <img :src="appsettings.mainlogo.value">
+                    <img width="200px" :src="appsettings.mainlogo.value">
                   </v-col>
                 </v-row>
               </v-card-text>
             </v-card>
-          </v-row>
-           <v-row>
+          </v-col>
+          <v-col md="6" sm="12">
+          <!-- </v-row>
+           <v-row> -->
             <v-card>
               <v-card-title>Grenswaarden</v-card-title>
               <v-card-text>
                 <v-data-table :items="grenswaarden" :headers="grensheaders" group-by="categorie"></v-data-table>
               </v-card-text>
             </v-card>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col class="6">
+              <v-card>
+                <v-card-title>Archiveringsredenen</v-card-title>
+                  <v-card-text>
+                    <v-row dense>
+                    <v-col sm="12" md="12">
+                      <v-text-field
+                        v-model="appsettings.vijfjaar_inactief.omschrijving"
+                        :label="labelFor(appsettings.vijfjaar_inactief)"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-row dense>
+                    <v-col sm="12" md="12">
+                      <v-text-field
+                        v-model="appsettings.alreadyTADD.omschrijving"
+                        :label="labelFor(appsettings.alreadyTADD)"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-row dense>
+                    <v-col sm="12" md="12">
+                      <v-text-field
+                        v-model="appsettings.schoolUitScholengemeenschap.omschrijving"
+                        :label="labelFor(appsettings.schoolUitScholengemeenschap)"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-col>
           </v-row>
         </v-container>
       </v-card-text>

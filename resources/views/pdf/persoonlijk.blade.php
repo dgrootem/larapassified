@@ -25,6 +25,13 @@
                 @if(count($ambten) > 0)
                 @foreach($ambten as $ambt)
                 <h3>{{$ambt->name}} : {{$aanstellingen[$ambt->id][0]->total_seniority_days}} dagen ({{$aanstellingen[$ambt->id][0]->seniority_days}} eff)</h3>
+                @if(($aanstellingen[$ambt->id][0]->startwaarde_tot>0) || ($aanstellingen[$ambt->id][0]->startwaarde_int>0))
+                <ul>
+                    Waarvan 
+                    @if($aanstellingen[$ambt->id][0]->startwaarde_tot >0) <li>startwaarde effectieve dagen: {{$aanstellingen[$ambt->id][0]->startwaarde_tot}}</li> @endif
+                    @if($aanstellingen[$ambt->id][0]->startwaarde_int >0)<li>startwaarde dagen onderbreking: {{$aanstellingen[$ambt->id][0]->startwaarde_int}}</li>@endif
+                </ul>
+                @endif
                 <table class="table">
                     <tr>
                         <th>School</th>
