@@ -46,11 +46,11 @@
               
               <v-icon v-if="!ro" small class="mr-2" @click="editItem(item)">edit</v-icon>
               <v-icon v-if="!ro" small class="mr-2" @click="deleteItem(item)">delete</v-icon>
-              <v-icon v-if="!ro"
+              <!-- <v-icon v-if="!ro"
                 small
                 class="mr-2"
                 @click="toggleVisibility(item)"
-              >{{ item.isActive ? 'visibility' : 'visibility_off' }}</v-icon>
+              >{{ item.isActive ? 'visibility' : 'visibility_off' }}</v-icon> -->
               <img src="https://www.skbl.be/pdf2.png" width="24" height="24" style="margin-bottom : -8px !important" class="mr-2" @click="showPDF(item)">
             </template>
           </v-data-table>

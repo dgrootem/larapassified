@@ -1,16 +1,16 @@
 @extends('layouts.pdf')
 
 @section('content')
-    <header>TADD calculator v2 - overzicht voor {{$employee->fullname}}</header>
+    <header>TADD calculator v2 - overzicht voor {{$employee->firstName}} {{$employee->lastName}}</header>
     <footer>Gegenereerd op {{$gendate}} door {{Auth::user()->name}}</footer>
     <div class="container">
         <div class="row">
             <table>
                 <tr>
-                    <td width="120px"><img height="100px" src="{{$mainlogo->value}}" alt="skbl logo"></td>
+                    <td width="120px">@if($mainlogo!='') <img height="100px" src="{{$mainlogo->value}}" alt="skbl logo"> @endif</td>
                     <td width="30px"></td>
                     <td>
-                        <h1 class="bd-title">{{$employee->fullname}}</h1>
+                        <h1 class="bd-title">{{$employee->firstName}} {{$employee->lastName}}</h1>
                         <h4 class="bd-lead">{{$employee->registrationNumber}}</h4>
                     </td>
                 </tr>
