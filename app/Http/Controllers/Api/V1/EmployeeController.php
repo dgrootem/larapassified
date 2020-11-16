@@ -33,10 +33,10 @@ class EmployeeController extends Controller
 
     private function allEmployees(){
         Log::debug("returning all employees");
-        Log::debug(0);
+        
         $this->writeLog('Employees','index','all','full list');
-        $q = $this->buildIndexQuery(false);//->orderBy('firstname', 'asc');
-        Log::debug(3);
+        $q = $this->buildIndexQuery('1a1a1',false);//->orderBy('firstname', 'asc');
+        
         Log::debug($q->toSql());
         return $q->get();
     }
@@ -63,7 +63,7 @@ class EmployeeController extends Controller
 
     private function buildIndexQuery($flags,$distinct = false)
     {
-        //Log::debug($flags);
+        Log::debug($flags);
         $result = Employee::selectRaw(($distinct?'distinct ':'').'employees.*,concat(firstname," ",lastname," [",ifnull(registrationNumber,""),"]") as fullNameExtended');
         $proc_flags = explode('a',$flags);
         Log::debug(compact('proc_flags'));
