@@ -85,8 +85,6 @@ class EmployeeController extends Controller
                 $query->select (\DB::raw(1))->from('edu_function_data')->where('employee_id',\DB::raw('employees.id'))->where('archived_auto',0);
             });
         }
-        //if ($activeOnly) $result = $result->where('isActive', 1);
-        //Log::debug(2);
         Log::debug($result->toSql());
         return $result;
     }
@@ -106,15 +104,12 @@ class EmployeeController extends Controller
         return $employee;
     }
 
-    public function visible()
-    {
-        $this->writeLog('Employees','index','visible','');
-        return Employee::where('isActive', true)->get();
-    }
+   
 
+    
     public function limitedTo5Years($visibleOnly = true)
     {
-        return Employee::where('isActive', true); //TODO: add selection criteria for limiting to employees that have been active in the last 5 years
+        return Employee::all(); //TODO: add selection criteria for limiting to employees that have been active in the last 5 years
     }
 
 
@@ -201,7 +196,6 @@ class EmployeeController extends Controller
         $employee->registrationNumber = $request['registrationNumber'];
         $employee->firstName = $request['firstName'];
         $employee->lastName = $request['lastName'];
-        $employee->isActive = $request['isActive'];
         //$employee->startwaardeDA = $request['startwaardeDA'];
         //$employee->startwaardeINT = $request['startwaardeINT'];
         //$employee->oudsysteem = false; //$request['oudsysteem'];
@@ -224,34 +218,4 @@ class EmployeeController extends Controller
         return '';
     }
 
-    public function archiveOldOrTADDEmployees(/*Request $request*/)
-    {
-        if (!Auth::user()->isadmin && Auth::user()->isactive) throw new Exception('not authorized');
-        $this->writeLog('Employees','archive','OldOrTADDEmployees','');
-        Log::info("archiving old employees...");
-        $query = "update employees set isActive = 0 where id in ".
-            "(select r1.id from ".
-                "(select e.id, max(ifNull(endDate, curdate())) as laatstedatum ".
-                    "from employees e ".
-                    "inner join edu_function_data edf on e.id = edf.employee_id ".
-                    "inner join employments emp on emp.edu_function_data_id = edf.id ".
-                    "group by e.id) r1 ".
-                "where r1.laatstedatum < DATE_SUB(curdate(), INTERVAL 5 YEAR) ) ;";
-        \DB::statement($query);
-        Log::info('archiving employees that are already TADD...');
-        $query2 = "update employees set isActive = 0 where isactive = 1 and id not in (select edf.employee_id from edu_function_data edf where edf.isTadd = 0);";
-        \DB::statement($query2);
-        
-        
-        Log::info("done!");
-    }
-
-    public function toggleEmployeesVisibility($visiblity)
-    {
-        if (!Auth::user()->isadmin) throw new Exception('not authorized');
-        $this->writeLog('Employees','toggle visibility','',$visiblity);
-        $v = ($visiblity == true ? "1" : "0");
-        Employee::where('isActive',0)->update(["isActive" => 1]);
-        //\DB::raw("update employees set isActive = " . $v . ";");
-    }
 }

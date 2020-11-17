@@ -17,4 +17,8 @@ class EduFunctionData extends Model
     public function employments(){
         return $this->hasMany(Employment::class);
     }
+
+    public function archiveReasons(){
+        return $this->hasMany(EfdArchiveReason::class);
+    }
 }

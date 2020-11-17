@@ -42,15 +42,51 @@ class TaddCalculationController extends Controller
         }
         $school = School::find($id);
         // Log::debug('useForCalculations='.$school->useForCalculations);
+
+        $reason_id = 16;
+
         if ($school->useForCalculations == 0){
             Log::info('archiving employees that only work in schools that don\'t count...');
-            $query3 = "update employees set isActive = 0 where isactive = 1 and id not in (select distinct edf.employee_id from edu_function_data edf inner join employments eo on edf.id = eo.edu_function_data_id and eo.school_id <> ".$school->id.")";
-            \DB::statement($query3);
+            
+            
+            //we gaan enkele de efds auto-archiveren waarvoor 
+            //  er GEEN aanstellingen zijn in scholen die actief zijn
+            // en die nog niet ge-autoarchiveerd zijn
+            $efds_voor_commentaar = EduFunctionData::where('archived_auto',0)
+                                        //->whereHas('employments',function($query) use ($school) {$query->where('school_id',$school->id);} )
+                                        ->whereDoesntHave('employments.school',function($query) use ($school) {$query->where('useForCalculations',true);})
+                                        ->whereDoesntHave('archiveReasons',function($query) use ($reason_id) {$query->where('setting_id',$reason_id);})
+                                        ->get();
+            foreach($efds_voor_commentaar as $efd){
+                $efd->archived_auto = 1;
+                $efd->save();
+                $efdid = $efd->id;
+                $query4 = "insert into efd_archive_reasons (setting_id,created_at,updated_at,edu_function_data_id) values($reason_id,now(),now(),$efdid)";
+                \DB::statement($query4);
+            }
+            //$query3 = "update employees set isActive = 0 where isactive = 1 and id not in (select distinct edf.employee_id from edu_function_data edf inner join employments eo on edf.id = eo.edu_function_data_id and eo.school_id <> ".$school->id.")";
+            
         }
         else
         {
-            Log::info('heractiveer alle personeelsleden die in deze school werkten');
-            $query3 = "update employees set isActive = 1 where isactive = 0 and id not in (select distinct edf.employee_id from edu_function_data edf inner join employments eo on edf.id = eo.edu_function_data_id and eo.school_id <> ".$school->id.")";
+            //we gaan de efds bijwerken die nog als auto_archived gemarkeerd zijn, maar die nu toch minstsen 1 school hebben die actief is
+            $efds_voor_commentaar = EduFunctionData::where('archived_auto',1)
+                                    //->whereHas('employments',function($query) use ($school) {$query->where('school_id',$school->id);} )
+                                    ->whereHas('employments.school',function($query) use ($school) {$query->where('useForCalculations',true);})
+                                    ->get();
+
+            //$efds_voor_commentaar = EduFunctionData::where('school_id',$school->id)->whereHas('archiveReasons',function($query) use($reason_id){
+            //    $query->where('settings_id',$reason_id);
+            //})->get();
+            foreach($efds_voor_commentaar as $efd){
+                $efdid = $efd->id;
+                $query4 = "delete from efd_archive_reasons where setting_id = $reason_id and edu_function_data_id = $efdid";
+                Log::debug($query4);
+                \DB::statement($query4);
+            }
+            // zet auto-archivering op 0 wanneer er geen "auto-archief"-redenen terug te vinden zijn voor een bepaalde edu_function_data 
+            $query3 = 'update edu_function_data a set archived_auto=0 where not exists (select \'x\' from efd_archive_reasons where edu_function_data_id = a.id)';
+            //$query3 = "update employees set isActive = 1 where isactive = 0 and id not in (select distinct edf.employee_id from edu_function_data edf inner join employments eo on edf.id = eo.edu_function_data_id and eo.school_id <> ".$school->id.")";
             \DB::statement($query3);
         }
 

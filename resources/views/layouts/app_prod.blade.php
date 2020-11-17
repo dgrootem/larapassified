@@ -156,7 +156,7 @@
         @endif
         @endauth
 
-        <v-app-bar app dark>
+        <v-app-bar app dark color="indigo">
             <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>TADD Calc</v-toolbar-title>
         </v-app-bar>

@@ -123,14 +123,14 @@ class EduFunctionDataController extends Controller
                 'edu_function_data.archived_final as archived_final',
                 'edu_function_data.archived_temporary as archived_temporary',
                 'edu_function_data.archived_auto as archived_auto',
-                \DB::raw("(select group_concat(omschrijving separator ' ,') from settings s inner join efd_archive_reason ar on s.id = ar.settings_id where ar.efd_id = edu_function_data.id) as redenen "),
+                \DB::raw("(select group_concat(omschrijving separator ' ,') from settings s inner join efd_archive_reasons ar on s.id = ar.setting_id where ar.edu_function_data_id = edu_function_data.id) as redenen "),
                 \DB::raw('edu_function_data.seniority_days / ' . $neededEffective1 . ' * 100.0 as seniority_days_perc'),
                 \DB::raw('edu_function_data.total_seniority_days / ' . $neededTotal . ' * 100.0 as total_seniority_days_perc'),
                 'edu_function_data.datum_verbetering_nodig_gezet as werkpunt',
                 'edu_function_data.istadd',
                 \DB::raw($oudsysteem . ' as oudsysteem')
             )->where('edu_function_data.isbenoemd', '=', 0);
-        if ($fullList == 0) $result = $result->where('employees.isActive',1);
+        
         if ($schoolId != -1) /*$result = $result->whereExists(function($query) use ($schoolId){
                 $query->select('x')->from('employments')
                         ->where('school_id',$schoolId)
@@ -400,7 +400,7 @@ class EduFunctionDataController extends Controller
         $results =  EduFunctionData::where('employee_id', $id)
             ->with('educationalFunction', 'employments.school')
             ->select('*',
-            \DB::raw("(select group_concat(omschrijving separator ' ,') from settings s inner join efd_archive_reason ar on s.id = ar.settings_id where ar.efd_id = edu_function_data.id) as auto_reason ")
+            \DB::raw("(select group_concat(omschrijving separator ' ,') from settings s inner join efd_archive_reasons ar on s.id = ar.setting_id where ar.edu_function_data_id = edu_function_data.id) as auto_reason ")
             )
             ->get();
         foreach ($results as $result) {
