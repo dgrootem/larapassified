@@ -21,6 +21,47 @@ class TaddCalculationController extends Controller
         if (Auth::user()->readonly) throw new Exception('not authorized');
     }
 
+    private function createReason($reason_id,$efdid){
+        $query4 = "insert into efd_archive_reasons (setting_id,created_at,updated_at,edu_function_data_id) values($reason_id,now(),now(),$efdid)";
+        \DB::statement($query4);
+    }
+
+    private function removeReason($reason_id,$efdid){
+        $query4 = "delete from efd_archive_reasons where setting_id = $reason_id and edu_function_data_id = $efdid";
+        Log::debug($query4);
+        \DB::statement($query4);
+    }
+
+    private function evaluateAutoArchiveFlag($edufunctionid){
+        $reason_id = 16;
+        $efds_voor_commentaar = EduFunctionData::where('id',$edufunctionid)
+                                        //->where('employee_id',$employee->id)
+                                        ->where('archived_auto',0)
+                                        //->whereHas('employments',function($query) use ($school) {$query->where('school_id',$school->id);} )
+                                        ->whereDoesntHave('employments.school',function($query) {$query->where('useForCalculations',true);})
+                                        ->whereDoesntHave('archiveReasons',function($query) use ($reason_id) {$query->where('setting_id',$reason_id);})
+                                        ->get();
+        foreach($efds_voor_commentaar as $efd){
+            Log::debug('auto archiving '.$efd->id);
+            $efd->archived_auto = 1;
+            $efd->save();
+            $this->createReason($reason_id,$efd->id);
+        }
+        $efds_voor_commentaar = EduFunctionData::where('id',$edufunctionid)
+                                    //where('employee_id',$employee->id)
+                                    ->where('archived_auto',1)
+                                    //->whereHas('employments',function($query) use ($school) {$query->where('school_id',$school->id);} )
+                                    ->whereHas('employments.school',function($query) {$query->where('useForCalculations',true);})
+                                    ->get();
+        foreach($efds_voor_commentaar as $efd){
+            Log::debug('auto de-archiving '.$efd->id);
+            $efdid = $efd->id;
+            $efd->archived_auto = 0;
+            $efd->save();
+            $this->removeReason($reason_id,$efdid);
+        }
+    }
+
     public function recalculateForSchool($id)
     {
         //testpersoon 28311250560
@@ -54,15 +95,14 @@ class TaddCalculationController extends Controller
             // en die nog niet ge-autoarchiveerd zijn
             $efds_voor_commentaar = EduFunctionData::where('archived_auto',0)
                                         //->whereHas('employments',function($query) use ($school) {$query->where('school_id',$school->id);} )
-                                        ->whereDoesntHave('employments.school',function($query) use ($school) {$query->where('useForCalculations',true);})
+                                        ->whereDoesntHave('employments.school',function($query) {$query->where('useForCalculations',true);})
                                         ->whereDoesntHave('archiveReasons',function($query) use ($reason_id) {$query->where('setting_id',$reason_id);})
                                         ->get();
             foreach($efds_voor_commentaar as $efd){
                 $efd->archived_auto = 1;
                 $efd->save();
                 $efdid = $efd->id;
-                $query4 = "insert into efd_archive_reasons (setting_id,created_at,updated_at,edu_function_data_id) values($reason_id,now(),now(),$efdid)";
-                \DB::statement($query4);
+                $this->createReason($reason_id,$efdid);
             }
             //$query3 = "update employees set isActive = 0 where isactive = 1 and id not in (select distinct edf.employee_id from edu_function_data edf inner join employments eo on edf.id = eo.edu_function_data_id and eo.school_id <> ".$school->id.")";
             
@@ -72,7 +112,7 @@ class TaddCalculationController extends Controller
             //we gaan de efds bijwerken die nog als auto_archived gemarkeerd zijn, maar die nu toch minstsen 1 school hebben die actief is
             $efds_voor_commentaar = EduFunctionData::where('archived_auto',1)
                                     //->whereHas('employments',function($query) use ($school) {$query->where('school_id',$school->id);} )
-                                    ->whereHas('employments.school',function($query) use ($school) {$query->where('useForCalculations',true);})
+                                    ->whereHas('employments.school',function($query)  {$query->where('useForCalculations',true);})
                                     ->get();
 
             //$efds_voor_commentaar = EduFunctionData::where('school_id',$school->id)->whereHas('archiveReasons',function($query) use($reason_id){
@@ -80,9 +120,7 @@ class TaddCalculationController extends Controller
             //})->get();
             foreach($efds_voor_commentaar as $efd){
                 $efdid = $efd->id;
-                $query4 = "delete from efd_archive_reasons where setting_id = $reason_id and edu_function_data_id = $efdid";
-                Log::debug($query4);
-                \DB::statement($query4);
+                $this->removeReason($reason_id,$efdid);
             }
             // zet auto-archivering op 0 wanneer er geen "auto-archief"-redenen terug te vinden zijn voor een bepaalde edu_function_data 
             $query3 = 'update edu_function_data a set archived_auto=0 where not exists (select \'x\' from efd_archive_reasons where edu_function_data_id = a.id)';
@@ -108,6 +146,8 @@ class TaddCalculationController extends Controller
         $functionData->total_seniority_days = $result['aantalDagen'];
         $functionData->seniority_days = $result['effectieveAantalDagen'];
         $functionData->save();
+
+        $this->evaluateAutoArchiveFlag($functionData_id);
         // Log::debug($functionData);
         return $functionData;
     }
@@ -122,15 +162,17 @@ class TaddCalculationController extends Controller
     function updateAllSeniorityDaysInternal(Employee $employee)
     {
         
-        // Log::debug('updateAllSeniorityDays');
-        // Log::debug($employee);
-        // Log::debug($employee->educationalFunctionData);
+        Log::debug('updateAllSeniorityDays');
+        Log::debug($employee);
+        Log::debug($employee->educationalFunctionData);
 
         foreach ($employee->educationalFunctionData as $functionData) {
             // Log::debug('x');
             // Log::debug('updateSeniorityDays for '.$functionData->id);
             $this->updateSeniorityDays($functionData->id);
         }
+        
+
         return $employee;
     }
 
