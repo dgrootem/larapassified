@@ -398,7 +398,7 @@ class EduFunctionDataController extends Controller
         
         $hasnew = $hasValidPreviousSettings; // (($neededTotal_new !== null) && ($neededEffective1_new != null));
         $results =  EduFunctionData::where('employee_id', $id)
-            ->with('educationalFunction', 'employments.school')
+            ->with('educationalFunction', 'employments.school','ratings.ratingtype')
             ->select('*',
             \DB::raw("(select group_concat(omschrijving separator ' ,') from settings s inner join efd_archive_reasons ar on s.id = ar.setting_id where ar.edu_function_data_id = edu_function_data.id) as auto_reason ")
             )

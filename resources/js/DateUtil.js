@@ -10,9 +10,11 @@ export function parseDate(val) {
     } else return null;
   }
   export function formatDate(date) {
+    console.log(date);
     if (date && date.length >= 10) {
       let d = this.parseDate(date);
       let f = format(d, "dd-MM-yyyy");
+      console.log(f);
       return f;
     } else return null;
   }
@@ -32,6 +34,14 @@ export function parseDate(val) {
       return parse(d, "yyyy-MM-dd", new Date());
     }
     else return null;
+  }
+
+  export function todayString(){
+    return format(parseDateFromDB(new Date().toJSON().slice(0,10)), "dd-MM-yyyy");
+  }
+  export function todayDate(){
+    return parseDate(this.todayString() + " 12:00:00");
+    //return parseDateFromDB(new Date().toJSON().slice(0,10) + ' 12:00:00');
   }
 
 //thanks to https://github.com/date-fns/date-fns/issues/489 , solution by @maggiepint

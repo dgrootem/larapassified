@@ -3,7 +3,9 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
+/**
+ *  model voor een aanstelling van een personeellid (employee) in een ambt (educational_function)
+ * */
 class EduFunctionData extends Model
 {
     protected $guarded = ["id"];
@@ -16,6 +18,9 @@ class EduFunctionData extends Model
     }
     public function employments(){
         return $this->hasMany(Employment::class);
+    }
+    public function ratings(){
+        return $this->hasMany(Rating::class);
     }
 
     public function archiveReasons(){
